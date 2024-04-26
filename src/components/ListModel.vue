@@ -4,7 +4,7 @@ const props = defineProps({
 	jobs: {
 		type: Array,
 	},
-})
+});
 </script>
 <template>
 	<div>

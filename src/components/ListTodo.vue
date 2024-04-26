@@ -1,17 +1,22 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue"
-import { useRoute, RouterLink, useRouter } from "vue-router"
+import { onMounted, ref } from "vue"
+import { RouterLink, useRouter } from "vue-router"
 import TodoModal from "./TodoModal.vue"
 import Listmodel from "./ListModel.vue"
 import { getTodoById, getTodos } from "@/util/fetchUtils"
 
 const route = useRouter()
-
-const tasks = ref([])
-
 const isTeleport = ref(false)
 const isEmptyTask = ref(false)
+const tasks = ref([])
 const taskDetails = ref()
+
+onMounted(async () => {
+	const listTodo = await getTodos(import.meta.env.VITE_BASE_URL + "/tasks")
+	if (listTodo.length === 0) isEmptyTask.value = true
+	tasks.value = listTodo
+	isTeleport.value = false
+});
 
 async function modalHandler(id) {
 	taskDetails.value = await getTodoById(
@@ -23,17 +28,16 @@ async function modalHandler(id) {
 	isTeleport.value = true
 }
 
-console.log(convertUtils("2024-04-22T09:00:00Z"))
 
 function convertUtils(yeahman) {
+	console.log(yeahman)
+	const wtf = Date(yeahman)
+	console.log(wtf)
 	const formattedTimeZone = formatTimeZone(yeahman)
-	console.log(formattedTimeZone)
 	const [date, timeString] = formattedTimeZone.split(",")
-	console.log(date)
-	console.log(timeString)
 	const dateformat = convertDateFormat(date)
-	console.log(dateformat)
 	const timeformat = convertTimeTo24HourFormat(timeString.substring(1))
+	console.log(dateformat, timeformat)
 	return `${dateformat} ${timeformat}`
 }
 
@@ -53,7 +57,14 @@ function convertTimeTo24HourFormat(timeString) {
 }
 
 function convertDateFormat(dateString) {
-	return dateString.replace(/\//g, "-")
+	const parts = dateString.split('/');
+
+	const month = parts[0].length === 1 ? `0${parts[0]}` : parts[0];
+
+	const formattedDate = `${parts[1]}/${month}/${parts[2]}`;
+
+
+	return formattedDate;
 }
 
 function formatTimeZone(timestampString) {
@@ -69,12 +80,7 @@ function closeModal(isClose) {
 	isTeleport.value = isClose
 	route.go(-1)
 }
-onMounted(async () => {
-	const listTodo = await getTodos(import.meta.env.VITE_BASE_URL + "/tasks")
-	if (listTodo.length === 0) isEmptyTask.value = true
-	tasks.value = listTodo
-	isTeleport.value = false
-})
+
 </script>
 
 <template>
@@ -84,11 +90,8 @@ onMounted(async () => {
 		</div>
 		<div class="w-full max-w-[90%] p-6 bg-gray-200 border border-black">
 			<teleport to="body" v-if="isTeleport">
-				<TodoModal
-					@back="closeModal"
-					:taskDetails="taskDetails"
-					:timeZone="Intl.DateTimeFormat().resolvedOptions().timeZone"
-				/>
+				<TodoModal @back="closeModal" :taskDetails="taskDetails"
+					:timeZone="Intl.DateTimeFormat().resolvedOptions().timeZone" />
 			</teleport>
 			<div class="w-full overflow-auto border border-black">
 				<table class="w-full text-gray-700">
@@ -110,44 +113,37 @@ onMounted(async () => {
 					<Listmodel :jobs="tasks">
 						<template #default="slotprop">
 							<router-link :to="{ path: '/task/' + slotprop.job.id }">
-								<tr
-									class="flex justify-between my-[10px] p-[10px] text-[20px] border border-black hover:drop-shadow-2xl bg-white"
-									:class="
-										{
-											Doing: 'hover:border-l-[20px] border-l-red-400 ',
-											Done: 'hover:border-l-[20px] border-l-green-300',
-											'To Do': 'hover:border-l-[20px] border-l-yellow-200',
-										}[slotprop.job.taskStatus]
-									"
-									@click="modalHandler(slotprop.job.id)"
-								>
+								<tr class="itbkk-item flex justify-between my-[10px] p-[10px] text-[20px] border border-black hover:drop-shadow-2xl bg-white"
+									:class="{
+				Doing: 'hover:border-l-[20px] border-l-red-400 ',
+				Done: 'hover:border-l-[20px] border-l-green-300',
+				'To Do': 'hover:border-l-[20px] border-l-yellow-200',
+			}[slotprop.job.taskStatus]
+				" @click="modalHandler(slotprop.job.id)">
 									<td class="px-4 py-2 border border-black w-1/1">
 										{{ slotprop.job.id }}
 									</td>
 
 									<td
-										class="px-4 py-2 w-1/2 text-blue-600 cursor-pointer border border-black break-all"
-									>
+										class="itbkk-title px-4 py-2 w-1/2 text-blue-600 cursor-pointer border border-black break-all">
 										{{ slotprop.job.taskTitle }}
 									</td>
 
-									<td class="px-4 py-2 border border-black w-1/3">
+									<td class="itbkk-assignees 4px-4 py-2 border border-black w-1/3"
+										:class="!slotprop.job.taskAssignees ? 'italic' : ''">
 										{{
-											slotprop.job.taskAssignees
-												? slotprop.job.taskAssignees
-												: "kuy"
-										}}
+				slotprop.job.taskAssignees
+					? slotprop.job.taskAssignees
+					: "Unassigned"
+			}}
 									</td>
-									<td
-										class="px-4 py-2 p-1.5 w-[90px] text-sm text-center font-[20px] uppercase border border-black tracking-wider rounded-200 bg-opacity-50 rounded-[10px]"
-										:class="
-											{
-												Doing: 'bg-red-200 text-red-800',
-												Done: 'bg-green-200 text-green-800 ',
-												'To Do': 'bg-yellow-200 text-yellow-800 ',
-											}[slotprop.job.taskStatus]
-										"
-									>
+									<td class="itbkk-status px-4 py-2 p-1.5 w-[90px] text-sm text-center font-[20px] uppercase border border-black tracking-wider rounded-200 bg-opacity-50 rounded-[10px]"
+										:class="{
+					Doing: 'bg-red-200 text-red-800',
+					Done: 'bg-green-200 text-green-800 ',
+					'To Do': 'bg-yellow-200 text-yellow-800 ',
+				}[slotprop.job.taskStatus]
+				">
 										{{ slotprop.job.taskStatus }}
 									</td>
 								</tr>
