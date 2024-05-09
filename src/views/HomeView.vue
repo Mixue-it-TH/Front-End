@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue"
-import { RouterLink,useRouter } from "vue-router"
+import { RouterLink, useRouter } from "vue-router"
 import { getTaskById, getTaskList, addTask, editTask, deleteTaskById } from "@/util/fetchUtils"
 import TaskModal from "@/components/TaskModal.vue"
 import Listmodel from "@/components/ListModel.vue"
@@ -26,7 +26,7 @@ onMounted(async () => {
 	const id = fullPath.split('/')[2]
 	if (fullPath.includes('edit')) {
 		modalHandler(id, 'edit')
-	}else if(id) modalHandler(id,'read')
+	} else if (id) modalHandler(id, 'read')
 
 	const listTasks = await getTaskList(import.meta.env.VITE_BASE_URL + "/tasks")
 	if (listTasks.length === 0) isEmptyTask.value = true
@@ -50,9 +50,9 @@ async function modalHandler(id, action) {
 		}
 	} else if (action === 'add') {
 		mode.value = "add"
-		taskDetails.value = {status:"NO_STATUS"}
+		taskDetails.value = { status: "NO_STATUS" }
 		modalOpen.value = true
-		
+
 	} else if (action === 'edit') {
 		taskDetails.value = await getTaskById(
 			import.meta.env.VITE_BASE_URL + "/tasks",
@@ -75,7 +75,7 @@ function closeDeleteModal(isClose) {
 	taskDetails.value = {}
 	showDeleteModal.value = isClose
 }
-function deleteModalHandler(tasks,number) {
+function deleteModalHandler(tasks, number) {
 	taskDetails.value = tasks
 	taskNumber.value = number
 	showDeleteModal.value = true;
@@ -84,15 +84,15 @@ async function confirmDelete(id) {
 	console.log(id)
 	const response = await deleteTaskById(import.meta.env.VITE_BASE_URL + "/tasks", id)
 	console.log(response)
-	if(response.status === 200){
+	if (response.status === 200) {
 		taskManagement.value.deleteTask(id)
 		showDeleteModal.value = false
-		statusHandler(taskDetails.value.title,'deleted')
-		taskDetails.value = {}	
+		statusHandler(taskDetails.value.title, 'deleted')
+		taskDetails.value = {}
 	}
-	if(response.status === 404){
-		statusHandler(taskDetails.value.title,'deleting','error')
-		taskManagement.value.deleteTask(id)		
+	if (response.status === 404) {
+		statusHandler(taskDetails.value.title, 'deleting', 'error')
+		taskManagement.value.deleteTask(id)
 		showDeleteModal.value = false
 		taskDetails.value = {}
 	}
@@ -104,17 +104,17 @@ async function confirmHandeler(action, taskDetails) {
 		return
 	}
 	if (action === 'add') {
-	if(!taskDetails?.status) taskDetails.status = 'NO_STATUS';
-	console.log(taskDetails)
+		if (!taskDetails?.status) taskDetails.status = 'NO_STATUS';
+		console.log(taskDetails)
 		const respone = await addTask(import.meta.env.VITE_BASE_URL + "/tasks", taskDetails)
 		console.log(respone)
-		statusHandler(respone.title,'added')
+		statusHandler(respone.title, 'added')
 		taskManagement.value.addTask(respone)
 	}
 	if (action === 'edit') {
 		const respone = await editTask(import.meta.env.VITE_BASE_URL + "/tasks", taskDetails)
 		console.log(respone)
-		statusHandler(respone.title,'updated')
+		statusHandler(respone.title, 'updated')
 		taskManagement.value.editTask(taskDetails.id, taskDetails)
 
 	}
@@ -125,23 +125,23 @@ function closeModal(isClose) {
 	taskDetails.value = {}
 	router.go(-1)
 }
-function statusHandler(title,status,type = 'success'){
-	if(type === 'success') {
+function statusHandler(title, status, type = 'success') {
+	if (type === 'success') {
 		message.value = `The task has been  ${status} successfully`
-	}else message.value = `An error occurred ${status} the task "${title}" dose not exist`
+	} else message.value = `An error occurred ${status} the task "${title}" dose not exist`
 	statusType.value = type
 	showAlertModal.value = true
 	let seconds = 10
-	let timer = setInterval(function() {
+	let timer = setInterval(function () {
 		seconds--
-		if (seconds < 0){
+		if (seconds < 0) {
 			clearInterval(timer)
 			closeStatusModal(false)
 		}
-	},1000)
+	}, 1000)
 }
 
-function closeStatusModal(isClose){
+function closeStatusModal(isClose) {
 	showAlertModal.value = isClose
 	message.value = ""
 	statusType.value = ""
@@ -162,18 +162,23 @@ function formatTimeZone(timestampString) {
 	return formattedtimestamp
 }
 
+function kuy(event) {
+	console.log(event.target.value)
+}
 
 
 </script>
 
 <template>
 	<Teleport to="body" v-if="showDeleteModal">
-		<DeleteModal @cancel="closeDeleteModal" @confirm="confirmDelete" :taskDetails="taskDetails" :taskNumber="taskNumber" />
+		<DeleteModal @cancel="closeDeleteModal" @confirm="confirmDelete" :taskDetails="taskDetails"
+			:taskNumber="taskNumber" />
 	</Teleport>
 	<teleport to="body" v-if="modalOpen">
 		<TaskModal @back="closeModal" @confirm="confirmHandeler" :taskDetails="taskDetails"
 			:timeZone="Intl.DateTimeFormat().resolvedOptions().timeZone" :mode="mode" />
 	</teleport>
+	<input type="color" @input="kuy" />
 	<div class="w-screen h-screen bg bg-[#FBFBFB] px-[35px] py-[25px] font-nonto">
 		<div class=" flex flex-row justify-between items-center w-[100%] h-[75px] mb-[15px]">
 			<div class="h-[75%] mt-[20px] ">
@@ -199,7 +204,7 @@ function formatTimeZone(timestampString) {
 				</div>
 			</div>
 		</div>
-		<AlertMessage v-show="showAlertModal" @close="closeStatusModal" :message="message" :type="statusType"  />
+		<AlertMessage v-show="showAlertModal" @close="closeStatusModal" :message="message" :type="statusType" />
 		<div class=" h-[500px]">
 			<div class="flex justify-between items-center w-[100%] px-[20px] min-h-[45px] font-[550]">
 				<div class="w-[10%]">
@@ -243,7 +248,7 @@ function formatTimeZone(timestampString) {
 		'DOING': 'hover:border-l-[7px] hover:border-l-[#F55D30] ',
 		'DONE': 'hover:border-l-[7px] hover:border-l-[#30F558]',
 		'TO_DO': 'hover:border-l-[7px] hover:border-l-[#F5C330]',
-		'NO_STATUS': 'hover:border-l-[7px] hover:border-l-gray-500'
+		'NO_STATUS': 'hover:border-l-[7px] hover:border-l-[#6b7280]'
 	}[slotprop.job.taskStatus]">
 						<router-link :to="{ path: '/task/' + slotprop.job.id }" class="w-full h-full">
 							<div class="flex w-full min-h-[55px]" @click="modalHandler(slotprop.job.id, 'read')">
@@ -262,7 +267,7 @@ function formatTimeZone(timestampString) {
 		'DOING': 'bg-[#F55D30] ',
 		'DONE': 'bg-[#30F558]  ',
 		'TO_DO': 'bg-[#F5C330]  ',
-		'NO_STATUS': 'bg-gray-500'
+		'NO_STATUS': 'bg-[#6b7280]'
 	}[slotprop.job.status]
 		">
 										<p class="itbkk-status text-white">
@@ -302,7 +307,8 @@ function formatTimeZone(timestampString) {
 										<a>Edit</a>
 									</li>
 								</router-link>
-								<li class="itbkk-button-delete" @click="deleteModalHandler(slotprop.job,slotprop.key + 1)">
+								<li class="itbkk-button-delete"
+									@click="deleteModalHandler(slotprop.job,slotprop.key + 1)">
 									<a>Delete</a>
 								</li>
 							</ul>

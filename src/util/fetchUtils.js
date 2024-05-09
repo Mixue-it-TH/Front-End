@@ -28,10 +28,10 @@ async function addTask(url, task) {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				taskTitle: task.title?.trim(),
-				taskDescription: task.description?.trim(),
-				taskAssignees: task.assignees?.trim(),
-				taskStatus: task.status
+				title: task.title?.trim(),
+				description: task.description?.trim(),
+				assignees: task.assignees?.trim(),
+				status: task.status
 			}),
 		})
 		if (response.ok) {
@@ -54,10 +54,10 @@ async function editTask(url, task) {
 			},
 			body: JSON.stringify({
 				id: task.id,
-				taskTitle: task.title,
-				taskDescription: task.description,
-				taskAssignees: task.assignees,
-				taskStatus: task.status
+				title: task.title,
+				description: task.description,
+				assignees: task.assignees,
+				status: task.status
 			}),
 		})
 		if (respone.ok) {
