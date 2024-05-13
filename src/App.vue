@@ -19,7 +19,7 @@ function statusHandler(title, action, data, type = "success") {
 	if (type === "success" && typeof title !== "number") {
 		message.value = `The ${data} has been  ${action} successfully`
 	} else if (type === "error") {
-		message.value = `An ${type} occurred ${action} the ${data} ${title} dose not exist`
+		message.value = `An error has occurred, the status does not exist`
 	} else if (typeof title === "number") {
 		message.value = `${title} task(s) have been tranfer and the status has been deleted`
 	}

@@ -23,6 +23,7 @@ const delState = ref(false)
 
 
 onMounted(async () => {
+	console.log("HAHA")
 	const data = router.currentRoute.value.fullPath.split("/")
 	if (data.length === 3 && !data.includes("add")) {
 		actionHandler(data[2], "read")
@@ -74,14 +75,14 @@ async function actionHandler(id, action) {
 			oldStatus.value = { ...statusDetails.value }
 			mode.value = "edit";
 		} else {
-			window.alert("The requested status does not exist");
-			router.push("/");
+			emit("alert", statusDetails.value.name, "edit", "status", "error")
+			router.push("/status");
 		}
 	} else if (action === "delete") {
 		mode.value = "delete"
 		if (id === 1) {
 			window.alert("The requested statuses can't delete default status")
-			router.push("/")
+			router.push("/status")
 		}
 		statusDetails.value = await getStatusById(
 			import.meta.env.VITE_BASE_URL + "/statuses",
@@ -211,8 +212,9 @@ function closeModal() {
 			</main>
 			<footer class="flex justify-end mt-[auto] h-[17%] gap-5 items-center border-t-2">
 				<button
-					class="itbkk-button itbkk-button-confirm flex w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-600 rounded-lg"
-					:class="isDisable ? 'opacity-50' : ''" v-show="mode !== 'read'" @click="confirmHandeler()">
+					class="itbkk-button itbkk-button-confirm disabled flex w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-600 rounded-lg"
+					:class="isDisable ? 'opacity-50' : ''" v-show="mode !== 'read'" @click="confirmHandeler()"
+					:disabled="isDisable">
 					<button class="m-[auto]">
 						{{ mode !== "read" ? "Save" : "Ok" }}
 					</button>
