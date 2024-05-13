@@ -17,6 +17,9 @@ const props = defineProps({
 	tranferData: {
 		type: Array,
 	},
+	amountTasks: {
+		type: Number,
+	},
 })
 console.log(props.stage)
 const statusManagement = useStatus()
@@ -37,8 +40,8 @@ const newStatus = ref({ id: null, name: "", description: "", statusColor: "" });
 						<span class="text-red-600">"{{ stDetail.name }}" status ?</span>
 					</div>
 					<div v-else class="pb-[20px]">
-						There is some task associated with the <span class="text-red-500">{{ stDetail.name
-							}}</span> status.
+						There is some task associated with the <span class="text-red-500">{{ amountTasks }}</span>
+						status.
 						<div class="mt-[15px]">
 							<span class="">you need to transfer to</span>
 							<div class="mt-[10px] border-2">

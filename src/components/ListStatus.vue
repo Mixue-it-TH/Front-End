@@ -17,7 +17,8 @@ const statusDetail = ref()
 const statusId = ref()
 const delState = ref(false)
 const stage = ref("delete")
-let arrTranfer = ref([])
+const arrTranfer = ref([])
+const amoutTasks = ref(0)
 
 
 function delAction(status, id) {
@@ -29,6 +30,7 @@ function delAction(status, id) {
 	})
 	if (taskRelation.length >= 1) {
 		stage.value = "tranfer"
+		amoutTasks.value = taskRelation.length
 		arrTranfer.value = statusManagement.getAllStatus().filter((st) => {
 			return st.id !== id
 		})
@@ -40,7 +42,7 @@ function delAction(status, id) {
 
 async function delConfirm(id, tranferId) {
 	let delRespond
-	if (stage.value === 'delete') {
+	if (stage.value === "delete") {
 		delRespond = await deleteStatusById(
 			import.meta.env.VITE_BASE_URL + "/v2/statuses",
 			id
@@ -51,7 +53,7 @@ async function delConfirm(id, tranferId) {
 		} else if (delRespond.status === 404) {
 			emit("alert", statusDetail.value.name, "deleted", "status", "error")
 		}
-	} else if (stage.value === 'tranfer') {
+	} else if (stage.value === "tranfer") {
 		delRespond = await deleteTaskAndTranfer(
 			import.meta.env.VITE_BASE_URL + "/v2/statuses",
 			id,
@@ -59,7 +61,11 @@ async function delConfirm(id, tranferId) {
 		)
 		if (delRespond.ok) {
 			statusManagement.deleteStatus(id)
-			taskManagement.tranferStatus(id, statusManagement.getStatusById(tranferId))
+			taskManagement.tranferStatus(
+				id,
+				statusManagement.getStatusById(tranferId)
+			)
+			emit("alert", amoutTasks.value, "deleted", "status") // เล้งเพิ่ม
 		} else if (delRespond.status === 404) {
 			emit("alert", statusDetail.value.name, "deleted", "status", "error")
 		}
@@ -86,7 +92,7 @@ function modalHandler(id, action) {
 	<div class="">
 		<Teleport to="body" v-if="delState">
 			<DeleteStatusModal :id="statusId" :stDetail="statusDetail" :stage="stage" :tranferData="arrTranfer"
-				@cancel="closeDelModal" @confirm="delConfirm" />
+				:amountTasks="amoutTasks" @cancel="closeDelModal" @confirm="delConfirm" />
 		</Teleport>
 
 		<div>

@@ -15,10 +15,13 @@ function closeStatusModal(isClose) {
 }
 
 function statusHandler(title, action, data, type = "success") {
-	if (type === "success") {
+	console.log(title)
+	if (type === "success" && typeof title !== "number") {
 		message.value = `The ${data} has been  ${action} successfully`
 	} else if (type === "error") {
 		message.value = `An ${type} occurred ${action} the ${data} ${title} dose not exist`
+	} else if (typeof title === "number") {
+		message.value = `${title} task(s) have been tranfer and the status has been deleted`
 	}
 	statusType.value = type
 	showAlertModal.value = true
@@ -29,7 +32,7 @@ function statusHandler(title, action, data, type = "success") {
 			clearInterval(timer)
 			closeStatusModal(false)
 		}
-	}, 1000000000)
+	}, 1000)
 }
 </script>
 

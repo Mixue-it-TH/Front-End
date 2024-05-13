@@ -130,6 +130,7 @@ async function confirmHandeler() {
 				statusManagement.deleteStatus(statusDetails.value.id)
 			} else {
 				statusManagement.editStatus(statusDetails.value);
+				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)// เล้งเพิ่ม
 				emit("alert", respone.name, "updated", "status");
 			}
 		} else {
