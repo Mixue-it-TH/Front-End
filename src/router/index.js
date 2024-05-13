@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router"
 
 import HomeView from "@/views/HomeView.vue"
+import Empty from "@/components/Empty.vue"
+import TaskModal from "@/components/TaskModal.vue"
+import StatusModal from "@/components/StatusModal.vue"
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,25 +14,44 @@ const router = createRouter({
 		},
 		{
 			path: "/task",
-			name: "task	",
-			component: HomeView,
-			// component: backup,
+			name: "taskList	",
+			component: Empty,
 		},
 		{
 			path: "/task/:id",
-			name: "details",
-			component: HomeView,
+			name: "taskDetail",
+			component: TaskModal,
 		},
 		{
 			path: "/task/add",
-			name: "add",
-			component: HomeView
+			name: "taskAdd",
+			component: TaskModal,
 		},
 		{
 			path: "/task/:id/edit",
-			name: "edit",
-			component: HomeView
-		}
+			name: "taskEdit",
+			component: TaskModal,
+		},
+		{
+			path: "/status",
+			name: "status",
+			component: Empty,
+		},
+		{
+			path: "/status/add",
+			name: "statusAdd",
+			component: StatusModal,
+		},
+		{
+			path: "/status/:id",
+			name: "statusDetail",
+			component: StatusModal,
+		},
+		{
+			path: "/status/:id/edit",
+			name: "statusEdit",
+			component: StatusModal,
+		},
 	],
 })
 

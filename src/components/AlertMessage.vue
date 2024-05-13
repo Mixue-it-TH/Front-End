@@ -16,7 +16,8 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="flex justify-between px-[15px] py-[10px]" :class="type">
+    <div class="fade-up absolute right-0 bottom-0 mr-[30px] mb-[30px] w-[280px] z-[20] flex justify-between px-[15px] py-[10px]"
+        :class="type">
         <div>
             <h1 class="font-[700]">{{ type === 'success' ? 'Success' : 'Error' }}</h1>
             <p class="itbkk-message">
@@ -44,5 +45,29 @@ const props = defineProps({
     border-radius: 5px;
     background-color: #FEE2E2;
 
+}
+
+.duplicate {
+    color: #DC2626;
+    border-color: #DC2626;
+    border-radius: 5px;
+    background-color: #FEE2E2;
+
+}
+
+.fade-up {
+    animation: fadeUp 0.5s ease-out;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>

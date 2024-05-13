@@ -1,4 +1,4 @@
-async function getTaskList(url) {
+async function getStatusList(url) {
 	try {
 		const data = await fetch(url)
 		const items = await data.json()
@@ -7,7 +7,7 @@ async function getTaskList(url) {
 		console.log(`error: ${error}`)
 	}
 }
-async function getTaskById(url, id) {
+async function getStatusById(url, id) {
 	try {
 		const data = await fetch(`${url}/${id}`)
 		const item = await data.json()
@@ -19,8 +19,8 @@ async function getTaskById(url, id) {
 	} catch (error) { }
 }
 
-async function addTask(url, task) {
-	console.log(task)
+async function addStatus(url, newStatus) {
+	console.log(newStatus)
 	try {
 		const response = await fetch(`${url}`, {
 			method: "POST",
@@ -28,51 +28,50 @@ async function addTask(url, task) {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				title: task.title?.trim(),
-				description: task.description?.trim(),
-				assignees: task.assignees?.trim(),
-				status: task.status,
+				name: newStatus.name?.trim(),
+				description: newStatus.description?.trim(),
+				statusColor: newStatus.statusColor,
 			}),
 		})
 		console.log(response)
 		if (response.ok) {
 			const responseData = await response.json()
+			console.log(responseData)
 			return responseData
 		} else {
-			throw new Error("Failed to add task")
+			throw new Error("Failed to add status")
 		}
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}
 }
 
-async function editTask(url, task) {
+async function editStatus(url, status) {
 	try {
-		const respone = await fetch(`${url}/${task.id}`, {
+		const respone = await fetch(`${url}/${status.id}`, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				id: task.id,
-				title: task.title?.trim(),
-				description: task.description?.trim(),
-				assignees: task.assignees?.trim(),
-				status: {
-					id: task.status.id,
-				},
+				id: status.id,
+				name: status.name?.trim(),
+				description: status.description?.trim(),
+				statusColor: status.statusColor
 			}),
 		})
 		console.log(respone)
 		if (respone.ok) {
 			const responseData = await respone.json()
 			return responseData
+		} else if (respone.status === 404) {
+			return 404
 		}
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}
 }
-async function deleteTaskById(url, id) {
+async function deleteStatusById(url, id) {
 	try {
 		const response = await fetch(`${url}/${id}`, {
 			method: "DELETE",
@@ -82,21 +81,21 @@ async function deleteTaskById(url, id) {
 		console.log(`error: ${e}`)
 	}
 }
-
-async function getStatusList(url) {
+async function deleteTaskAndTranfer(url, id, newId) {
 	try {
-		const data = await fetch(url)
-		const items = await data.json()
-		return items
-	} catch (error) {
-		console.log(`error: ${error}`)
+		const response = await fetch(`${url}/${id}/${newId}`, {
+			method: "DELETE",
+		})
+		return response
+	} catch (e) {
+		console.log(`error: ${e}`)
 	}
 }
 export {
-	getTaskList,
-	getTaskById,
-	addTask,
-	editTask,
-	deleteTaskById,
 	getStatusList,
+	getStatusById,
+	addStatus,
+	editStatus,
+	deleteTaskAndTranfer,
+	deleteStatusById,
 }

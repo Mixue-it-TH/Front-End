@@ -1,9 +1,46 @@
 <script setup>
 import { RouterView } from "vue-router"
+import HomeView from "./views/HomeView.vue";
+import { ref } from "vue";
+import AlertMessage from "./components/AlertMessage.vue";
+
+const message = ref("")
+const statusType = ref("success")
+const showAlertModal = ref(false)
+
+function closeStatusModal(isClose) {
+	showAlertModal.value = isClose
+	message.value = ""
+	statusType.value = ""
+}
+
+function statusHandler(title, action, data, type = "success") {
+	if (type === "success") {
+		message.value = `The ${data} has been  ${action} successfully`
+	} else if (type === "error") {
+		message.value = `An ${type} occurred ${action} the ${data} ${title} dose not exist`
+	}
+	statusType.value = type
+	showAlertModal.value = true
+	let seconds = 10
+	let timer = setInterval(function () {
+		seconds--
+		if (seconds < 0) {
+			clearInterval(timer)
+			closeStatusModal(false)
+		}
+	}, 1000000000)
+}
 </script>
 
+
+
 <template>
-	<RouterView />
+	<div class="w-screen h-screen overflow-x-hidden">
+		<AlertMessage v-if="showAlertModal" @close="closeStatusModal" :message="message" :type="statusType" />
+		<HomeView @alert="statusHandler" />
+		<RouterView @alert="statusHandler" />
+	</div>
 </template>
 
 <style scoped></style>
