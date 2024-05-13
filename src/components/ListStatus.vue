@@ -105,6 +105,9 @@ function modalHandler(id, action) {
 				<div class="w-[60%]">
 					<p>Description</p>
 				</div>
+				<div class="w-[5%]">
+					<p>Action</p>
+				</div>
 			</div>
 		</div>
 		<router-link :to="{ name: 'statusAdd' }">
@@ -135,7 +138,7 @@ function modalHandler(id, action) {
 							<div class="w-[30%]">
 								<div class="text-white min-w-[80px] max-w-[150px] px-[10px]  rounded-[5px] m-[auto] inline-block"
 									:style="{ backgroundColor: slotprop.status.statusColor }">
-									<p class="">{{ slotprop.status.name }}</p>
+									<p class="itbkk-status-name">{{ slotprop.status.name }}</p>
 								</div>
 							</div>
 
@@ -144,7 +147,7 @@ function modalHandler(id, action) {
 								<div class="px-[25px]">
 									<p :class="{
 			'italic text-gray-500': !slotprop.status.description,
-		}">
+		}" class="itbkk-status-description">
 										{{
 			slotprop.status.description
 				? slotprop.status.description
@@ -158,12 +161,15 @@ function modalHandler(id, action) {
 					</router-link>
 					<div class="w-[100px]">
 						<div class="flex justify-between w-[100px]" v-if="slotprop.status.id !== 1">
-							<router-link :to="{ name: 'statusEdit', params: { id: slotprop.status.id } }">
-								<div>
+							<router-link :to="{ name: 'statusEdit', params: { id: slotprop.status.id } }"
+								class="itbkk-button-edit">
+								<div class="">
+									Edit
 									<img src="/image/repair-icon-.png" class="w-[30px]" />
 								</div>
 							</router-link>
-							<div>
+							<div class="itbkk-button-delete">
+								Delete
 								<img src="/image/delete-image.png" class="w-[30px]"
 									@click="delAction(slotprop.status, slotprop.status.id)" />
 							</div>
