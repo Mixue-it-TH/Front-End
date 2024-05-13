@@ -17,22 +17,23 @@ const statusDetail = ref()
 const statusId = ref()
 const delState = ref(false)
 const stage = ref("delete")
-let arrTranfer = ref([])
+const arrTranfer = ref([])
+const amoutTasks = ref(0)
 
 
 function delAction(status, id) {
-	console.log(id)
-	console.log(status)
+
 	statusDetail.value = status
 	const taskRelation = taskManagement.getAllTask().filter((task) => {
 		return task.status.id === statusDetail.value.id
 	})
 	if (taskRelation.length >= 1) {
 		stage.value = "tranfer"
+		amoutTasks.value = taskRelation.length
 		arrTranfer.value = statusManagement.getAllStatus().filter((st) => {
 			return st.id !== id
 		})
-		console.log(arrTranfer.value)
+
 	}
 	statusId.value = id
 	delState.value = true
@@ -40,9 +41,9 @@ function delAction(status, id) {
 
 async function delConfirm(id, tranferId) {
 	let delRespond
-	if (stage.value === 'delete') {
+	if (stage.value === "delete") {
 		delRespond = await deleteStatusById(
-			import.meta.env.VITE_BASE_URL + "/v2/statuses",
+			import.meta.env.VITE_BASE_URL + "/statuses",
 			id
 		)
 		statusManagement.deleteStatus(id)
@@ -51,15 +52,19 @@ async function delConfirm(id, tranferId) {
 		} else if (delRespond.status === 404) {
 			emit("alert", statusDetail.value.name, "deleted", "status", "error")
 		}
-	} else if (stage.value === 'tranfer') {
+	} else if (stage.value === "tranfer") {
 		delRespond = await deleteTaskAndTranfer(
-			import.meta.env.VITE_BASE_URL + "/v2/statuses",
+			import.meta.env.VITE_BASE_URL + "/statuses",
 			id,
 			tranferId
 		)
 		if (delRespond.ok) {
 			statusManagement.deleteStatus(id)
-			taskManagement.tranferStatus(id, statusManagement.getStatusById(tranferId))
+			taskManagement.tranferStatus(
+				id,
+				statusManagement.getStatusById(tranferId)
+			)
+			emit("alert", amoutTasks.value, "deleted", "status") // เล้งเพิ่ม
 		} else if (delRespond.status === 404) {
 			emit("alert", statusDetail.value.name, "deleted", "status", "error")
 		}
@@ -86,7 +91,7 @@ function modalHandler(id, action) {
 	<div class="">
 		<Teleport to="body" v-if="delState">
 			<DeleteStatusModal :id="statusId" :stDetail="statusDetail" :stage="stage" :tranferData="arrTranfer"
-				@cancel="closeDelModal" @confirm="delConfirm" />
+				:amountTasks="amoutTasks" @cancel="closeDelModal" @confirm="delConfirm" />
 		</Teleport>
 
 		<div>
@@ -99,6 +104,9 @@ function modalHandler(id, action) {
 				</div>
 				<div class="w-[60%]">
 					<p>Description</p>
+				</div>
+				<div class="w-[5%]">
+					<p>Action</p>
 				</div>
 			</div>
 		</div>
@@ -130,7 +138,7 @@ function modalHandler(id, action) {
 							<div class="w-[30%]">
 								<div class="text-white min-w-[80px] max-w-[150px] px-[10px]  rounded-[5px] m-[auto] inline-block"
 									:style="{ backgroundColor: slotprop.status.statusColor }">
-									<p class="">{{ convertStatus(slotprop.status.name) }}</p>
+									<p class="itbkk-status-name">{{ slotprop.status.name }}</p>
 								</div>
 							</div>
 
@@ -139,11 +147,11 @@ function modalHandler(id, action) {
 								<div class="px-[25px]">
 									<p :class="{
 			'italic text-gray-500': !slotprop.status.description,
-		}">
+		}" class="itbkk-status-description">
 										{{
 			slotprop.status.description
 				? slotprop.status.description
-				: "Unassigned"
+				: "No description is provided"
 		}}
 									</p>
 								</div>
@@ -153,12 +161,15 @@ function modalHandler(id, action) {
 					</router-link>
 					<div class="w-[100px]">
 						<div class="flex justify-between w-[100px]" v-if="slotprop.status.id !== 1">
-							<router-link :to="{ name: 'statusEdit', params: { id: slotprop.status.id } }">
-								<div>
+							<router-link :to="{ name: 'statusEdit', params: { id: slotprop.status.id } }"
+								class="itbkk-button-edit">
+								<div class="">
+									Edit
 									<img src="/image/repair-icon-.png" class="w-[30px]" />
 								</div>
 							</router-link>
-							<div>
+							<div class="itbkk-button-delete">
+								Delete
 								<img src="/image/delete-image.png" class="w-[30px]"
 									@click="delAction(slotprop.status, slotprop.status.id)" />
 							</div>

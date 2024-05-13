@@ -16,7 +16,12 @@ const taskDetails = ref({
 	description: "",
 	status: { id: 1 },
 })
-const oldTask = ref({})
+const oldTask = ref({
+	title: "",
+	assignees: "",
+	description: "",
+	status: { id: 1 },
+})
 const isDisable = ref(true)
 const mode = ref("read")
 const dataLoaded = ref(false)
@@ -37,13 +42,12 @@ onMounted(async () => {
 async function actionHandler(id, action) {
 	if (action === "read") {
 		taskDetails.value = await getTaskById(
-			import.meta.env.VITE_BASE_URL + "/v1/tasks",
+			import.meta.env.VITE_BASE_URL + "/tasks",
 			id
 		)
 		if (typeof taskDetails.value === "object") {
 			taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
 			taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn)
-			console.log(taskDetails.value)
 			mode.value = "read"
 		} else {
 			window.alert("The requested task does not exist")
@@ -53,7 +57,7 @@ async function actionHandler(id, action) {
 		mode.value = "add"
 	} else if (action === "edit") {
 		taskDetails.value = await getTaskById(
-			import.meta.env.VITE_BASE_URL + "/v1/tasks",
+			import.meta.env.VITE_BASE_URL + "/tasks",
 			id
 		)
 		if (typeof taskDetails.value === "object") {
@@ -61,8 +65,6 @@ async function actionHandler(id, action) {
 			taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn)
 			oldTask.value = { ...taskDetails.value }
 			mode.value = "edit"
-			console.log(taskDetails.value.status)
-			console.log(statusManagement.getAllStatus())
 		} else {
 			window.alert("The requested task does not exist")
 			router.push("/")
@@ -76,37 +78,31 @@ async function confirmHandeler() {
 	}
 	if (mode.value === "add") {
 		if (!taskDetails.value?.status) taskDetails.value.status = 1
-		console.log(taskDetails.value)
 		const respone = await addTask(
-			import.meta.env.VITE_BASE_URL + "/v1/tasks",
+			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		console.log(respone)
 		emit("alert", respone.title, "added", "task")
 		taskManagement.addTask(respone)
-		console.log(taskManagement.getAllTask())
 		closeModal()
 		return
 	}
 	if (mode.value === "edit") {
-		console.log(taskDetails.value)
 		const respone = await editTask(
-			import.meta.env.VITE_BASE_URL + "/v1/tasks",
+			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		console.log(respone)
 		emit("alert", respone.title, "updated", "task")
 		taskManagement.editTask(taskDetails.value.id, respone)
 		closeModal()
 		return
 	}
 }
-function saveBthHandler() {
-	console.log(taskDetails.value)
+function saveBthHandler(isTrue = false) {
 	if (
-		JSON.stringify({ ...oldTask.value }) !==
-		JSON.stringify({ ...taskDetails.value }) &&
-		oldTask.value.title
+		(JSON.stringify({ ...oldTask.value }) !==
+			JSON.stringify({ ...taskDetails.value }) &&
+			oldTask.value.title) || isTrue
 	) {
 		isDisable.value = false
 		return
@@ -125,7 +121,7 @@ function closeModal() {
 <template>
 	<div v-if="dataLoaded" class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
 		<div class="fade-up flex justify-center items-center w-[100%] h-[100%]">
-			<div class="w-[75%] h-[90%] rounded-[15px] bg bg-white">
+			<div class="itbkk-modal-task w-[75%] h-[90%] rounded-[15px] bg bg-white">
 				<header class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-[#F8F8F8] border-b-2 rounded-t-[7px]">
 					<div v-show="mode !== 'read'">
 						{{ mode === "add" ? "New Task" : "Edit Task" }}
@@ -170,9 +166,9 @@ function closeModal() {
 								<p class="font-[600]">Status</p>
 								<div class="border border-gray-300 min-h-[50px] rounded-[5px]">
 									<select name="status" class="itbkk-status w-full h-full min-h-[50px] px-[15px]"
-										v-model="taskDetails.status" @change="saveBthHandler" :required="true">
-										<option v-for="(status, index) in statusManagement.getAllStatus()" :key="index"
-											:value="status" :selected="taskDetails.status.id === status.id">
+										v-model="taskDetails.status.id" @change="saveBthHandler(true)" :required="true">
+										<option v-for="(status, index) in  statusManagement.getAllStatus() "
+											:key="index" :value="status.id">
 											{{ convertStatus(status.name) }}
 										</option>
 									</select>

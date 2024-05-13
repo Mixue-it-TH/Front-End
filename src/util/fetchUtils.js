@@ -16,7 +16,7 @@ async function getTaskById(url, id) {
 		} else {
 			return data.status
 		}
-	} catch (error) {}
+	} catch (error) { }
 }
 
 async function addTask(url, task) {
@@ -31,7 +31,7 @@ async function addTask(url, task) {
 				title: task.title?.trim(),
 				description: task.description?.trim(),
 				assignees: task.assignees?.trim(),
-				status: task.status,
+				status: task.status.id,
 			}),
 		})
 		console.log(response)
