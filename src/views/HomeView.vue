@@ -163,6 +163,9 @@ function formatTimeZone(timestampString) {
 	return formattedtimestamp
 }
 
+function kuy(event) {
+	console.log(event.target.value)
+}
 
 
 </script>
@@ -176,6 +179,7 @@ function formatTimeZone(timestampString) {
 		<TaskModal @back="closeModal" @confirm="confirmHandeler" :taskDetails="taskDetails"
 			:timeZone="Intl.DateTimeFormat().resolvedOptions().timeZone" :mode="mode" />
 	</teleport>
+	<input type="color" @input="kuy" />
 	<div class="w-screen h-screen bg bg-[#FBFBFB] px-[35px] py-[25px] font-nonto">
 		<div class=" flex flex-row justify-between items-center w-[100%] h-[75px] mb-[15px]">
 			<div class="h-[75%] mt-[20px] ">
@@ -245,7 +249,7 @@ function formatTimeZone(timestampString) {
 		'DOING': 'hover:border-l-[7px] hover:border-l-[#F55D30] ',
 		'DONE': 'hover:border-l-[7px] hover:border-l-[#30F558]',
 		'TO_DO': 'hover:border-l-[7px] hover:border-l-[#F5C330]',
-		'NO_STATUS': 'hover:border-l-[7px] hover:border-l-gray-500'
+		'NO_STATUS': 'hover:border-l-[7px] hover:border-l-[#6b7280]'
 	}[slotprop.job.taskStatus]">
 						<router-link :to="{ name: 'details', params: { id: slotprop.job.id } }" class="w-full h-full">
 							<div class="flex w-full min-h-[55px]" @click="modalHandler(slotprop.job.id, 'read')">
@@ -264,7 +268,7 @@ function formatTimeZone(timestampString) {
 		'DOING': 'bg-[#F55D30] ',
 		'DONE': 'bg-[#30F558]  ',
 		'TO_DO': 'bg-[#F5C330]  ',
-		'NO_STATUS': 'bg-gray-500'
+		'NO_STATUS': 'bg-[#6b7280]'
 	}[slotprop.job.status]
 		">
 										<p class="itbkk-status text-white">
