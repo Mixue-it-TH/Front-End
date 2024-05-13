@@ -24,10 +24,10 @@ const toggleManage = ref(" Mannage Status")
 
 onMounted(async () => {
 	const listTasks = await getTaskList(
-		import.meta.env.VITE_BASE_URL + "/v1/tasks"
+		import.meta.env.VITE_BASE_URL + "/tasks"
 	)
 	const listStatuses = await getStatusList(
-		import.meta.env.VITE_BASE_URL + "/v2/statuses"
+		import.meta.env.VITE_BASE_URL + "/statuses"
 	)
 	if (listTasks.length === 0) isEmptyTask.value = true
 	taskManagement.addTasks(listTasks)
@@ -47,7 +47,7 @@ function closeDeleteModal(isClose) {
 }
 async function confirmDelete(id) {
 	const response = await deleteTaskById(
-		import.meta.env.VITE_BASE_URL + "/v1/tasks",
+		import.meta.env.VITE_BASE_URL + "/tasks",
 		id
 	)
 	console.log(response)

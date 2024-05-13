@@ -61,7 +61,7 @@ const taskManagement = useTasks();
             backgroundColor: slotprop.job.status.statusColor,
         }">
                                     <p class="itbkk-status text-white">
-                                        {{ convertStatus(slotprop.job.status.name) }}
+                                        {{ slotprop.job.status.name }}
                                     </p>
                                 </div>
                             </div>

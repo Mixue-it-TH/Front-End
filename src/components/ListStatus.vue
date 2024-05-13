@@ -22,8 +22,7 @@ const amoutTasks = ref(0)
 
 
 function delAction(status, id) {
-	console.log(id)
-	console.log(status)
+
 	statusDetail.value = status
 	const taskRelation = taskManagement.getAllTask().filter((task) => {
 		return task.status.id === statusDetail.value.id
@@ -34,7 +33,7 @@ function delAction(status, id) {
 		arrTranfer.value = statusManagement.getAllStatus().filter((st) => {
 			return st.id !== id
 		})
-		console.log(arrTranfer.value)
+
 	}
 	statusId.value = id
 	delState.value = true
@@ -44,7 +43,7 @@ async function delConfirm(id, tranferId) {
 	let delRespond
 	if (stage.value === "delete") {
 		delRespond = await deleteStatusById(
-			import.meta.env.VITE_BASE_URL + "/v2/statuses",
+			import.meta.env.VITE_BASE_URL + "/statuses",
 			id
 		)
 		statusManagement.deleteStatus(id)
@@ -55,7 +54,7 @@ async function delConfirm(id, tranferId) {
 		}
 	} else if (stage.value === "tranfer") {
 		delRespond = await deleteTaskAndTranfer(
-			import.meta.env.VITE_BASE_URL + "/v2/statuses",
+			import.meta.env.VITE_BASE_URL + "/statuses",
 			id,
 			tranferId
 		)
@@ -136,7 +135,7 @@ function modalHandler(id, action) {
 							<div class="w-[30%]">
 								<div class="text-white min-w-[80px] max-w-[150px] px-[10px]  rounded-[5px] m-[auto] inline-block"
 									:style="{ backgroundColor: slotprop.status.statusColor }">
-									<p class="">{{ convertStatus(slotprop.status.name) }}</p>
+									<p class="">{{ slotprop.status.name }}</p>
 								</div>
 							</div>
 
@@ -149,7 +148,7 @@ function modalHandler(id, action) {
 										{{
 			slotprop.status.description
 				? slotprop.status.description
-				: "Unassigned"
+				: "No description is provided"
 		}}
 									</p>
 								</div>

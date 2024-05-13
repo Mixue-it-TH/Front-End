@@ -10,7 +10,7 @@ const props = defineProps({
     }
 });
 
-console.log(props.taskNumber)
+
 </script>
 
 <template>
