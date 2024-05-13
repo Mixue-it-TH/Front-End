@@ -24,10 +24,7 @@ const delState = ref(false)
 
 onMounted(async () => {
 	const data = router.currentRoute.value.fullPath.split("/")
-	console.log(data)
-	console.log(statusDetails.value)
 	if (data.length === 3 && !data.includes("add")) {
-		console.log("YEAH")
 		actionHandler(data[2], "read")
 	} else if (data.includes("add")) {
 		actionHandler(null, "add")
@@ -43,10 +40,10 @@ onMounted(async () => {
 async function actionHandler(id, action) {
 	if (action === "read") {
 		statusDetails.value = await getStatusById(
-			import.meta.env.VITE_BASE_URL + "/v2/statuses",
+			import.meta.env.VITE_BASE_URL + "/statuses",
 			id
 		)
-		console.log(statusDetails.value)
+
 		if (typeof statusDetails.value === "object") {
 			statusDetails.value.createdOn = convertUtils(
 				statusDetails.value.createdOn
@@ -55,7 +52,6 @@ async function actionHandler(id, action) {
 				statusDetails.value.updatedOn
 			)
 			statusDetails.value.name = convertStatus(statusDetails.value.name)
-			console.log(statusDetails.value)
 			mode.value = "read"
 		} else {
 			window.alert("The requested statues does not exist")
@@ -65,7 +61,7 @@ async function actionHandler(id, action) {
 		mode.value = "add"
 	} else if (action === "edit") {
 		statusDetails.value = await getStatusById(
-			import.meta.env.VITE_BASE_URL + "/v2/statuses",
+			import.meta.env.VITE_BASE_URL + "/statuses",
 			id
 		);
 		if (typeof statusDetails.value === "object") {
@@ -77,8 +73,6 @@ async function actionHandler(id, action) {
 			);
 			oldStatus.value = { ...statusDetails.value }
 			mode.value = "edit";
-			console.log(statusDetails.value);
-			console.log(statusManagement.getAllStatus());
 		} else {
 			window.alert("The requested status does not exist");
 			router.push("/");
@@ -90,10 +84,9 @@ async function actionHandler(id, action) {
 			router.push("/")
 		}
 		statusDetails.value = await getStatusById(
-			import.meta.env.VITE_BASE_URL + "/v2/statuses",
+			import.meta.env.VITE_BASE_URL + "/statuses",
 			id
 		)
-		console.log(statusDetails.value)
 	}
 }
 
@@ -104,7 +97,7 @@ async function confirmHandeler() {
 		})
 		if (duplicateName.length === 0) {
 			const respone = await addStatus(
-				import.meta.env.VITE_BASE_URL + "/v2/statuses",
+				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			)
 			emit("alert", respone.name, "added", "status")
@@ -114,17 +107,14 @@ async function confirmHandeler() {
 		}
 	}
 	if (mode.value === "edit") {
-		console.log(statusDetails.value);
 		const duplicateName = statusManagement.getAllStatus().filter((status) => {
-			console.log(status.name + " : " + statusDetails.value.name)
 			return ((convertStatus(status.name) === convertStatus(statusDetails.value.name)) && status.id !== statusDetails.value.id)
 		})
 		if (duplicateName.length === 0) {
 			const respone = await editStatus(
-				import.meta.env.VITE_BASE_URL + "/v2/statuses",
+				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			);
-			console.log(respone)
 			if (respone === 404) {
 				emit("alert", statusDetails.value.name, "edit", "status", "error")
 				statusManagement.deleteStatus(statusDetails.value.id)
@@ -140,7 +130,6 @@ async function confirmHandeler() {
 	closeModal()
 }
 function saveBthHandler() {
-	console.log(statusDetails.value)
 	if (
 		JSON.stringify({ ...oldStatus.value }) !==
 		JSON.stringify({ ...statusDetails.value }) &&

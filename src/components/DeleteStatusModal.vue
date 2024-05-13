@@ -21,9 +21,8 @@ const props = defineProps({
 		type: Number,
 	},
 })
-console.log(props.stage)
-const statusManagement = useStatus()
-const newStatus = ref({ id: null, name: "", description: "", statusColor: "" });
+
+const newStatus = ref({ id: 1, name: "", description: "", statusColor: "" });
 
 </script>
 
@@ -46,9 +45,8 @@ const newStatus = ref({ id: null, name: "", description: "", statusColor: "" });
 							<span class="">you need to transfer to</span>
 							<div class="mt-[10px] border-2">
 								<select name="status" class="itbkk-status w-full h-full min-h-[50px] px-[15px]"
-									v-model="newStatus" :required="true" v-if="stage === 'tranfer'">
-									<option v-for="(status, index) in tranferData" :key="index" :value="status"
-										v-bind:selected="status.name === 'NO_STATUS'">
+									v-model="newStatus.id" :required="true" v-if="stage === 'tranfer'">
+									<option v-for="(status, index) in tranferData" :key="index" :value="status.id">
 										{{ convertStatus(status.name) }}
 									</option>
 								</select>

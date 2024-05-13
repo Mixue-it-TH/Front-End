@@ -29,7 +29,7 @@ async function addStatus(url, newStatus) {
 			},
 			body: JSON.stringify({
 				name: newStatus.name?.trim(),
-				description: newStatus.description?.trim(),
+				description: newStatus.description ? newStatus.description.trim() : null,
 				statusColor: newStatus.statusColor,
 			}),
 		})
@@ -56,7 +56,7 @@ async function editStatus(url, status) {
 			body: JSON.stringify({
 				id: status.id,
 				name: status.name?.trim(),
-				description: status.description?.trim(),
+				description: status.description ? status.description.trim() : null,
 				statusColor: status.statusColor
 			}),
 		})
