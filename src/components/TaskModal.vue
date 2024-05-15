@@ -5,6 +5,15 @@ import { useTasks } from "@/store/task.js"
 import { useStatus } from "@/store/status.js"
 import { getTaskById, addTask, editTask } from "@/util/fetchUtils"
 import { convertUtils, convertStatus } from "@/util/formatUtils"
+const props = defineProps({
+	sortState: {
+		type: Number,
+		default: 0
+	},
+})
+
+console.log(props.sortState)
+
 const emit = defineEmits(["alert"])
 
 const taskManagement = useTasks()
@@ -84,6 +93,7 @@ async function confirmHandeler() {
 		)
 		emit("alert", respone.title, "added", "task")
 		taskManagement.addTask(respone)
+		taskManagement.sortTaskByStatusName(props.sortState)
 		closeModal()
 		return
 	}
@@ -94,6 +104,7 @@ async function confirmHandeler() {
 		)
 		emit("alert", respone.title, "updated", "task")
 		taskManagement.editTask(taskDetails.value.id, respone)
+		taskManagement.sortTaskByStatusName(props.sortState)
 		closeModal()
 		return
 	}
