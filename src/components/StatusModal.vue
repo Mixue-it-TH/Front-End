@@ -23,7 +23,6 @@ const delState = ref(false)
 
 
 onMounted(async () => {
-	console.log("HAHA")
 	const data = router.currentRoute.value.fullPath.split("/")
 	if (data.length === 3 && !data.includes("add")) {
 		actionHandler(data[2], "read")
@@ -166,15 +165,16 @@ function closeModal() {
 					<p class="text-[17px] font-[550]">Name</p>
 					<textarea
 						class="itbkk-status-name bg-white w-[400px] h-[40px] px-[5px] border-gray-400 border-2 text-black rounded-[5px]"
-						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"></textarea>
+						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"
+						maxlength="50"></textarea>
 				</div>
 				<div class="flex flex-row gap-[20px] mt-[25px] px-[14px]">
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Description</p>
 						<textarea
 							class="itbkk-status-description w-[400px] h-[120px] px-[5px] bg-white border-gray-400 border-2 rounded-[5px]"
-							v-model="statusDetails.description" :disabled="mode === 'read'"
-							@input="saveBthHandler"></textarea>
+							v-model="statusDetails.description" :disabled="mode === 'read'" @input="saveBthHandler"
+							maxlength="200"></textarea>
 					</div>
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Color</p>

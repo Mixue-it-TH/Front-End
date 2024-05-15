@@ -139,15 +139,14 @@ function closeModal() {
 					</div>
 					<textarea class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all"
 						:disabled="mode === 'read'" placeholder="input some title" v-model="taskDetails.title"
-						@input="saveBthHandler">{{ taskDetails.title }}</textarea>
+						@input="saveBthHandler" maxlength="100">{{ taskDetails.title }}</textarea>
 				</header>
 				<main class="flex flex-row h-[80%] px-[25px]">
 					<div class="w-[70%] h-[100%] py-[10px]">
 						<p class="font-[600]">Description</p>
 						<textarea v-if="mode !== 'read'"
 							class="itbkk-description w-[95%] h-[90%] px-[15px] border-[2px] border-gray-400 rounded-[8px]"
-							v-model="taskDetails.description" @input="saveBthHandler">
-						</textarea>
+							v-model="taskDetails.description" @input="saveBthHandler" maxlength="500"> </textarea>
 						<div v-if="mode === 'read'"
 							class="itbkk-description w-[95%] h-[90%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
 							:class="{ 'italic text-gray-500': !taskDetails.description }">
@@ -163,7 +162,7 @@ function closeModal() {
 							<p class="font-[650]">Assignees</p>
 							<textarea v-if="mode !== 'read'"
 								class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
-								v-model="taskDetails.assignees" @input="saveBthHandler"></textarea>
+								v-model="taskDetails.assignees" @input="saveBthHandler" maxlength="30"></textarea>
 							<div v-if="mode === 'read'"
 								class="itbkk-assignees min-h-[180px] px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
 								:class="{ 'italic text-gray-500': !taskDetails.assignees }">
