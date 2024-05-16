@@ -120,24 +120,28 @@ function alertMessageHandler(title, status, data, type = "success") {
   <Teleport to="body" v-if="showLimitModal">
     <LimitTaskModal @cancel="limitModalHandler" />
   </Teleport>
-  <div class="w-screen h-screen bg bg-[#F4F4F4] px-[35px] py-[25px] font-nonto">
+  <div
+    class="w-screen min-h-screen h-auto bg-[#F4F4F4] px-[35px] py-[25px] font-nonto"
+  >
     <div
       class="flex flex-row justify-between items-center w-[100%] h-[75px] mb-[15px]"
     >
-      <div class="h-[75%] mt-[20px]">
+      <div class="h-[75%] mt-[20px] mb-20px">
         <h1 class="text-[24px] text-gray-700 font-[800]">
           IT-Bangmod Kradan Kanban
         </h1>
       </div>
       <div class="flex flex-row gap-[15px] h-[75%]">
         <div
-          class="itbkk-manage-status itbkk-button-home cursor-pointer bg bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px] w-[200px] h-[40px] m-[7px] py-[7px] px-[5px] text-center"
+          class="itbkk-manage-status hover:text-gray-50 hover:bg-gray-800 itbkk-button-home cursor-pointer bg bg-gray-900 border border-[#BDBDBD] rounded-[4px] w-[200px] h-[40px] m-[7px] py-[7px] px-[5px] text-center"
           @click="toggleMode"
         >
-          <h1>{{ toggleManage }}</h1>
+          <h1 class="">
+            {{ toggleManage }}
+          </h1>
         </div>
         <div
-          class="bg-gray-900 flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] bg border border-[#BDBDBD] rounded-[4px]"
+          class="bg-gray-900 flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] bg border border-[#BDBDBD] rounded-[4px] hover:text-gray-50 hover:bg-gray-800"
         >
           <div class="dropdown dropdown-bottom text-xs font-medium">
             <div
@@ -192,20 +196,33 @@ function alertMessageHandler(title, status, data, type = "success") {
             @click="filterClearSelection"
             class="flex justify-center items-center cursor-pointer"
           >
-            <img src="/image/close-icon.png" class="w-[13px] h-[13px]" />
+            <p
+              class="hover:text-red-600 border-6 rounded-md border-gray-50 pr-1.5"
+            >
+              X
+            </p>
           </div>
         </div>
         <div
           @click="sortTask"
-          class="itbkk-status-filter w-[45px] h-[45px] m-[auto] cursor-pointer bg bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px]"
+          class="itbkk-status-filter bg-gray-900 hover:text-gray-50 hover:bg-gray-800 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
         >
-          <div class="flex justify-center mt-[5px]">
+          <div v-if="sortState === 0" class="flex justify-center mt-[5px]">
             <img src="/image/up-and-down-icon.png" class="w-[30px] h-[30px]" />
+          </div>
+          <div
+            v-if="sortState === 1"
+            class="flex justify-center mt-[5.5px] mr-1"
+          >
+            <img src="/image/a-z-blue.png" class="w-[30px] h-[30px]" />
+          </div>
+          <div v-if="sortState === 2" class="flex justify-center mt-[6px]">
+            <img src="/image/z-a-blue.png" class="w-[30px] h-[30px]" />
           </div>
         </div>
         <div
           @click="limitModalHandler(true)"
-          class="flex justify-center items-center w-[45px] h-[45px] m-[auto] cursor-pointer border bg bg-[#F9F9F9] border-[#BDBDBD] rounded-[4px]"
+          class="flex justify-center bg-gray-900 hover:text-gray-50 hover:bg-gray-800 items-center w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
         >
           <div class="flex justify-center">
             <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
