@@ -1,4 +1,5 @@
 import { defineStore, acceptHMRUpdate } from "pinia"
+
 import { ref } from "vue"
 
 export const useTasks = defineStore("taskmanager", () => {
@@ -17,9 +18,26 @@ export const useTasks = defineStore("taskmanager", () => {
 		tasks.value.push(newTask)
 		originalTasks.value.push(newTask)
 	}
+	function addFilter(listArr) {
+		console.log(listArr)
+		console.log(listArr.length)
+		if (listArr.length === 0 || listArr === 0) {
+			console.log(tasks.value)
+			console.log(originalTasks.value)
+			clearAllTask()
+			originalTasks.value.forEach((e) => {
+				tasks.value.push(e)
+			})
+		} else {
+			clearAllTask()
+			listArr.forEach((e) => {
+				tasks.value.push(e)
+			})
+		}
+	}
 
 	function addTasks(newStatus) {
-
+		console.log(newStatus)
 		newStatus.forEach((newTask) => {
 			this.addTask(newTask)
 		})
@@ -33,7 +51,10 @@ export const useTasks = defineStore("taskmanager", () => {
 
 		const originalIndex = originalTasks.value.findIndex((e) => e.id === taskId)
 		if (originalIndex !== -1) {
-			originalTasks.value[originalIndex] = { ...originalTasks.value[originalIndex], ...updateTask }
+			originalTasks.value[originalIndex] = {
+				...originalTasks.value[originalIndex],
+				...updateTask,
+			}
 		}
 	}
 	function deleteTask(taskId) {
@@ -74,6 +95,10 @@ export const useTasks = defineStore("taskmanager", () => {
 		}
 	}
 
+	function clearAllTask() {
+		tasks.value = []
+	}
+
 	return {
 		getAllTask,
 		getTaskById,
@@ -82,7 +107,9 @@ export const useTasks = defineStore("taskmanager", () => {
 		editTask,
 		deleteTask,
 		tranferStatus,
-		sortTaskByStatusName
+		sortTaskByStatusName,
+		clearAllTask,
+		addFilter,
 	}
 })
 
