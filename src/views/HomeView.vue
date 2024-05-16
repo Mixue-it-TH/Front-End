@@ -133,7 +133,7 @@ function alertMessageHandler(title, status, data, type = "success") {
       </div>
       <div class="flex flex-row gap-[15px] h-[75%]">
         <div
-          class="itbkk-manage-status hover:text-gray-50 hover:bg-gray-800 itbkk-button-home cursor-pointer bg bg-gray-900 border border-[#BDBDBD] rounded-[4px] w-[200px] h-[40px] m-[7px] py-[7px] px-[5px] text-center"
+          class="itbkk-manage-status itbkk-button-home cursor-pointer bg border hover:text-gray-700 border-[#BDBDBD] rounded-[4px] w-[200px] h-[40px] m-[7px] py-[7px] px-[5px] text-center"
           @click="toggleMode"
         >
           <h1 class="">
@@ -141,7 +141,7 @@ function alertMessageHandler(title, status, data, type = "success") {
           </h1>
         </div>
         <div
-          class="bg-gray-900 flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] bg border border-[#BDBDBD] rounded-[4px] hover:text-gray-50 hover:bg-gray-800"
+          class="flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] bg border border-[#BDBDBD] rounded-[4px] hover:text-gray-700"
         >
           <div class="dropdown dropdown-bottom text-xs font-medium">
             <div
@@ -205,7 +205,7 @@ function alertMessageHandler(title, status, data, type = "success") {
         </div>
         <div
           @click="sortTask"
-          class="itbkk-status-filter bg-gray-900 hover:text-gray-50 hover:bg-gray-800 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
+          class="itbkk-status-filter hover:bg-gray-200 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
         >
           <div v-if="sortState === 0" class="flex justify-center mt-[5px]">
             <img src="/image/up-and-down-icon.png" class="w-[30px] h-[30px]" />
@@ -222,7 +222,7 @@ function alertMessageHandler(title, status, data, type = "success") {
         </div>
         <div
           @click="limitModalHandler(true)"
-          class="flex justify-center bg-gray-900 hover:text-gray-50 hover:bg-gray-800 items-center w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
+          class="flex justify-center items-center hover:bg-gray-200 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
         >
           <div class="flex justify-center">
             <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
