@@ -103,7 +103,8 @@ async function confirmHandeler() {
 			emit("alert", respone.name, "added", "status")
 			statusManagement.addStatus(respone)
 		} else {
-			emit("alert", statusDetails.value.name, "added", "status", "error")
+			// emit("alert", statusDetails.value.name, "added", "status", "error")
+			emit("alert", "duplicate", "added", "status", "error")
 		}
 	}
 	if (mode.value === "edit") {
@@ -148,6 +149,7 @@ function saveBthHandler() {
 function closeModal() {
 	router.go(-1)
 }
+
 </script>
 
 <template>
