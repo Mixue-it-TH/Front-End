@@ -29,7 +29,7 @@ const taskManagement = useTasks();
     </div>
     <router-link :to="{ name: 'taskAdd' }">
       <div
-        class="itbkk-button-add flex items-center bg-yellow-50 hover:bg-yellow-200 min-h-[55px] mb-[5px] px-[15px] border-dashed border-[3px] border-[#FFCB45] rounded-[8px]"
+        class="itbkk-button-add flex items-center min-h-[55px] mb-[5px] px-[15px] border-dashed border-[3px] border-[#FFCB45] rounded-[8px]"
       >
         <div class="flex flex-row w-[50%]">
           <div class="mr-[10px]">

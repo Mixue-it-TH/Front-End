@@ -133,7 +133,7 @@ function alertMessageHandler(title, status, data, type = "success") {
       </div>
       <div class="flex flex-row gap-[15px] h-[75%]">
         <div
-          class="itbkk-manage-status itbkk-button-home cursor-pointer bg border hover:text-gray-700 border-[#BDBDBD] rounded-[4px] w-[200px] h-[40px] m-[7px] py-[7px] px-[5px] text-center"
+          class="itbkk-manage-status itbkk-button-home cursor-pointer hover:bg-gray-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px] w-[200px] h-[40px] m-[7px] py-[7px] px-[5px] text-center"
           @click="toggleMode"
         >
           <h1 class="">
@@ -141,7 +141,7 @@ function alertMessageHandler(title, status, data, type = "success") {
           </h1>
         </div>
         <div
-          class="flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] bg border border-[#BDBDBD] rounded-[4px] hover:text-gray-700"
+          class="flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] hover:bg-gray-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px]"
         >
           <div class="dropdown dropdown-bottom text-xs font-medium">
             <div
@@ -162,17 +162,19 @@ function alertMessageHandler(title, status, data, type = "success") {
                 >
                   <div
                     v-for="status in statusFilter"
-                    class="mt-2.5 flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                    class="mt-2.5 flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-medium"
                   >
                     <div
-                      class="relative transition-all text-sm duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 flex"
+                      class="relative transition-all text-sm duration-75 rounded-md flex"
                     >
                       {{ status }}
                       <div
                         @click="filterDeleteSelection(status)"
                         class="z-[10]"
                       >
-                        <p class="pr-1 hover:text-red-500">&nbsp;&nbsp;X</p>
+                        <p class="pr-1 hover:text-red-500 text-gray-400">
+                          &nbsp;&nbsp;X
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -181,7 +183,7 @@ function alertMessageHandler(title, status, data, type = "success") {
             </div>
             <ul
               tabindex="0"
-              class="dropdown-content z-[1] menu shadow bg-base-100 rounded-[10px] w-[150px]"
+              class="dropdown-content z-[1] menu shadow rounded-[10px] w-[150px] bg-white"
             >
               <li
                 v-for="status in statusManagement.getAllStatus()"
@@ -205,7 +207,7 @@ function alertMessageHandler(title, status, data, type = "success") {
         </div>
         <div
           @click="sortTask"
-          class="itbkk-status-filter hover:bg-gray-200 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
+          class="itbkk-status-filter bg-[#F9F9F9] hover:bg-gray-100 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
         >
           <div v-if="sortState === 0" class="flex justify-center mt-[5px]">
             <img src="/image/up-and-down-icon.png" class="w-[30px] h-[30px]" />
@@ -222,7 +224,7 @@ function alertMessageHandler(title, status, data, type = "success") {
         </div>
         <div
           @click="limitModalHandler(true)"
-          class="flex justify-center items-center hover:bg-gray-200 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
+          class="flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-100 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
         >
           <div class="flex justify-center">
             <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
