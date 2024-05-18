@@ -91,23 +91,25 @@ async function confirmHandeler() {
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		emit("alert", respone.title, "added", "task")
-		//if respone === 200 throw error else ก็ทำงานปกติ
-		taskManagement.addTask(respone) //เดี๋ยวค่อยเปลี่ยนเป็น v2
-		taskManagement.sortTaskByStatusName(props.sortState)
+		if (respone !== 400) {
+			emit("alert", respone.title, "added", "task")
+			taskManagement.addTask(respone)
+		} else emit("alert", respone.title, "added", "task", "error")
+
 		closeModal()
 		return
 	}
 	if (mode.value === "edit") {
-		//อาจจะต้องใช้ที่กูสร้างและ comment ไว้เพราะมัน respone เป็น 200 มันต้องเช็คจากจำนวน limit แทน
-		// มีบัคเรื่องลบ task ด้วยเหมือนขึ้น status ผิด
 		const respone = await editTask(
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		emit("alert", respone.title, "updated", "task")
-		taskManagement.editTask(taskDetails.value.id, respone)
-		taskManagement.sortTaskByStatusName(props.sortState)
+		console.log(respone)
+		if (respone.status !== 400) {
+			emit("alert", respone.title, "updated", "task")
+			taskManagement.editTask(taskDetails.value.id, respone)
+		} else emit("alert", respone.title, "updated", "task", "error")
+
 		closeModal()
 		return
 	}

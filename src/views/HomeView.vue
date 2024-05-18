@@ -4,7 +4,7 @@ import { onMounted, ref, watchEffect } from "vue"
 import { RouterLink } from "vue-router"
 import { getTaskList, deleteTaskById } from "@/util/fetchUtils"
 import { convertStatus } from "@/util/formatUtils"
-import { getStatusList } from "@/util/statusFetchUtils"
+import { getStatusList, handelLimitMaximum } from "@/util/statusFetchUtils"
 import { useTasks } from "@/store/task.js"
 import { useStatus } from "@/store/status.js"
 import ListTask from "@/components/ListTask.vue"
@@ -25,12 +25,22 @@ const showTask = ref(true)
 const toggleManage = ref(" Mannage Status")
 const sortState = ref(0)
 const statusFilter = ref([])
-
+const limitMaximux = ref(10)
+const isLimit = ref(false)
+// const dataLoaded = ref(false)
 onMounted(async () => {
 	const listTasks = await getTaskList(import.meta.env.VITE_BASE_URL + "/tasks")
 	const listStatuses = await getStatusList(
 		import.meta.env.VITE_BASE_URL + "/statuses"
 	)
+	const isEnbleLimit = await getTaskList(
+		import.meta.env.VITE_BASE_URL + "/tasks/islimit"
+	)
+
+	isLimit.value = isEnbleLimit.limit
+	limitMaximux.value = isEnbleLimit.number
+	console.log(limitMaximux.value)
+	console.log(isLimit.value)
 	if (listTasks.length === 0) isEmptyTask.value = true
 	taskManagement.addTasks(listTasks)
 	statusManagement.addStatuses(listStatuses)
@@ -99,35 +109,21 @@ function toggleMode() {
 		router.push("/task")
 	}
 }
-async function sortTask() {
-	console.log(statusFilter.value)
-	let ss
-	if (statusFilter.value.length !== 0) {
-		ss = statusFilter.value.toString()
-		console.log(ss)
-	}
-	if (sortState.value === 0) {
-		const respone = await getTaskList(
-			import.meta.env.VITE_BASE_URL +
-				`/tasks?sortBy=statusName&sortDirection=asc${
-					statusFilter.value.length !== 0 ? `&filterStatuses=${ss}` : ""
-				}`
-		)
-		console.log(respone)
-		taskManagement.addTaskV2(respone)
-		sortState.value++
-	} else if (sortState.value === 1) {
-		const respone = await getTaskList(
-			import.meta.env.VITE_BASE_URL +
-				`/tasks?sortBy=statusName&sortDirection=desc`
-		)
-		taskManagement.addTaskV2(respone)
-		sortState.value++
-	} else {
-		const respone = await getTaskList(import.meta.env.VITE_BASE_URL + `/tasks`)
-		taskManagement.addTaskV2(respone)
-		sortState.value = 0
-	}
+function sortTask() {
+	sortState.value = taskManagement.sortTaskByStatusName(sortState.value)
+}
+
+async function handelLimit(enable, amountLimit) {
+	const respone = await handelLimitMaximum(
+		import.meta.env.VITE_BASE_URL + `/statuses/maximum-task`,
+		enable,
+		amountLimit
+	)
+	console.log(enable, amountLimit)
+	alertMessageHandler("limit", respone.number, null)
+	taskManagement.setLimitMaximumTask(enable, amountLimit)
+	showLimitModal.value = false
+	isLimit.value = enable
 }
 
 function alertMessageHandler(title, status, data, type = "success") {
@@ -137,16 +133,21 @@ function alertMessageHandler(title, status, data, type = "success") {
 watchEffect(async () => {
 	//back up
 	let ss
+
+	let arr = []
 	if (statusFilter.value.length !== 0) {
 		ss = statusFilter.value.toString()
 		console.log(ss)
 	}
-
-	const respone = await getTaskList(
-		import.meta.env.VITE_BASE_URL +
-			`/tasks?${statusFilter.value.length !== 0 ? `filterStatuses=${ss}` : ""}`
+	arr = await getTaskList(
+		import.meta.env.VITE_BASE_URL + `/tasks?filterStatuses=${ss}`
 	)
-	taskManagement.addTaskV2(respone)
+
+	if (arr.length !== 0) {
+		taskManagement.addFilter(arr)
+	} else {
+		taskManagement.addFilter(0)
+	}
 })
 </script>
 
@@ -160,7 +161,12 @@ watchEffect(async () => {
 		/>
 	</Teleport>
 	<Teleport to="body" v-if="showLimitModal">
-		<LimitTaskModal @cancel="limitModalHandler" />
+		<LimitTaskModal
+			@cancel="limitModalHandler"
+			@save="handelLimit"
+			:isLimit="isLimit"
+			:limitMaximum="limitMaximux"
+		/>
 	</Teleport>
 	<div
 		class="w-screen min-h-screen h-auto bg-[#F4F4F4] px-[35px] py-[25px] font-nonto"
@@ -183,13 +189,15 @@ watchEffect(async () => {
 					</h1>
 				</div>
 				<div
-					class="flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] hover:bg-gray-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px]"
+					class="itbkk-status-filter flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] hover:bg-gray-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px]"
 				>
-					<div class="dropdown dropdown-bottom text-xs font-medium">
+					<div
+						class="dropdown dropdown-bottom text-xs font-medium cursor-pointer"
+					>
 						<div
 							tabindex="0"
 							role=""
-							class="cursor-pointer w-full flex items-center overflow-auto"
+							class="h-full cursor-pointer w-full flex items-center pb-3"
 						>
 							<div class="">
 								<div v-if="statusFilter.length === 0">
@@ -198,14 +206,14 @@ watchEffect(async () => {
 
 								<div
 									v-else
-									class="flex gap-[8px] w-[150px] pb-4"
+									class="flex gap-[8px] w-[150px] pb-[30px] overflow-auto pt-[30px]"
 									tabindex="0"
 									role=""
 								>
 									<div
 										v-for="(status, index) in statusFilter"
 										:key="index"
-										class="mt-2.5 flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-medium"
+										class="itbkk-filter-item hover:bg-gray-100 text-gray-400 border border-gray-400 rounded-md mt-2.5 flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-medium"
 									>
 										<div
 											class="relative transition-all text-sm duration-75 rounded-md flex"
@@ -213,9 +221,11 @@ watchEffect(async () => {
 											{{ status }}
 											<div
 												@click="filterDeleteSelection(status)"
-												class="z-[10]"
+												class="itbkk-filter-item-clear z-[10]"
 											>
-												<p class="pr-1 hover:text-red-500 text-gray-400">
+												<p
+													class="itbkk-item-clear pr-1 hover:text-red-500 text-gray-400"
+												>
 													&nbsp;&nbsp;X
 												</p>
 											</div>
@@ -251,7 +261,7 @@ watchEffect(async () => {
 				</div>
 				<div
 					@click="sortTask"
-					class="itbkk-status-filter bg-[#F9F9F9] hover:bg-gray-100 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
+					class="itbkk-status-sort bg-[#F9F9F9] hover:bg-gray-100 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
 				>
 					<div v-if="sortState === 0" class="flex justify-center mt-[5px]">
 						<img src="/image/up-and-down-icon.png" class="w-[30px] h-[30px]" />

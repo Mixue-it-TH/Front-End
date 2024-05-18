@@ -79,7 +79,7 @@ async function actionHandler(id, action) {
 		}
 	} else if (action === "delete") {
 		mode.value = "delete"
-		if (id === 1) {
+		if (id === 1 ) {
 			window.alert("The requested statuses can't delete default status")
 			router.push("/status")
 		}
@@ -157,7 +157,7 @@ function closeModal() {
 	<div v-if="dataLoaded"
 		class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed flex justify-center items-center top-0 left-0 z-[30] font-nonto">
 		<div
-			class="fade-up itbkk-modal-status flex flex-col w-[45%] h-[60%] min-h-[500px] min-w-[350px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
+			class="fade-up itbkk-modal-status flex flex-col w-[full] h-[60%] min-h-[500px] min-w-[350px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
 			<header class="flex items-center h-[15%] px-[14px] bg bg-[#F8F8F8]  rounded-t-[7px] border-b-2 border">
 				<p class="text-[20px] font-[600]">{{ mode === 'read' ? 'Status Details' : (mode === 'add' ? 'Add Status'
 		: 'Edit Status') }}
@@ -182,12 +182,12 @@ function closeModal() {
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Color</p>
 						<div class="flex flex-col gap-[10px]">
-							<input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"></input>
-							<input type="color"
-								class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
-								v-model="statusDetails.statusColor" :disabled="mode === 'read'"
-								@input="saveBthHandler" />
-						</div>
+                            <input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"></input>
+                            <input type="color"
+                                class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
+                                v-model="statusDetails.statusColor" :disabled="mode === 'read'"
+                                @input="saveBthHandler" />
+                        </div>
 					</div>
 				</div>
 

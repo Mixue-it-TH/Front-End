@@ -18,14 +18,20 @@ function statusHandler(title, action, data, type = "success") {
 	console.log(title)
 	console.log(action)
 	console.log(data)
-	if (type === "success" && typeof title !== "number") {
+	if (
+		type === "success" &&
+		typeof title !== "number" &&
+		typeof action !== "number"
+	) {
 		message.value = `The ${data} has been  ${action} successfully`
 	} else if (type === "error" && title !== "duplicate") {
-		message.value = `An error has occurred, the status does not exist`
+		message.value = `An error has occurred, the ${data} does not exist`
 	} else if (typeof title === "number") {
 		message.value = `${title} task(s) have been tranfer and the status has been deleted`
 	} else if (title === "duplicate") {
 		message.value = `An error has occurred, the status has duplicate status `
+	} else if (typeof action === "number") {
+		message.value = `The Kanban board now limits ${title} tasks in each status`
 	}
 	statusType.value = type
 	showAlertModal.value = true

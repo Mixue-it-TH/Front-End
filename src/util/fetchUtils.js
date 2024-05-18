@@ -16,7 +16,7 @@ async function getTaskById(url, id) {
 		} else {
 			return data.status
 		}
-	} catch (error) { }
+	} catch (error) {}
 }
 
 async function addTask(url, task) {
@@ -34,11 +34,11 @@ async function addTask(url, task) {
 				status: task.status.id,
 			}),
 		})
-		console.log(response)
 		if (response.ok) {
 			const responseData = await response.json()
 			return responseData
 		} else {
+			return response.status
 			throw new Error("Failed to add task")
 		}
 	} catch (e) {
@@ -67,6 +67,8 @@ async function editTask(url, task) {
 		if (respone.ok) {
 			const responseData = await respone.json()
 			return responseData
+		} else {
+			return respone.status
 		}
 	} catch (e) {
 		console.log(`error: ${e}`)
@@ -92,6 +94,16 @@ async function getStatusList(url) {
 		console.log(`error: ${error}`)
 	}
 }
+
+async function getEnableLimit(url) {
+	try {
+		const data = await fetch(url)
+		const items = await data.json()
+		return items
+	} catch (error) {
+		console.log(`error: ${error}`)
+	}
+}
 export {
 	getTaskList,
 	getTaskById,
@@ -99,4 +111,5 @@ export {
 	editTask,
 	deleteTaskById,
 	getStatusList,
+	getEnableLimit,
 }

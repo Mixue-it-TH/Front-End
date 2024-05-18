@@ -16,7 +16,7 @@ async function getStatusById(url, id) {
 		} else {
 			return data.status
 		}
-	} catch (error) { }
+	} catch (error) {}
 }
 
 async function addStatus(url, newStatus) {
@@ -29,7 +29,9 @@ async function addStatus(url, newStatus) {
 			},
 			body: JSON.stringify({
 				name: newStatus.name?.trim(),
-				description: newStatus.description ? newStatus.description.trim() : null,
+				description: newStatus.description
+					? newStatus.description.trim()
+					: null,
 				statusColor: newStatus.statusColor,
 			}),
 		})
@@ -57,7 +59,7 @@ async function editStatus(url, status) {
 				id: status.id,
 				name: status.name?.trim(),
 				description: status.description ? status.description.trim() : null,
-				statusColor: status.statusColor
+				statusColor: status.statusColor,
 			}),
 		})
 		console.log(respone)
@@ -76,7 +78,9 @@ async function deleteStatusById(url, id) {
 		const response = await fetch(`${url}/${id}`, {
 			method: "DELETE",
 		})
-		return response
+		if (response.ok) {
+			return response
+		} else return response.status
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}
@@ -86,7 +90,33 @@ async function deleteTaskAndTranfer(url, id, newId) {
 		const response = await fetch(`${url}/${id}/${newId}`, {
 			method: "DELETE",
 		})
+		console.log(response.status)
 		return response
+	} catch (e) {
+		console.log(`error: ${e}`)
+	}
+}
+
+async function handelLimitMaximum(url, isLimit, amountMaximum) {
+	try {
+		const response = await fetch(`${url}`, {
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				limitMaximumTask: isLimit,
+				number: amountMaximum,
+			}),
+		})
+		console.log(response)
+		if (response.ok) {
+			const responseData = await response.json()
+			console.log(responseData)
+			return responseData
+		} else {
+			throw new Error("Failed to add status")
+		}
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}
@@ -98,4 +128,5 @@ export {
 	editStatus,
 	deleteTaskAndTranfer,
 	deleteStatusById,
+	handelLimitMaximum,
 }

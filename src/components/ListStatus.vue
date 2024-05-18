@@ -55,13 +55,14 @@ async function delConfirm(id, tranferId) {
 			tranferId
 		)
 		if (delRespond.ok) {
+			console.log(delRespond.status)
 			statusManagement.deleteStatus(id)
 			taskManagement.tranferStatus(
 				id,
 				statusManagement.getStatusById(tranferId)
 			)
 			emit("alert", amoutTasks.value, "deleted", "status") // เล้งเพิ่ม
-		} else if (delRespond.status === 404) {
+		} else if (delRespond.status === 404 || delRespond.status === 400) {
 			emit("alert", statusDetail.value.name, "deleted", "status", "error")
 		}
 	}
@@ -206,7 +207,7 @@ function modalHandler(id, action) {
 								Delete
 								<img
 									src="/image/delete-image.png"
-									class="w-[30px]"
+									class="w-[30px] cursor-pointer"
 									@click="delAction(slotprop.status, slotprop.status.id)"
 								/>
 							</div>
