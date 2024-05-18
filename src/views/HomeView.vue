@@ -99,8 +99,35 @@ function toggleMode() {
 		router.push("/task")
 	}
 }
-function sortTask() {
-	sortState.value = taskManagement.sortTaskByStatusName(sortState.value)
+async function sortTask() {
+	console.log(statusFilter.value)
+	let ss
+	if (statusFilter.value.length !== 0) {
+		ss = statusFilter.value.toString()
+		console.log(ss)
+	}
+	if (sortState.value === 0) {
+		const respone = await getTaskList(
+			import.meta.env.VITE_BASE_URL +
+				`/tasks?sortBy=statusName&sortDirection=asc${
+					statusFilter.value.length !== 0 ? `&filterStatuses=${ss}` : ""
+				}`
+		)
+		console.log(respone)
+		taskManagement.addTaskV2(respone)
+		sortState.value++
+	} else if (sortState.value === 1) {
+		const respone = await getTaskList(
+			import.meta.env.VITE_BASE_URL +
+				`/tasks?sortBy=statusName&sortDirection=desc`
+		)
+		taskManagement.addTaskV2(respone)
+		sortState.value++
+	} else {
+		const respone = await getTaskList(import.meta.env.VITE_BASE_URL + `/tasks`)
+		taskManagement.addTaskV2(respone)
+		sortState.value = 0
+	}
 }
 
 function alertMessageHandler(title, status, data, type = "success") {
@@ -109,23 +136,17 @@ function alertMessageHandler(title, status, data, type = "success") {
 
 watchEffect(async () => {
 	//back up
-	let arr = []
-	for (let i = 0; i < statusFilter.value.length; i++) {
-		const element = statusFilter.value[i]
-		const param = `statusName=${element}`
-		const listFilterTasks = await getTaskList(
-			import.meta.env.VITE_BASE_URL + `/tasks?${param}`
-		)
-		listFilterTasks.forEach((e) => {
-			arr.push(e)
-		})
+	let ss
+	if (statusFilter.value.length !== 0) {
+		ss = statusFilter.value.toString()
+		console.log(ss)
 	}
-	if (arr.length !== 0) {
-		taskManagement.addFilter(arr)
-	} else {
-		taskManagement.addFilter(0)
-		console.log(222)
-	}
+
+	const respone = await getTaskList(
+		import.meta.env.VITE_BASE_URL +
+			`/tasks?${statusFilter.value.length !== 0 ? `filterStatuses=${ss}` : ""}`
+	)
+	taskManagement.addTaskV2(respone)
 })
 </script>
 
@@ -157,7 +178,7 @@ watchEffect(async () => {
 					class="itbkk-manage-status itbkk-button-home cursor-pointer hover:bg-gray-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px] w-[200px] h-[40px] m-[7px] py-[7px] px-[5px] text-center"
 					@click="toggleMode"
 				>
-					<h1 class="">
+					<h1>
 						{{ toggleManage }}
 					</h1>
 				</div>
@@ -182,7 +203,8 @@ watchEffect(async () => {
 									role=""
 								>
 									<div
-										v-for="status in statusFilter"
+										v-for="(status, index) in statusFilter"
+										:key="index"
 										class="mt-2.5 flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-medium"
 									>
 										<div
@@ -207,7 +229,8 @@ watchEffect(async () => {
 							class="dropdown-content z-[1] menu shadow rounded-[10px] w-[150px] bg-white"
 						>
 							<li
-								v-for="status in statusManagement.getAllStatus()"
+								v-for="(status, index) in statusManagement.getAllStatus()"
+								:key="index"
 								class="break-all"
 								@click="filterSelection(status.name)"
 							>

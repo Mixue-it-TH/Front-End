@@ -100,6 +100,7 @@ async function confirmHandeler() {
 				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			)
+			console.log(respone);
 			emit("alert", respone.name, "added", "status")
 			statusManagement.addStatus(respone)
 		} else {

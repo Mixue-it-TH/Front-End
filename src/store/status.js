@@ -1,44 +1,51 @@
-import { defineStore, acceptHMRUpdate, } from "pinia";
-import { ref } from "vue";
+import { defineStore, acceptHMRUpdate } from "pinia"
+import { ref } from "vue"
 
 export const useStatus = defineStore("statusmanager", () => {
-    const statusList = ref([]);
+	const statusList = ref([])
+	console.log(statusList.value)
 
-    function getAllStatus() {
-        return statusList.value
-    }
+	function getAllStatus() {
+		return statusList.value
+	}
 
-    function getStatusById(id) {
-        return statusList.value.find((e) => e.id === id)
-    }
+	function getStatusById(id) {
+		return statusList.value.find((e) => e.id === id)
+	}
 
-    function addStatus(newStatus) {
-        statusList.value.push(newStatus)
-    }
+	function addStatus(newStatus) {
+		statusList.value.push(newStatus)
+	}
 
-    function addStatuses(newStatus) {
-        newStatus.forEach((newSt) => {
-            this.addStatus(newSt)
-        })
-    }
+	function addStatuses(newStatus) {
+		newStatus.forEach((newSt) => {
+			this.addStatus(newSt)
+		})
+	}
 
-    function editStatus(newStatus) {
-        const index = statusList.value.findIndex((e) => e.id === newStatus.id)
-        const currentStatus = statusList.value[index]
-        statusList.value[index] = { currentStatus, ...newStatus }
-    }
+	function editStatus(newStatus) {
+		const index = statusList.value.findIndex((e) => e.id === newStatus.id)
+		const currentStatus = statusList.value[index]
+		statusList.value[index] = { currentStatus, ...newStatus }
+	}
 
-    function deleteStatus(statusId) {
-        statusList.value.splice(
-            statusList.value.findIndex((task) => task.id === statusId),
-            1
-        )
-    }
+	function deleteStatus(statusId) {
+		statusList.value.splice(
+			statusList.value.findIndex((task) => task.id === statusId),
+			1
+		)
+	}
 
-    return { getAllStatus, getStatusById, addStatus, addStatuses, editStatus, deleteStatus };
-}
-);
+	return {
+		getAllStatus,
+		getStatusById,
+		addStatus,
+		addStatuses,
+		editStatus,
+		deleteStatus,
+	}
+})
 
 if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useStatus, import.meta.hot));
+	import.meta.hot.accept(acceptHMRUpdate(useStatus, import.meta.hot))
 }
