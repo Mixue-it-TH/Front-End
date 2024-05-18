@@ -143,7 +143,9 @@ function alertMessageHandler(title, status, data, type = "success") {
         <div
           class="flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] hover:bg-gray-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px]"
         >
-          <div class="dropdown dropdown-bottom text-xs font-medium">
+          <div
+            class="itbkk-status-filter dropdown dropdown-bottom text-xs font-medium"
+          >
             <div
               tabindex="0"
               role=""
@@ -162,7 +164,7 @@ function alertMessageHandler(title, status, data, type = "success") {
                 >
                   <div
                     v-for="status in statusFilter"
-                    class="mt-2.5 flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-medium"
+                    class="itbkk-filter-item mt-2.5 flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-medium"
                   >
                     <div
                       class="relative transition-all text-sm duration-75 rounded-md flex"
@@ -172,7 +174,9 @@ function alertMessageHandler(title, status, data, type = "success") {
                         @click="filterDeleteSelection(status)"
                         class="z-[10]"
                       >
-                        <p class="pr-1 hover:text-red-500 text-gray-400">
+                        <p
+                          class="itbkk-filter-item-clear pr-1 hover:text-red-500 text-gray-400"
+                        >
                           &nbsp;&nbsp;X
                         </p>
                       </div>
@@ -196,7 +200,7 @@ function alertMessageHandler(title, status, data, type = "success") {
           </div>
           <div
             @click="filterClearSelection"
-            class="flex justify-center items-center cursor-pointer"
+            class="itbkk-filter-clear flex justify-center items-center cursor-pointer"
           >
             <p
               class="hover:text-red-600 border-6 rounded-md border-gray-50 pr-1.5"
@@ -224,7 +228,7 @@ function alertMessageHandler(title, status, data, type = "success") {
         </div>
         <div
           @click="limitModalHandler(true)"
-          class="flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-100 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
+          class="itbkk-status-setting flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-100 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
         >
           <div class="flex justify-center">
             <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
