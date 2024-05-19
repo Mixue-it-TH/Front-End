@@ -16,7 +16,7 @@ async function getStatusById(url, id) {
 		} else {
 			return data.status
 		}
-	} catch (error) {}
+	} catch (error) { }
 }
 
 async function addStatus(url, newStatus) {
@@ -49,6 +49,7 @@ async function addStatus(url, newStatus) {
 }
 
 async function editStatus(url, status) {
+	console.log(status.description !== "" ? status.description.trim() : null)
 	try {
 		const respone = await fetch(`${url}/${status.id}`, {
 			method: "PUT",
@@ -58,7 +59,7 @@ async function editStatus(url, status) {
 			body: JSON.stringify({
 				id: status.id,
 				name: status.name?.trim(),
-				description: status.description ? status.description.trim() : null,
+				description: status.description !== "" ? status.description.trim() : null,
 				statusColor: status.statusColor,
 			}),
 		})
@@ -109,10 +110,8 @@ async function handelLimitMaximum(url, isLimit, amountMaximum) {
 				number: amountMaximum,
 			}),
 		})
-		console.log(response)
 		if (response.ok) {
 			const responseData = await response.json()
-			console.log(responseData)
 			return responseData
 		} else {
 			throw new Error("Failed to add status")

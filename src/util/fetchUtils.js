@@ -16,7 +16,7 @@ async function getTaskById(url, id) {
 		} else {
 			return data.status
 		}
-	} catch (error) {}
+	} catch (error) { }
 }
 
 async function addTask(url, task) {
@@ -47,6 +47,7 @@ async function addTask(url, task) {
 }
 
 async function editTask(url, task) {
+	console.log(task)
 	try {
 		const respone = await fetch(`${url}/${task.id}`, {
 			method: "PUT",

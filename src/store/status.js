@@ -3,7 +3,6 @@ import { ref } from "vue"
 
 export const useStatus = defineStore("statusmanager", () => {
 	const statusList = ref([])
-	console.log(statusList.value)
 
 	function getAllStatus() {
 		return statusList.value

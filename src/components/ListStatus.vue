@@ -44,9 +44,11 @@ async function delConfirm(id, tranferId) {
 		)
 		statusManagement.deleteStatus(id)
 		if (delRespond.ok) {
-			emit("alert", statusDetail.value.name, "deleted", "status")
+			emit("alert", "success", "The status has been deleted successfully")
+			closeDelModal(false)
 		} else if (delRespond.status === 404) {
-			emit("alert", statusDetail.value.name, "deleted", "status", "error")
+			emit("alert", "error", "An error has occurred, the status does not exist")
+			closeDelModal(false)
 		}
 	} else if (stage.value === "tranfer") {
 		delRespond = await deleteTaskAndTranfer(
@@ -55,18 +57,20 @@ async function delConfirm(id, tranferId) {
 			tranferId
 		)
 		if (delRespond.ok) {
-			console.log(delRespond.status)
 			statusManagement.deleteStatus(id)
 			taskManagement.tranferStatus(
 				id,
 				statusManagement.getStatusById(tranferId)
 			)
-			emit("alert", amoutTasks.value, "deleted", "status") // เล้งเพิ่ม
+			emit("alert", "success", `${amoutTasks.value} task(s) have been tranfer and the status has been deleted`)
+			closeDelModal(false)
 		} else if (delRespond.status === 404 || delRespond.status === 400) {
-			emit("alert", statusDetail.value.name, "deleted", "status", "error")
+			const status = statusManagement.getStatusById(tranferId)
+			//emit("alert", statusDetail.value.name, "deleted", "status", "error")
+			emit("alert", "error", `Cannot transfer to ${status.name} status since it will exceed the limit. Please choose another status to transfer to.`)
 		}
 	}
-	closeDelModal(false)
+
 }
 
 function closeDelModal(isclose) {
@@ -87,21 +91,12 @@ function modalHandler(id, action) {
 <template>
 	<div class="">
 		<Teleport to="body" v-if="delState">
-			<DeleteStatusModal
-				:id="statusId"
-				:stDetail="statusDetail"
-				:stage="stage"
-				:tranferData="arrTranfer"
-				:amountTasks="amoutTasks"
-				@cancel="closeDelModal"
-				@confirm="delConfirm"
-			/>
+			<DeleteStatusModal :id="statusId" :stDetail="statusDetail" :stage="stage" :tranferData="arrTranfer"
+				:amountTasks="amoutTasks" @cancel="closeDelModal" @confirm="delConfirm" />
 		</Teleport>
 
 		<div>
-			<div
-				class="flex justify-between items-center w-[100%] px-[20px] min-h-[45px] font-[550]"
-			>
+			<div class="flex justify-between items-center w-[100%] px-[20px] min-h-[45px] font-[550]">
 				<div class="w-[10%]">
 					<p>No</p>
 				</div>
@@ -118,29 +113,12 @@ function modalHandler(id, action) {
 		</div>
 		<router-link :to="{ name: 'statusAdd' }">
 			<div
-				class="itbkk-button-add flex items-center min-h-[55px] mb-[5px] px-[15px] bg bg-[#F6F6F6] border-dashed border-[3px] border-[#FFCB45] rounded-[8px]"
-			>
+				class="itbkk-button-add flex items-center min-h-[55px] mb-[5px] px-[15px] bg bg-[#F6F6F6] border-dashed border-[3px] border-[#FFCB45] rounded-[8px]">
 				<div class="flex flex-row w-[50%]">
 					<div class="mr-[10px]">
-						<svg
-							width="28"
-							height="28"
-							viewBox="0 0 24 24"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="M12 6L12 18"
-								stroke="#E2A300"
-								stroke-width="2"
-								stroke-linecap="round"
-							/>
-							<path
-								d="M18 12L6 12"
-								stroke="#E2A300"
-								stroke-width="2"
-								stroke-linecap="round"
-							/>
+						<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M12 6L12 18" stroke="#E2A300" stroke-width="2" stroke-linecap="round" />
+							<path d="M18 12L6 12" stroke="#E2A300" stroke-width="2" stroke-linecap="round" />
 						</svg>
 					</div>
 					<div class="font-[430]" @click="modalHandler(null, 'add')">
@@ -152,52 +130,39 @@ function modalHandler(id, action) {
 		<ListModel :statuses="statusManagement.getAllStatus()">
 			<template #status="slotprop">
 				<div
-					class="itbkk-item flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] reak-all hover:drop-shadow-2xl"
-				>
-					<router-link
-						:to="{ name: 'statusDetail', params: { id: slotprop.status.id } }"
-						class="w-full"
-					>
+					class="itbkk-item flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] reak-all hover:drop-shadow-2xl">
+					<router-link :to="{ name: 'statusDetail', params: { id: slotprop.status.id } }" class="w-full">
 						<div class="flex justify-between">
 							<div class="w-[10%] font-[350]">
 								<p class="m-[auto]">{{ slotprop.key + 1 }}</p>
 							</div>
 							<div class="w-[30%]">
-								<div
-									class="text-white min-w-[80px] max-w-[150px] px-[10px] rounded-[5px] m-[auto] inline-block"
-									:style="{ backgroundColor: slotprop.status.statusColor }"
-								>
+								<div class="text-white min-w-[80px] max-w-[150px] px-[10px] rounded-[5px] m-[auto] inline-block"
+									:style="{ backgroundColor: slotprop.status.statusColor }">
 									<p class="itbkk-status-name">{{ slotprop.status.name }}</p>
 								</div>
 							</div>
 
 							<div class="w-[60%]">
 								<div class="px-[25px]">
-									<p
-										:class="{
-											'italic text-gray-500': !slotprop.status.description,
-										}"
-										class="itbkk-status-description"
-									>
+									<p :class="{
+			'italic text-gray-500': !slotprop.status.description,
+		}" class="itbkk-status-description">
 										{{
-											slotprop.status.description
-												? slotprop.status.description
-												: "No description is provided"
-										}}
+			slotprop.status.description
+				? slotprop.status.description
+				: "No description is provided"
+		}}
 									</p>
 								</div>
 							</div>
 						</div>
 					</router-link>
 					<div class="w-[100px]">
-						<div
-							class="flex justify-between w-[100px]"
-							v-if="slotprop.status.id !== 1 && slotprop.status.id !== 4"
-						>
-							<router-link
-								:to="{ name: 'statusEdit', params: { id: slotprop.status.id } }"
-								class="itbkk-button-edit"
-							>
+						<div class="flex justify-between w-[100px]"
+							v-if="slotprop.status.id !== 1 && slotprop.status.id !== 4">
+							<router-link :to="{ name: 'statusEdit', params: { id: slotprop.status.id } }"
+								class="itbkk-button-edit">
 								<div class="">
 									Edit
 									<img src="/image/repair-icon-.png" class="w-[30px]" />
@@ -205,11 +170,8 @@ function modalHandler(id, action) {
 							</router-link>
 							<div class="itbkk-button-delete">
 								Delete
-								<img
-									src="/image/delete-image.png"
-									class="w-[30px] cursor-pointer"
-									@click="delAction(slotprop.status, slotprop.status.id)"
-								/>
+								<img src="/image/delete-image.png" class="w-[30px] cursor-pointer"
+									@click="delAction(slotprop.status, slotprop.status.id)" />
 							</div>
 						</div>
 					</div>

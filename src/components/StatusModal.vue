@@ -74,12 +74,12 @@ async function actionHandler(id, action) {
 			oldStatus.value = { ...statusDetails.value }
 			mode.value = "edit";
 		} else {
-			emit("alert", statusDetails.value.name, "edit", "status", "error")
+			emit("alert", "error", "An error has occurred, the status does not exist")
 			router.push("/status");
 		}
 	} else if (action === "delete") {
 		mode.value = "delete"
-		if (id === 1 ) {
+		if (id === 1) {
 			window.alert("The requested statuses can't delete default status")
 			router.push("/status")
 		}
@@ -100,12 +100,10 @@ async function confirmHandeler() {
 				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			)
-			console.log(respone);
-			emit("alert", respone.name, "added", "status")
+			emit("alert", "success", "The status has been added successfully")
 			statusManagement.addStatus(respone)
 		} else {
-			// emit("alert", statusDetails.value.name, "added", "status", "error")
-			emit("alert", "duplicate", "added", "status", "error")
+			emit("alert", "error", "An error has occurred, the status has duplicate status name")
 		}
 	}
 	if (mode.value === "edit") {
@@ -117,16 +115,18 @@ async function confirmHandeler() {
 				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			);
+			console.log(respone)
 			if (respone === 404) {
-				emit("alert", statusDetails.value.name, "edit", "status", "error")
+				console.log("YHOO")
+				emit("alert", "error", "An error has occurred, the status does not exist")
 				statusManagement.deleteStatus(statusDetails.value.id)
 			} else {
 				statusManagement.editStatus(statusDetails.value);
 				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)// เล้งเพิ่ม
-				emit("alert", respone.name, "updated", "status");
+				emit("alert", "success", "The status has been updated successfully");
 			}
 		} else {
-			emit("alert", statusDetails.value.name, "updated", "status", "duplicate")
+			emit("alert", "error", "An error has occurred, the status has duplicate status name")
 		}
 	}
 	closeModal()
@@ -182,12 +182,12 @@ function closeModal() {
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Color</p>
 						<div class="flex flex-col gap-[10px]">
-                            <input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"></input>
-                            <input type="color"
-                                class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
-                                v-model="statusDetails.statusColor" :disabled="mode === 'read'"
-                                @input="saveBthHandler" />
-                        </div>
+							<input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"></input>
+							<input type="color"
+								class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
+								v-model="statusDetails.statusColor" :disabled="mode === 'read'"
+								@input="saveBthHandler" />
+						</div>
 					</div>
 				</div>
 

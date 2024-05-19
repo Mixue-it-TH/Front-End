@@ -5,10 +5,21 @@ export const useTasks = defineStore("taskmanager", () => {
 	const tasks = ref([])
 	const originalTasks = ref([])
 	let isLimt = true
-	let filtered = false
 	let limitMaximum = 10
-	let arr
-	let state
+	let state = 0
+	let currentState = 2
+	let filteredArray = []
+
+	function getState() {
+		return state
+	}
+	function getCurrentState() {
+		return currentState
+	}
+	function getIsLimit() {
+		return isLimt
+	}
+
 	function getAllTask() {
 		return tasks.value
 	}
@@ -20,46 +31,33 @@ export const useTasks = defineStore("taskmanager", () => {
 	function addTask(newTask) {
 		tasks.value.push(newTask)
 		originalTasks.value.push(newTask)
-		sortTaskByStatusName(state)
-	}
-
-	// function addTaskV2(newTask) {
-	// 	clearAllTask()
-	// 	// console.log(newTask)
-	// 	this.addTasks(newTask)
-	// 	console.log(tasks.value)
-	// }
-
-	function addFilter(listArr) {
-		console.log(listArr)
-		arr = listArr
-		if (listArr === 0) {
-			isLimt = true
-			filtered = false
-			clearAllTask()
-			originalTasks.value.forEach((e) => {
-				tasks.value.push(e)
-			})
-		} else {
-			isLimt = false
-			filtered = true
-			clearAllTask()
-			listArr.forEach((e) => {
-				tasks.value.push(e)
-			})
-			sortTaskByStatusName(state)
-		}
 	}
 
 	function addTasks(newStatus) {
 		newStatus.forEach((newTask) => {
-			this.addTask(newTask)
+			addTask(newTask)
 		})
 		originalTasks.value = [...tasks.value]
+		if (filteredArray.length !== 0) {
+			addFilter(filteredArray)
+		}
+	}
+
+	function addFilter(listArr) {
+		filteredArray = listArr
+		if (filteredArray.length === 0) {
+			tasks.value = [...originalTasks.value]
+		} else {
+			tasks.value = originalTasks.value.filter((task) => {
+				return filteredArray.includes(task.status.name)
+			})
+		}
+		if (state !== 0) {
+			sortTaskByStatusName(state)
+		}
 	}
 
 	function editTask(taskId, updateTask) {
-		console.log(updateTask)
 		const index = tasks.value.findIndex((e) => e.id === taskId)
 		const currentTask = tasks.value[index]
 		tasks.value[index] = { ...currentTask, ...updateTask }
@@ -70,66 +68,48 @@ export const useTasks = defineStore("taskmanager", () => {
 				...originalTasks.value[originalIndex],
 				...updateTask,
 			}
-			console.log(originalTasks.value)
-			console.log(tasks.value)
-			console.log(arr)
-			if (filtered) {
-				const test = arr.filter((e) => {
-					return e.title !== updateTask.title
-				})
-				console.log(test)
-				addFilter(test)
-				sortTaskByStatusName(state)
+		}
+		if (filteredArray.length !== 0) {
+			addFilter(filteredArray)
+		}
+	}
+
+	function deleteTask(taskId) {
+		const index = tasks.value.findIndex((task) => task.id === taskId)
+		if (index !== -1) {
+			tasks.value.splice(index, 1)
+			const originalIndex = originalTasks.value.findIndex((task) => task.id === taskId)
+			if (originalIndex !== -1) {
+				originalTasks.value.splice(originalIndex, 1)
 			}
 		}
 	}
-	function deleteTask(taskId) {
-		tasks.value.splice(
-			tasks.value.findIndex((task) => task.id === taskId),
-			1
-		)
-		originalTasks.value.splice(
-			//เพิ่มไอนี้มาเพราะตอนแอดข้อมูลละมีปัญหามันเอาข้อมูลเดิมจากตัวนี้มาแอดเพิ่มเข้าไปทำให้ทุกครั้งที่ลบกูต้องลบใน arr นี้ด้วย
-			tasks.value.findIndex((task) => task.id === taskId),
-			1
-		)
-	}
+
 	function tranferStatus(id, newStatus) {
-		console.log(tasks.value)
-		console.log(newStatus)
 		tasks.value
-			.filter((st) => {
-				return st.status.id === id
-			})
+			.filter((st) => st.status.id === id)
 			.forEach((st) => {
-				console.log(st)
-				console.log(newStatus)
 				st.status = newStatus
 			})
-		console.log(tasks.value)
 	}
+
 	function sortTaskByStatusName(sortState) {
 		state = sortState
-		console.log(state)
 		if (sortState === 0) {
-			tasks.value.sort((a, b) => {
-				return a.status.name.localeCompare(b.status.name)
-			})
-
+			currentState = 0
+			tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name))
 			return 1
 		} else if (sortState === 1) {
-			tasks.value.sort((a, b) => {
-				return b.status.name.localeCompare(a.status.name)
-			})
-
+			currentState = 1
+			tasks.value.sort((a, b) => b.status.name.localeCompare(a.status.name))
 			return 2
-		} else if (sortState === 2 && isLimt) {
+		} else if (sortState === 2) {
+			currentState = 2
 			tasks.value = [...originalTasks.value]
-			return 0
-		} else if (sortState === 2 && filtered) {
-			console.log(tasks.value)
-			console.log(arr)
-			tasks.value = [...arr]
+			if (filteredArray.length !== 0) {
+				state = 0
+				addFilter(filteredArray)
+			}
 			return 0
 		}
 	}
@@ -145,14 +125,12 @@ export const useTasks = defineStore("taskmanager", () => {
 
 	function checkAddEditMaximum(taskdetail) {
 		if (isLimt) {
-			const statusLimit = tasks.value.filter(
-				(e) => e.status.name === taskdetail.status.name
-			)
-			if (statusLimit.length > limitMaximum) {
-				return false
-			} else return true
-		} else return true
+			const statusLimit = tasks.value.filter((e) => e.status.name === taskdetail.status.name)
+			return statusLimit.length <= limitMaximum
+		}
+		return true
 	}
+
 	return {
 		getAllTask,
 		getTaskById,
@@ -166,6 +144,9 @@ export const useTasks = defineStore("taskmanager", () => {
 		clearAllTask,
 		setLimitMaximumTask,
 		checkAddEditMaximum,
+		getState,
+		getCurrentState,
+		getIsLimit
 	}
 })
 

@@ -13,11 +13,21 @@ function closeStatusModal(isClose) {
 	message.value = ""
 	statusType.value = ""
 }
+function statusHandler(type, text) {
+	message.value = text
+	statusType.value = type
+	showAlertModal.value = true
+	let seconds = 10
+	let timer = setInterval(function () {
+		seconds--
+		if (seconds < 0) {
+			clearInterval(timer)
+			closeStatusModal(false)
+		}
+	}, 1000)
+}
 
-function statusHandler(title, action, data, type = "success") {
-	console.log(title)
-	console.log(action)
-	console.log(data)
+function statusHandler2(title, action, data, type = "success") {
 	if (
 		type === "success" &&
 		typeof title !== "number" &&
@@ -47,13 +57,8 @@ function statusHandler(title, action, data, type = "success") {
 </script>
 
 <template>
-	<div class="w-screen h-[auto] overflow-x-hidden bg-[#F4F4F4]">
-		<AlertMessage
-			v-if="showAlertModal"
-			@close="closeStatusModal"
-			:message="message"
-			:type="statusType"
-		/>
+	<div class=" h-[auto] overflow-x-hidden bg-[#F4F4F4]">
+		<AlertMessage v-if="showAlertModal" @close="closeStatusModal" :message="message" :type="statusType" />
 		<HomeView @alert="statusHandler" />
 		<RouterView @alert="statusHandler" />
 	</div>
