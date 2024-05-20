@@ -5,9 +5,13 @@ import { useTasks } from "@/store/task.js"
 import { useStatus } from "@/store/status.js"
 import { getTaskById, addTask, editTask } from "@/util/fetchUtils"
 import { convertUtils, convertStatus } from "@/util/formatUtils"
+
+
+
 const emit = defineEmits(["alert"])
 
 const taskManagement = useTasks()
+const taskMessage = ref()
 const statusManagement = useStatus()
 const router = useRouter()
 const taskDetails = ref({
@@ -25,6 +29,7 @@ const oldTask = ref({
 const isDisable = ref(true)
 const mode = ref("read")
 const dataLoaded = ref(false)
+console.log(taskManagement.getIsLimit())
 
 onMounted(async () => {
 	const fullPath = router.currentRoute.value.fullPath
@@ -54,6 +59,7 @@ async function actionHandler(id, action) {
 			router.push("/task")
 		}
 	} else if (action === "add") {
+		console.log(taskDetails.value)
 		mode.value = "add"
 	} else if (action === "edit") {
 		taskDetails.value = await getTaskById(
@@ -72,18 +78,18 @@ async function actionHandler(id, action) {
 	}
 }
 async function confirmHandeler() {
-	if (!taskDetails.value.title) {
-		window.alert("You must input title !!!")
-		return
-	}
 	if (mode.value === "add") {
 		if (!taskDetails.value?.status) taskDetails.value.status = 1
 		const respone = await addTask(
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		emit("alert", respone.title, "added", "task")
-		taskManagement.addTask(respone)
+		if (respone !== 400) {
+			emit("alert", 'success', 'The task has been added successfully')
+			taskManagement.addTask(respone)
+			taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
+		} else emit("alert", "error", `The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`)
+
 		closeModal()
 		return
 	}
@@ -92,22 +98,29 @@ async function confirmHandeler() {
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		emit("alert", respone.title, "updated", "task")
-		taskManagement.editTask(taskDetails.value.id, respone)
+		console.log(taskDetails.value)
+		if (respone !== 400) {
+			emit("alert", "success", "The task has been updated successfully")
+			taskManagement.editTask(taskDetails.value.id, respone)
+			taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
+		} else emit("alert", "error", `The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`)
+
 		closeModal()
 		return
 	}
 }
 function saveBthHandler(isTrue = false) {
-	if (
-		(JSON.stringify({ ...oldTask.value }) !==
-			JSON.stringify({ ...taskDetails.value }) &&
-			oldTask.value.title) || isTrue
-	) {
+	console.log(taskDetails.value)
+	taskMessage.value = statusManagement.getStatusById(taskDetails.value.status?.id)
+	if (isTrue && taskDetails.value.title !== "") {
 		isDisable.value = false
 		return
 	}
-	if (mode.value === "add" && taskDetails.value.title) {
+	if ((JSON.stringify({ ...oldTask.value }) !== JSON.stringify({ ...taskDetails.value }) && oldTask.value.title) && mode.value !== "add") {
+		isDisable.value = false
+		return
+	}
+	if (mode.value === "add" && taskDetails.value.title !== "") {
 		isDisable.value = false
 		return
 	}
@@ -128,14 +141,14 @@ function closeModal() {
 					</div>
 					<textarea class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all"
 						:disabled="mode === 'read'" placeholder="input some title" v-model="taskDetails.title"
-						@input="saveBthHandler">{{ taskDetails.title }}</textarea>
+						@input="saveBthHandler" maxlength="100">{{ taskDetails.title }}</textarea>
 				</header>
 				<main class="flex flex-row h-[80%] px-[25px]">
 					<div class="w-[70%] h-[100%] py-[10px]">
 						<p class="font-[600]">Description</p>
 						<textarea v-if="mode !== 'read'"
 							class="itbkk-description w-[95%] h-[90%] px-[15px] border-[2px] border-gray-400 rounded-[8px]"
-							v-model="taskDetails.description" @input="saveBthHandler">
+							v-model="taskDetails.description" @input="saveBthHandler" maxlength="500">
 						</textarea>
 						<div v-if="mode === 'read'"
 							class="itbkk-description w-[95%] h-[90%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
@@ -152,7 +165,7 @@ function closeModal() {
 							<p class="font-[650]">Assignees</p>
 							<textarea v-if="mode !== 'read'"
 								class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
-								v-model="taskDetails.assignees" @input="saveBthHandler"></textarea>
+								v-model="taskDetails.assignees" @input="saveBthHandler" maxlength="30"></textarea>
 							<div v-if="mode === 'read'"
 								class="itbkk-assignees min-h-[180px] px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
 								:class="{ 'italic text-gray-500': !taskDetails.assignees }">
@@ -163,12 +176,15 @@ function closeModal() {
 						</div>
 						<div class="flex flex-col justify-between h-[55%]">
 							<div>
-								<p class="font-[600]">Status</p>
+								<p class="font-[600]">Status<span v-if="mode !== 'read'"
+										class="text-red-500 text-[14px] font-[500] ml-[5px]">(The
+										limit is {{ taskManagement.getIsLimit() ? "Enable" : "Disable" }})</span>
+								</p>
 								<div class="border border-gray-300 min-h-[50px] rounded-[5px]">
 									<select name="status" class="itbkk-status w-full h-full min-h-[50px] px-[15px]"
 										v-model="taskDetails.status.id" @change="saveBthHandler(true)" :required="true">
-										<option v-for="(status, index) in  statusManagement.getAllStatus() "
-											:key="index" :value="status.id">
+										<option v-for="(status, index) in statusManagement.getAllStatus()" :key="index"
+											:value="status.id">
 											{{ convertStatus(status.name) }}
 										</option>
 									</select>

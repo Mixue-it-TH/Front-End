@@ -23,7 +23,6 @@ const delState = ref(false)
 
 
 onMounted(async () => {
-	console.log("HAHA")
 	const data = router.currentRoute.value.fullPath.split("/")
 	if (data.length === 3 && !data.includes("add")) {
 		actionHandler(data[2], "read")
@@ -75,7 +74,7 @@ async function actionHandler(id, action) {
 			oldStatus.value = { ...statusDetails.value }
 			mode.value = "edit";
 		} else {
-			emit("alert", statusDetails.value.name, "edit", "status", "error")
+			emit("alert", "error", "An error has occurred, the status does not exist")
 			router.push("/status");
 		}
 	} else if (action === "delete") {
@@ -101,10 +100,10 @@ async function confirmHandeler() {
 				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			)
-			emit("alert", respone.name, "added", "status")
+			emit("alert", "success", "The status has been added successfully")
 			statusManagement.addStatus(respone)
 		} else {
-			emit("alert", statusDetails.value.name, "added", "status", "error")
+			emit("alert", "error", "An error has occurred, the status has duplicate status name")
 		}
 	}
 	if (mode.value === "edit") {
@@ -116,16 +115,18 @@ async function confirmHandeler() {
 				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			);
+			console.log(respone)
 			if (respone === 404) {
-				emit("alert", statusDetails.value.name, "edit", "status", "error")
+				console.log("YHOO")
+				emit("alert", "error", "An error has occurred, the status does not exist")
 				statusManagement.deleteStatus(statusDetails.value.id)
 			} else {
 				statusManagement.editStatus(statusDetails.value);
 				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)// เล้งเพิ่ม
-				emit("alert", respone.name, "updated", "status");
+				emit("alert", "success", "The status has been updated successfully");
 			}
 		} else {
-			emit("alert", statusDetails.value.name, "updated", "status", "duplicate")
+			emit("alert", "error", "An error has occurred, the status has duplicate status name")
 		}
 	}
 	closeModal()
@@ -149,13 +150,14 @@ function saveBthHandler() {
 function closeModal() {
 	router.go(-1)
 }
+
 </script>
 
 <template>
 	<div v-if="dataLoaded"
 		class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed flex justify-center items-center top-0 left-0 z-[30] font-nonto">
 		<div
-			class="fade-up itbkk-modal-status flex flex-col w-[45%] h-[60%] min-h-[500px] min-w-[350px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
+			class="fade-up itbkk-modal-status flex flex-col w-[full] h-[60%] min-h-[500px] min-w-[350px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
 			<header class="flex items-center h-[15%] px-[14px] bg bg-[#F8F8F8]  rounded-t-[7px] border-b-2 border">
 				<p class="text-[20px] font-[600]">{{ mode === 'read' ? 'Status Details' : (mode === 'add' ? 'Add Status'
 		: 'Edit Status') }}
@@ -166,15 +168,16 @@ function closeModal() {
 					<p class="text-[17px] font-[550]">Name</p>
 					<textarea
 						class="itbkk-status-name bg-white w-[400px] h-[40px] px-[5px] border-gray-400 border-2 text-black rounded-[5px]"
-						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"></textarea>
+						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"
+						maxlength="50"></textarea>
 				</div>
 				<div class="flex flex-row gap-[20px] mt-[25px] px-[14px]">
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Description</p>
 						<textarea
 							class="itbkk-status-description w-[400px] h-[120px] px-[5px] bg-white border-gray-400 border-2 rounded-[5px]"
-							v-model="statusDetails.description" :disabled="mode === 'read'"
-							@input="saveBthHandler"></textarea>
+							v-model="statusDetails.description" :disabled="mode === 'read'" @input="saveBthHandler"
+							maxlength="200"></textarea>
 					</div>
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Color</p>

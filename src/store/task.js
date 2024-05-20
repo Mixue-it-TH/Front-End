@@ -1,8 +1,25 @@
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { ref } from "vue"
+import { getTaskList } from "@/util/fetchUtils"
 
 export const useTasks = defineStore("taskmanager", () => {
 	const tasks = ref([])
+	const originalTasks = ref([])
+	let isLimt = true
+	let limitMaximum = 10
+	let state = 0
+	let currentState = 2
+	let filteredArray = []
+
+	function getState() {
+		return state
+	}
+	function getCurrentState() {
+		return currentState
+	}
+	function getIsLimit() {
+		return isLimt
+	}
 
 	function getAllTask() {
 		return tasks.value
@@ -14,40 +31,106 @@ export const useTasks = defineStore("taskmanager", () => {
 
 	function addTask(newTask) {
 		tasks.value.push(newTask)
+		originalTasks.value.push(newTask)
 	}
 
 	function addTasks(newStatus) {
 		newStatus.forEach((newTask) => {
-			this.addTask(newTask)
+			addTask(newTask)
 		})
+		originalTasks.value = [...tasks.value]
+		if (filteredArray.length !== 0) {
+			addFilter(filteredArray)
+		}
+	}
+
+	async function addFilter(listArr) {
+		filteredArray = listArr
+		if (filteredArray.length === 0) {
+			tasks.value = [...originalTasks.value]
+		} else {
+			const filterString = filteredArray.toString()
+			tasks.value = await getTaskList(
+				import.meta.env.VITE_BASE_URL + `/tasks?filterStatuses=${filterString}`
+			)
+		}
+		if (state !== 0) {
+			sortTaskByStatusName(state)
+		}
 	}
 
 	function editTask(taskId, updateTask) {
-		console.log()
 		const index = tasks.value.findIndex((e) => e.id === taskId)
 		const currentTask = tasks.value[index]
 		tasks.value[index] = { ...currentTask, ...updateTask }
-		console.log(tasks.value[index])
+
+		const originalIndex = originalTasks.value.findIndex((e) => e.id === taskId)
+		if (originalIndex !== -1) {
+			originalTasks.value[originalIndex] = {
+				...originalTasks.value[originalIndex],
+				...updateTask,
+			}
+		}
+		if (filteredArray.length !== 0) {
+			addFilter(filteredArray)
+		}
 	}
+
 	function deleteTask(taskId) {
-		tasks.value.splice(
-			tasks.value.findIndex((task) => task.id === taskId),
-			1
-		)
+		const index = tasks.value.findIndex((task) => task.id === taskId)
+		if (index !== -1) {
+			tasks.value.splice(index, 1)
+			const originalIndex = originalTasks.value.findIndex((task) => task.id === taskId)
+			if (originalIndex !== -1) {
+				originalTasks.value.splice(originalIndex, 1)
+			}
+		}
 	}
+
 	function tranferStatus(id, newStatus) {
-		console.log(tasks.value)
-		console.log(newStatus)
 		tasks.value
-			.filter((st) => {
-				return st.status.id === id
-			})
+			.filter((st) => st.status.id === id)
 			.forEach((st) => {
-				console.log(st)
-				console.log(newStatus)
 				st.status = newStatus
 			})
-		console.log(tasks.value)
+	}
+
+	function sortTaskByStatusName(sortState) {
+		state = sortState
+		if (sortState === 0) {
+			currentState = 0
+			tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name))
+			return 1
+		} else if (sortState === 1) {
+			currentState = 1
+			tasks.value.sort((a, b) => b.status.name.localeCompare(a.status.name))
+			return 2
+		} else if (sortState === 2) {
+			currentState = 2
+			tasks.value = [...originalTasks.value]
+			if (filteredArray.length !== 0) {
+				state = 0
+				addFilter(filteredArray)
+			}
+			return 0
+		}
+	}
+
+	function clearAllTask() {
+		tasks.value = []
+	}
+
+	function setLimitMaximumTask(isEnble, amount) {
+		isLimt = isEnble
+		limitMaximum = amount
+	}
+
+	function checkAddEditMaximum(taskdetail) {
+		if (isLimt) {
+			const statusLimit = tasks.value.filter((e) => e.status.name === taskdetail.status.name)
+			return statusLimit.length <= limitMaximum
+		}
+		return true
 	}
 
 	return {
@@ -58,6 +141,14 @@ export const useTasks = defineStore("taskmanager", () => {
 		editTask,
 		deleteTask,
 		tranferStatus,
+		sortTaskByStatusName,
+		addFilter,
+		clearAllTask,
+		setLimitMaximumTask,
+		checkAddEditMaximum,
+		getState,
+		getCurrentState,
+		getIsLimit
 	}
 })
 

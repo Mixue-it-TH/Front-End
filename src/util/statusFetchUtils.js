@@ -29,7 +29,9 @@ async function addStatus(url, newStatus) {
 			},
 			body: JSON.stringify({
 				name: newStatus.name?.trim(),
-				description: newStatus.description ? newStatus.description.trim() : null,
+				description: newStatus.description
+					? newStatus.description.trim()
+					: null,
 				statusColor: newStatus.statusColor,
 			}),
 		})
@@ -47,6 +49,7 @@ async function addStatus(url, newStatus) {
 }
 
 async function editStatus(url, status) {
+	console.log(status.description !== "" ? status.description.trim() : null)
 	try {
 		const respone = await fetch(`${url}/${status.id}`, {
 			method: "PUT",
@@ -56,8 +59,8 @@ async function editStatus(url, status) {
 			body: JSON.stringify({
 				id: status.id,
 				name: status.name?.trim(),
-				description: status.description ? status.description.trim() : null,
-				statusColor: status.statusColor
+				description: status.description !== "" ? status.description.trim() : null,
+				statusColor: status.statusColor,
 			}),
 		})
 		console.log(respone)
@@ -76,7 +79,9 @@ async function deleteStatusById(url, id) {
 		const response = await fetch(`${url}/${id}`, {
 			method: "DELETE",
 		})
-		return response
+		if (response.ok) {
+			return response
+		} else return response.status
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}
@@ -86,7 +91,31 @@ async function deleteTaskAndTranfer(url, id, newId) {
 		const response = await fetch(`${url}/${id}/${newId}`, {
 			method: "DELETE",
 		})
+		console.log(response.status)
 		return response
+	} catch (e) {
+		console.log(`error: ${e}`)
+	}
+}
+
+async function handelLimitMaximum(url, isLimit, amountMaximum) {
+	try {
+		const response = await fetch(`${url}`, {
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				limitMaximumTask: isLimit,
+				number: amountMaximum,
+			}),
+		})
+		if (response.ok) {
+			const responseData = await response.json()
+			return responseData
+		} else {
+			throw new Error("Failed to add status")
+		}
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}
@@ -98,4 +127,5 @@ export {
 	editStatus,
 	deleteTaskAndTranfer,
 	deleteStatusById,
+	handelLimitMaximum,
 }
