@@ -156,11 +156,13 @@ function closeModal() {
 <template>
 	<div v-if="dataLoaded"
 		class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed flex justify-center items-center top-0 left-0 z-[30] font-nonto">
+		<!-- edit css to w-full -->
 		<div
-			class="fade-up itbkk-modal-status flex flex-col w-[45%] h-[60%] min-h-[500px] min-w-[350px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
+			class="fade-up itbkk-modal-status flex flex-col w-[full] h-[60%] min-h-[500px] min-w-[350px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
 			<header class="flex items-center h-[15%] px-[14px] bg bg-[#F8F8F8]  rounded-t-[7px] border-b-2 border">
 				<p class="text-[20px] font-[600]">{{ mode === 'read' ? 'Status Details' : (mode === 'add' ? 'Add Status'
 		: 'Edit Status') }}
+		<!-- edit css to w-full -->
 				</p>
 			</header>
 			<main class="flex flex-col h-full">
