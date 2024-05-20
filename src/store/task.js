@@ -1,5 +1,6 @@
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { ref } from "vue"
+import { getTaskList } from "@/util/fetchUtils"
 
 export const useTasks = defineStore("taskmanager", () => {
 	const tasks = ref([])
@@ -43,14 +44,15 @@ export const useTasks = defineStore("taskmanager", () => {
 		}
 	}
 
-	function addFilter(listArr) {
+	async function addFilter(listArr) {
 		filteredArray = listArr
 		if (filteredArray.length === 0) {
 			tasks.value = [...originalTasks.value]
 		} else {
-			tasks.value = originalTasks.value.filter((task) => {
-				return filteredArray.includes(task.status.name)
-			})
+			const filterString = filteredArray.toString()
+			tasks.value = await getTaskList(
+				import.meta.env.VITE_BASE_URL + `/tasks?filterStatuses=${filterString}`
+			)
 		}
 		if (state !== 0) {
 			sortTaskByStatusName(state)
