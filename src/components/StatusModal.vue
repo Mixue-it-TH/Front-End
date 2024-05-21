@@ -118,7 +118,6 @@ async function confirmHandeler() {
 			);
 			console.log(respone)
 			if (respone === 404) {
-				console.log("YHOO")
 				emit("alert", "error", "An error has occurred, the status does not exist")
 				statusManagement.deleteStatus(statusDetails.value.id)
 			} else {

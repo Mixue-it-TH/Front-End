@@ -7,7 +7,7 @@ export const useTasks = defineStore("taskmanager", () => {
 	const originalTasks = ref([])
 	let isLimt = true
 	let limitMaximum = 10
-	let state = 0
+	let state = 2
 	let currentState = 2
 	let filteredArray = []
 
@@ -96,6 +96,7 @@ export const useTasks = defineStore("taskmanager", () => {
 	}
 
 	function sortTaskByStatusName(sortState) {
+		console.log("Sorted");
 		state = sortState
 		if (sortState === 0) {
 			currentState = 0
