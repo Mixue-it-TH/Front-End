@@ -103,7 +103,8 @@ async function confirmHandeler() {
 			emit("alert", "success", "The status has been added successfully")
 			statusManagement.addStatus(respone)
 		} else {
-			emit("alert", "error", "An error has occurred, the status has duplicate status name")
+			emit("alert", "error", "Status name must be uniques, please choose another name.")
+			return
 		}
 	}
 	if (mode.value === "edit") {
@@ -155,7 +156,7 @@ function closeModal() {
 
 <template>
 	<div v-if="dataLoaded"
-		class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed flex justify-center items-center top-0 left-0 z-[30] font-nonto">
+		class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed flex justify-center items-center top-0 left-0 z-[10] font-nonto">
 		<div
 			class="fade-up itbkk-modal-status flex flex-col w-[full] h-[60%] min-h-[500px] min-w-[350px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
 			<header class="flex items-center h-[15%] px-[14px] bg bg-[#F8F8F8]  rounded-t-[7px] border-b-2 border">
