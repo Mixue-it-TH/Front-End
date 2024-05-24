@@ -14,9 +14,10 @@ const prop = defineProps({
 const amountMaximum = ref(prop.limitMaximum)
 console.log(amountMaximum.value);
 const isEnable = ref(prop.isLimit)
+console.log(isEnable.value);
 </script>
 <template>
-  <div class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
+  <div class=" backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
     <div class="fade-up flex justify-center items-center w-[100%] h-[100%]">
       <div class="itbkk-modal-setting flex flex-col w-[75%] h-[60%] rounded-[15px] bg bg-white">
         <div class="">

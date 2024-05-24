@@ -207,9 +207,14 @@ function modalHandler(id, action) {
 						</div>
 					</router-link>
 					<div class="w-[100px]">
+						<!-- เล้งเพิ่มการเช็คด้วยชื่อ -->
 						<div
 							class="flex justify-between w-[100px]"
-							v-if="slotprop.status.id !== 1 && slotprop.status.id !== 4"
+							v-if="
+								slotprop.status.name.toLowerCase() !==
+									'No Status'.toLowerCase() &&
+								slotprop.status.name.toLowerCase() !== 'Done'.toLowerCase()
+							"
 						>
 							<router-link
 								:to="{ name: 'statusEdit', params: { id: slotprop.status.id } }"
