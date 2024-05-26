@@ -162,12 +162,13 @@ function closeModal() {
 					<textarea class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all bg-white"
 						:disabled="mode === 'read'" placeholder="input some title" v-model="taskDetails.title"
 						@input="saveBthHandler">{{ taskDetails.title }}</textarea>
-					<p v-if="mode !== 'read'" class="text-[15px]"
+					<p v-if="mode !== 'read'" class="text-[15px] mobile:text-[50px]"
 						:class="taskDetails.title.length > 100 ? 'text-red-500' : 'text-[#AFAFAF]'">
 						{{ taskDetails.title.length }}/100 characters
 					</p>
 				</header>
-				<main class="flex flex-row h-[80%] px-[25px] pt-[30px] border border-red-500">
+				<main class="flex flex-row h-[80%] px-[25px]  border border-red-500"
+					:class="mode !== 'read' ? 'pt-[30px]' : ''">
 					<div class="w-[70%] h-[100%] py-[10px]">
 						<p class="font-[600]">Description</p>
 						<textarea v-if="mode !== 'read'"

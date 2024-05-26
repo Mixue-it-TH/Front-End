@@ -27,37 +27,11 @@ function statusHandler(type, text) {
 	}, 1000)
 }
 
-function statusHandler2(title, action, data, type = "success") {
-	if (
-		type === "success" &&
-		typeof title !== "number" &&
-		typeof action !== "number"
-	) {
-		message.value = `The ${data} has been  ${action} successfully`
-	} else if (type === "error" && title !== "duplicate") {
-		message.value = `An error has occurred, the ${data} does not exist`
-	} else if (typeof title === "number") {
-		message.value = `${title} task(s) have been tranfer and the status has been deleted`
-	} else if (title === "duplicate") {
-		message.value = `An error has occurred, the status has duplicate status `
-	} else if (typeof action === "number") {
-		message.value = `The Kanban board now limits ${title} tasks in each status`
-	}
-	statusType.value = type
-	showAlertModal.value = true
-	let seconds = 10
-	let timer = setInterval(function () {
-		seconds--
-		if (seconds < 0) {
-			clearInterval(timer)
-			closeStatusModal(false)
-		}
-	}, 1000)
-}
+
 </script>
 
 <template>
-	<div class=" h-[auto] overflow-x-hidden bg-[#F4F4F4]">
+	<div class="w-[auto] h-screen overflow-auto bg bg-[#F4F4F4] ">
 		<AlertMessage v-if="showAlertModal" @close="closeStatusModal" :message="message" :type="statusType" />
 		<HomeView @alert="statusHandler" />
 		<RouterView @alert="statusHandler" />

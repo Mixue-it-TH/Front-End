@@ -11,18 +11,18 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="h-[500px] text-gray-700">
+  <div class="h-[500px] min-w-[954px] mt-[20px] text-gray-700 border border-red-500">
     <div class="flex justify-between items-center w-[100%] px-[20px] min-h-[45px] font-[550]">
       <div class="w-[10%]">
         <p>No</p>
       </div>
-      <div class="w-[50%] px-[15px]">
+      <div class="w-[45%] px-[15px]">
         <p>Title</p>
       </div>
       <div class="w-[10%]">
         <p>Status</p>
       </div>
-      <div class="w-[30%]">
+      <div class="w-[35%]">
         <p class="">Assignees</p>
       </div>
     </div>
@@ -52,13 +52,13 @@ const props = defineProps({
                   {{ slotprop.key + 1 }}
                 </p>
               </div>
-              <div class="w-[50%]">
+              <div class="w-[45%]">
                 <div class="itbkk-title px-[15px] font-[430]">
                   {{ slotprop.job.title }}
                 </div>
               </div>
-              <div class="w-[10%] transition-icon duration-100">
-                <div class="w-[100px] rounded-[5px] flex items-center justify-center" :style="{
+              <div class="w-[10%] transition-icon duration-100 border border-red-500">
+                <div class="min-w-[80px] w-[90%]  rounded-[5px] py-[3px] flex items-center justify-center" :style="{
       backgroundColor: slotprop.job.status.statusColor,
     }">
                   <p class="itbkk-status text-white">
@@ -66,8 +66,8 @@ const props = defineProps({
                   </p>
                 </div>
               </div>
-              <div class="w-[30%] font-[350]">
-                <p class="itbkk-assignees ml-" :class="{
+              <div class="w-[35%] border border-red-500 font-[350] min-w-[200px]">
+                <p class="itbkk-assignees " :class="{
       'italic text-gray-500': !slotprop.job.assignees,
     }">
                   {{

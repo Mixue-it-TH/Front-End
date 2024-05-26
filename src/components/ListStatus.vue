@@ -98,14 +98,14 @@ function modalHandler(id, action) {
 </script>
 
 <template>
-	<div class="text-gray-700">
+	<div class="text-gray-700 mt-[20px] border border-blue-500">
 		<Teleport to="body" v-if="delState">
 			<DeleteStatusModal :stDetail="statusDetail" :stage="stage" :tranferData="arrTranfer"
 				:amountTasks="amoutTasks" :limitExceed="limitExceed" @cancel="closeDelModal" @confirm="delConfirm" />
 		</Teleport>
 
 		<div>
-			<div class="flex justify-between items-center w-[100%] px-[20px] min-h-[45px] font-[550]">
+			<div class="flex justify-between items-center gap-[5px] w-[100%] px-[20px] min-h-[45px] font-[550]">
 				<div class="w-[10%]">
 					<p>No</p>
 				</div>
@@ -141,7 +141,7 @@ function modalHandler(id, action) {
 				<div
 					class="transition itbkk-item flex justify-between w-[100%] min-h-[55px] px-[20px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] reak-all hover:drop-shadow-2xl">
 					<router-link :to="{ name: 'statusDetail', params: { id: slotprop.status.id } }" class="w-full">
-						<div class="w-[100%] flex ">
+						<div class="w-[100%] flex gap-[5px]">
 							<div class="w-[11%] font-[350]">
 								<p class="m-[auto]">{{ slotprop.key + 1 }}</p>
 							</div>
@@ -167,9 +167,9 @@ function modalHandler(id, action) {
 							</div>
 						</div>
 					</router-link>
-					<div class="w-[10%]">
+					<div class="w-[12%]">
 						<!-- เล้งเพิ่มการเช็คด้วยชื่อ -->
-						<div class="flex justify-between w-[100px]" v-if="slotprop.status.name.toLowerCase() !==
+						<div class="flex tablet:flex-col w-[100px]" v-if="slotprop.status.name.toLowerCase() !==
 			'No Status'.toLowerCase() &&
 			slotprop.status.name.toLowerCase() !== 'Done'.toLowerCase()
 			">

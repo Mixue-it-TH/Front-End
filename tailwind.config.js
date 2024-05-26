@@ -3,10 +3,12 @@ export default {
 	content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
 	theme: {
 		screens: {
-			'mobile': '320px',
-			'mobile-M': '375px',
-			'laptop': '1024px',
-			'labtop-L': '1440px',
+			'mobile': { 'max': '320px' },
+			'mobile-M': { 'max': '376px' },
+			'mobile-L': { 'max': '426px' },
+			'tablet': { 'max': '768px' },
+			'laptop': { 'max': '1024px' },
+			'laptop-L': { 'max': '1440px' },
 		},
 		extend: {
 			fontFamily: {

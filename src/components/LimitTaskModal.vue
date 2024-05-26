@@ -16,7 +16,7 @@ const isEnable = ref(prop.isLimit);
 <template>
   <div class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
     <div class="flex justify-center items-center w-[100%] h-[100%]">
-      <div class="fade-up itbkk-modal-setting flex flex-col w-[75%] h-[60%] rounded-[15px] bg bg-white">
+      <div class="fade-up itbkk-modal-setting flex flex-col w-[75%] h-[60%] max-w-[750px] rounded-[8px] bg bg-white">
         <div class="">
           <p class="text-black text-3xl pl-4 pt-5">Status Setting
           </p>
