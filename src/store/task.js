@@ -44,15 +44,15 @@ export const useTasks = defineStore("taskmanager", () => {
 		}
 	}
 
-	async function addFilter(listArr) {
+	function addFilter(listArr) {
 		filteredArray = listArr
 		if (filteredArray.length === 0) {
 			tasks.value = [...originalTasks.value]
 		} else {
 			const filterString = filteredArray.toString()
-			tasks.value = await getTaskList(
-				import.meta.env.VITE_BASE_URL + `/tasks?filterStatuses=${filterString}`
-			)
+			tasks.value = originalTasks.value.filter((task) => {
+				return filteredArray.includes(task.status.name)
+			})
 		}
 		if (state !== 0) {
 			sortTaskByStatusName(state)
@@ -96,7 +96,6 @@ export const useTasks = defineStore("taskmanager", () => {
 	}
 
 	function sortTaskByStatusName(sortState) {
-		console.log("Sorted");
 		state = sortState
 		if (sortState === 0) {
 			currentState = 0

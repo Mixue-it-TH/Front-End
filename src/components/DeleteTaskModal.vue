@@ -38,20 +38,4 @@ const props = defineProps({
     </div>
 </template>
 
-<style scoped>
-.fade-up {
-    animation: fadeUp 0.5s ease-out;
-}
-
-@keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-</style>
+<style scoped></style>

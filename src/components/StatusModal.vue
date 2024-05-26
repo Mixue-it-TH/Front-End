@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref,watch } from "vue"
+import { onMounted, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import {
 	getStatusById,
@@ -20,8 +20,6 @@ const isDisable = ref(true)
 const statusManagement = useStatus()
 const taskManagement = useTasks()
 const delState = ref(false)
-const isMaxName = ref(false)
-const isMaxDescript = ref(false)
 
 onMounted(async () => {
 	const data = router.currentRoute.value.fullPath.split("/")
@@ -133,6 +131,10 @@ async function confirmHandeler() {
 	closeModal()
 }
 function saveBthHandler() {
+	if (statusDetails.value.name?.length > 50 || statusDetails.value.description?.length > 200) {
+		isDisable.value = true
+		return
+	}
 	if (
 		JSON.stringify({ ...oldStatus.value }) !==
 		JSON.stringify({ ...statusDetails.value }) &&
@@ -151,20 +153,8 @@ function saveBthHandler() {
 function closeModal() {
 	router.go(-1)
 }
-function checkMaxLength(field, maxLength) {//เล้งเพิ่ม
-	if (field) {
-		return field.length > maxLength
-	}
-}
 
-watch(
-	() => statusDetails.value,
-	(newStatusDetail) => {
-		isMaxName.value = checkMaxLength(newStatusDetail.name, 50)
-		isMaxDescript.value = checkMaxLength(newStatusDetail.description, 200)
-	},
-	{ deep: true }
-)
+
 </script>
 
 <template>
@@ -182,36 +172,28 @@ watch(
 					<p class="text-[17px] font-[550] mb-[10px]">Name</p>
 					<textarea
 						class="itbkk-status-name bg-white w-[400px] h-[40px] px-[5px] border-gray-400 border-2 text-black rounded-[5px]"
-						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"
-						></textarea>
-						<p v-if="isMaxName" class="text-red-600 pt-[5px]">
-							Status name exceeded ({{
-								statusDetails.name.length - 50 < 0
-									? 0
-									: statusDetails.name.length - 50
-							}}) if you save the error has occure
-						</p>
+						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"></textarea>
+					<p v-if="mode !== 'read'" class="text-[15px]"
+						:class="statusDetails.name.length > 50 ? 'text-red-500' : 'text-[#AFAFAF]'">
+						{{ statusDetails.name.length }}/50 characters
+					</p>
 				</div>
 				<div class="flex flex-row gap-[20px] mt-[25px] px-[14px]">
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Description</p>
 						<textarea
 							class="itbkk-status-description w-[400px] h-[120px] px-[5px] bg-white border-gray-400 border-2 rounded-[5px]"
-							v-model="statusDetails.description" :disabled="mode === 'read'" @input="saveBthHandler"
-							></textarea>
-							<!-- เล้งเพิ่ม -->
-							<p v-if="isMaxDescript" class="text-red-600 pt-[5px]">
-							Description exceeded ({{
-								statusDetails.description.length - 200 < 0
-									? 0
-									: statusDetails.description.length - 200
-							}}) if you save the error has occure
-						</p>
+							v-model="statusDetails.description" :disabled="mode === 'read'"
+							@input="saveBthHandler"></textarea>
+						<p v-if="mode !== 'read'" class="text-[15px]"
+							:class="statusDetails.description?.length > 200 ? 'text-red-500' : 'text-[#AFAFAF]'">
+							{{ statusDetails.description?.length || "0" }}/200 characters</p>
 					</div>
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Color</p>
 						<div class="flex flex-col gap-[10px]">
-							<input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"></input>
+							<input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"
+								class="bg-white"></input>
 							<input type="color"
 								class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
 								v-model="statusDetails.statusColor" :disabled="mode === 'read'"
@@ -262,20 +244,4 @@ watch(
 
 </template>
 
-<style scoped>
-.fade-up {
-	animation: fadeUp 0.5s ease-out;
-}
-
-@keyframes fadeUp {
-	from {
-		opacity: 0;
-		transform: translateY(20px);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-</style>
+<style scoped></style>

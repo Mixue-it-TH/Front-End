@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 
-import HomeView from "@/views/HomeView.vue"
+import NotFound from "@/views/NotFound.vue"
 import Empty from "@/components/Empty.vue"
 import TaskModal from "@/components/TaskModal.vue"
 import StatusModal from "@/components/StatusModal.vue"
@@ -51,6 +51,10 @@ const router = createRouter({
 			path: "/status/:id/edit",
 			name: "statusEdit",
 			component: StatusModal,
+		},
+		{
+			path: '/:notfound(.*)',
+			component: NotFound
 		},
 	],
 })

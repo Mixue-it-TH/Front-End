@@ -2,3 +2,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.fade-up {
+  animation: fadeUp 0.5s
+    ease-out;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(
+      20px
+    );
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.transition {
+  transition: all 0.1.5s
+    ease-in-out;
+}
+
+.transition:hover {
+  transform: scale(1.012);
+}
+
+.transition-icon {
+  transition: all 0.1.5s
+    ease-in-out;
+}
+
+.transition-icon:hover {
+  transform: scale(1.15);
+}

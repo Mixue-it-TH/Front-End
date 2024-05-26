@@ -16,7 +16,7 @@ async function getTaskById(url, id) {
 		} else {
 			return data.status
 		}
-	} catch (error) {}
+	} catch (error) { }
 }
 
 async function addTask(url, task) {

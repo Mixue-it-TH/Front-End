@@ -1,9 +1,7 @@
 <script setup>
 import router from "@/router"
-import { onMounted, ref, watchEffect } from "vue"
-import { RouterLink } from "vue-router"
+import { onMounted, ref } from "vue"
 import { getTaskList, deleteTaskById } from "@/util/fetchUtils"
-import { convertStatus } from "@/util/formatUtils"
 import { getStatusList, handelLimitMaximum } from "@/util/statusFetchUtils"
 import { useTasks } from "@/store/task.js"
 import { useStatus } from "@/store/status.js"
@@ -56,6 +54,7 @@ onMounted(async () => {
 	statusManagement.addStatuses(listStatuses)
 	if (listTasks.length === 0) isEmptyTask.value = true
 	if (router.currentRoute.value.fullPath.includes("status")) toggleMode()
+
 })
 
 function deleteModalHandler(tasks, number) {
@@ -96,8 +95,12 @@ async function filterSelection(statusName) {
 	})
 	if (isDuplicate.length === 0) {
 		statusFilter.value.push(statusName)
-	} else return
-	await taskManagement.addFilter(statusFilter.value)
+	} else {
+		statusFilter.value = statusFilter.value.filter((status) => {
+			return status !== statusName
+		})
+	}
+	taskManagement.addFilter(statusFilter.value)
 	if (sortState.value === 0) {
 		taskManagement.sortTaskByStatusName(2)
 	} else {
@@ -163,12 +166,9 @@ async function handelLimit(enable, amountLimit) {
 	)
 	// limitReached คือค่าที่นำไปบอก user ว่า status นี้ถึง taskLimit แล้ว
 	limitReached.value = responese.statusList
-	console.log(limitReached.value)
 	limitMaximux.value = amountLimit
-	console.log(limitMaximux.value)
 	showLimitModal.value = false
 	isLimit.value = enable
-	console.log(isLimit.value)
 }
 function alertMessageHandler(type = "success", text) {
 	emit("alert", type, text)
@@ -177,80 +177,46 @@ function alertMessageHandler(type = "success", text) {
 
 <template>
 	<Teleport to="body" v-if="showDeleteModal">
-		<DeleteTaskModal
-			@cancel="closeDeleteModal"
-			@confirm="confirmDelete"
-			:taskDetails="taskDetails"
-			:taskNumber="taskNumber"
-		/>
+		<DeleteTaskModal @cancel="closeDeleteModal" @confirm="confirmDelete" :taskDetails="taskDetails"
+			:taskNumber="taskNumber" />
 	</Teleport>
 	<Teleport to="body" v-if="showLimitModal">
-		<LimitTaskModal
-			@cancel="limitModalHandler"
-			@save="handelLimit"
-			:isLimit="isLimit"
-			:limitMaximum="limitMaximux"
-		/>
+		<LimitTaskModal @cancel="limitModalHandler" @save="handelLimit" :isLimit="isLimit"
+			:limitMaximum="limitMaximux" />
 	</Teleport>
-	<div
-		class="w-screen min-h-screen h-auto bg-[#F4F4F4] px-[35px] py-[25px] font-nonto"
-	>
-		<div
-			class="flex flex-row justify-between items-center w-[100%] h-[75px] mb-[15px]"
-		>
+	<div class="w-screen min-h-screen h-auto bg-[#F4F4F4] text-gray-700 px-[35px] py-[25px] font-nonto">
+		<div class="flex flex-row justify-between items-center w-[100%] h-[75px] mb-[15px]">
 			<div class="h-[75%] mt-[20px] mb-20px">
 				<h1 class="text-[24px] text-gray-700 font-[800]">
 					IT-Bangmod Kradan Kanban
 				</h1>
 			</div>
 			<div class="flex flex-row gap-[15px] h-[75%]">
-				<div
-					class="itbkk-manage-status itbkk-button-home cursor-pointer hover:bg-gray-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px] w-[200px] h-[40px] m-[7px] py-[7px] px-[5px] text-center"
-					@click="toggleMode"
-				>
+				<div class="itbkk-manage-status itbkk-button-home hover:bg-gray-200 duration-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px] w-[200px] h-[45px] m-[7px] py-[7px] px-[5px] text-center "
+					@click="toggleMode">
 					<h1>
 						{{ toggleManage }}
 					</h1>
 				</div>
-				<!-- ปรับ css -->
 				<div
-					class="itbkk-status-filter flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] hover:bg-gray-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px]"
-				>
-					<div
-						class="dropdown dropdown-bottom text-xs font-medium cursor-pointer"
-					>
-						<div
-							tabindex="0"
-							role=""
-							class="cursor-pointer w-full flex items-center"
-						>
+					class="itbkk-status-filter flex justify-between w-[202px] h-[45px] px-[10px] m-[auto] hover:bg-gray-200 duration-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px]">
+					<div class="dropdown dropdown-bottom text-xs font-medium cursor-pointer">
+						<div tabindex="0" role="" class="cursor-pointer w-full flex items-center">
 							<div class="mt-2 overflow-auto">
 								<div v-if="statusFilter.length === 0">
 									<p class="pl-8 pt-[5px]">Filter by status(es)</p>
 								</div>
 
-								<div
-									v-else
+								<div v-else
 									class="flex gap-[8px] w-[150px] absolute mb-5s max-h-[55px] overflow-y-hidden"
-									tabindex="0"
-									role=""
-								>
-									<div
-										v-for="(status, index) in statusFilter"
-										:key="index"
-										class="itbkk-filter-item min-w-[120px] max-h-[60px] mb-5 pt-6 hover:bg-gray-100 text-gray-400 border border-gray-400 rounded-md flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-normal"
-									>
-										<div
-											class="relative mb-5 transition-all text-sm duration-75 rounded-md flex"
-										>
+									tabindex="0" role="">
+									<div v-for="(status, index) in statusFilter" :key="index"
+										class="itbkk-filter-item min-w-[120px] max-h-[60px] mb-5 pt-6 hover:bg-gray-100 text-gray-400 border border-gray-400 rounded-md flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-normal">
+										<div class="relative mb-5 transition-all text-sm duration-75 rounded-md flex">
 											{{ status }}
-											<div
-												@click="filterDeleteSelection(status)"
-												class="itbkk-filter-item-clear z-[10]"
-											>
-												<p
-													class="itbkk-item-clear pr-1 hover:text-red-500 text-gray-400"
-												>
+											<div @click="filterDeleteSelection(status)"
+												class="itbkk-filter-item-clear z-[10]">
+												<p class="itbkk-item-clear pr-1 hover:text-red-500 text-gray-400">
 													&nbsp;&nbsp;&nbsp;&nbsp; X
 												</p>
 											</div>
@@ -259,69 +225,51 @@ function alertMessageHandler(type = "success", text) {
 								</div>
 							</div>
 						</div>
-						<ul
-							tabindex="0"
-							class="dropdown-content z-[1] menu shadow rounded-[10px] w-[150px] bg-white"
-						>
-							<li
-								v-for="(status, index) in statusManagement.getAllStatus()"
-								:key="index"
-								class="break-all itbkk-status-choice"
-								@click="filterSelection(status.name)"
-							>
-								<a>{{ status.name }}</a>
+						<ul tabindex="0" class="dropdown-content z-[1] menu shadow rounded-[10px] w-[150px] bg-white">
+							<li v-for="(status, index) in statusManagement.getAllStatus()" :key="index"
+								class="break-all itbkk-status-choice" @click="filterSelection(status.name)">
+								<a :class="statusFilter.includes(status.name) ? 'bg-[#D7D7D7]' : ''">{{ status.name
+									}}</a>
 							</li>
 						</ul>
 					</div>
-					<div
-						@click="filterClearSelection"
-						class="flex justify-center items-center cursor-pointer"
-					>
-						<p
-							class="hover:text-red-600 border-6 rounded-md border-gray-50 pr-1.5"
-						>
+					<div @click="filterClearSelection" class="flex justify-center items-center cursor-pointer">
+						<p class="hover:text-red-600 border-6 rounded-md border-gray-50 pr-1.5">
 							X
 						</p>
 					</div>
 				</div>
-				<div
-					@click="sortTask"
-					class="itbkk-status-sort bg-[#F9F9F9] hover:bg-gray-100 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
-				>
+				<div @click="sortTask"
+					class="itbkk-status-sort bg-[#F9F9F9] hover:bg-gray-200 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px] duration-100">
 					<div v-if="sortState === 0" class="flex justify-center mt-[5px]">
 						<img src="/image/up-and-down-icon.png" class="w-[30px] h-[30px]" />
 					</div>
-					<div
-						v-if="sortState === 1"
-						class="flex justify-center mt-[5.5px] mr-1"
-					>
+					<div v-if="sortState === 1" class="flex justify-center mt-[5.5px] mr-1">
 						<img src="/image/a-z-blue.png" class="w-[30px] h-[30px]" />
 					</div>
 					<div v-if="sortState === 2" class="flex justify-center mt-[6px]">
 						<img src="/image/z-a-blue.png" class="w-[30px] h-[30px]" />
 					</div>
 				</div>
-				<div
-					@click="limitModalHandler(true)"
-					class="itbkk-status-setting flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-100 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
-				>
+				<div @click="limitModalHandler(true)"
+					class="itbkk-status-setting flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-200 duration-100 w-[45px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]">
 					<div class="flex justify-center">
 						<img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
 					</div>
 				</div>
 			</div>
 		</div>
-		<ListTask
-			v-if="showTask"
-			@delete="deleteModalHandler"
-			:sortState="sortState"
-		/>
-		<ListStatus
-			v-else
-			@alert="alertMessageHandler"
-			:limitExceed="limitReached"
-		/>
+		<ListTask v-if="showTask" @delete="deleteModalHandler" :listTasks="taskManagement.getAllTask()" />
+		<ListStatus v-else @alert="alertMessageHandler" :limitExceed="limitReached" />
 	</div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.transition {
+	transition: all 0.3s ease-in-out;
+}
+
+.transition:hover {
+	transform: scale(1.1);
+}
+</style>
