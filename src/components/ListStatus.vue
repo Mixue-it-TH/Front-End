@@ -98,7 +98,22 @@ function modalHandler(id, action) {
 </script>
 
 <template>
-	<div class="text-gray-700 mt-[20px] border border-blue-500">
+	<router-link :to="{ name: 'statusAdd' }"
+		class="invisible mobile-L:visible absolute left-0 bottom-0 mb-[20px] ml-[20px]">
+		<div class="flex justify-center items-center w-[60px] h-[60px] rounded-[50%] bg-[#0058DD] border-2 shadow-xl">
+			<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg
+				enable-background="new 0 0 50 50" height="50px" id="Layer_1" version="1.1" viewBox="0 0 50 50"
+				width="50px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
+				xmlns:xlink="http://www.w3.org/1999/xlink">
+				<rect fill="none" height="50" width="50" />
+				<line fill="none" stroke="#F3F3F3" stroke-miterlimit="10" stroke-width="4" x1="9" x2="41" y1="25"
+					y2="25" />
+				<line fill="none" stroke="#F3F3F3" stroke-miterlimit="10" stroke-width="4" x1="25" x2="25" y1="9"
+					y2="41" />
+			</svg>
+		</div>
+	</router-link>
+	<div class="text-gray-700 mt-[20px]">
 		<Teleport to="body" v-if="delState">
 			<DeleteStatusModal :stDetail="statusDetail" :stage="stage" :tranferData="arrTranfer"
 				:amountTasks="amoutTasks" :limitExceed="limitExceed" @cancel="closeDelModal" @confirm="delConfirm" />
@@ -120,7 +135,7 @@ function modalHandler(id, action) {
 				</div>
 			</div>
 		</div>
-		<router-link :to="{ name: 'statusAdd' }">
+		<router-link :to="{ name: 'statusAdd' }" class="mobile-L:hidden">
 			<div
 				class="transition itbkk-button-add flex items-center min-h-[55px] mb-[5px] px-[15px] bg bg-[#F6F6F6] hover:bg-white border-dashed border-[3px] border-[#FFCB45] rounded-[8px]">
 				<div class="flex flex-row w-[50%]">
@@ -136,6 +151,8 @@ function modalHandler(id, action) {
 				</div>
 			</div>
 		</router-link>
+
+
 		<ListModel :statuses="statusManagement.getAllStatus()">
 			<template #status="slotprop">
 				<div
@@ -155,13 +172,13 @@ function modalHandler(id, action) {
 							<div class="w-[50%]">
 								<div class="">
 									<p :class="{
-			'italic text-gray-500': !slotprop.status.description,
-		}" class="itbkk-status-description">
+		'italic text-gray-500': !slotprop.status.description,
+	}" class="itbkk-status-description">
 										{{
-			slotprop.status.description
-				? slotprop.status.description
-				: "No description is provided"
-		}}
+		slotprop.status.description
+			? slotprop.status.description
+			: "No description is provided"
+	}}
 									</p>
 								</div>
 							</div>
@@ -170,19 +187,19 @@ function modalHandler(id, action) {
 					<div class="w-[12%]">
 						<!-- เล้งเพิ่มการเช็คด้วยชื่อ -->
 						<div class="flex tablet:flex-col w-[100px]" v-if="slotprop.status.name.toLowerCase() !==
-			'No Status'.toLowerCase() &&
-			slotprop.status.name.toLowerCase() !== 'Done'.toLowerCase()
-			">
+		'No Status'.toLowerCase() &&
+		slotprop.status.name.toLowerCase() !== 'Done'.toLowerCase()
+		">
 							<router-link :to="{ name: 'statusEdit', params: { id: slotprop.status.id } }"
 								class="itbkk-button-edit">
 								<div
 									class="transition-icon w-[50px] px-[6px] rounded-[10px] hover:drop-shadow-2xl duration-150">
 									Edit
-									<img src="/image/repair-icon-.png" class="w-[30px]" />
+									<img src="/image/edit-icon.png" class="w-[30px]" />
 								</div>
 							</router-link>
 							<div
-								class="transition-icon itbkk-button-deletew-[50px] rounded-[10px] hover:drop-shadow-2xl duration-150">
+								class="transition-icon itbkk-button-deletew-[50px] text-red-500 rounded-[10px] hover:drop-shadow-2xl duration-150">
 								Delete
 								<img src="/image/delete-image.png" class="w-[30px] ml-[5px] cursor-pointer"
 									@click="delAction(slotprop.status, slotprop.status.id)" />

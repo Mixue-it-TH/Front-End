@@ -154,25 +154,29 @@ function closeModal() {
 <template>
 	<div v-if="dataLoaded" class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
 		<div class="fade-up flex justify-center items-center w-[100%] h-[100%]">
-			<div class="itbkk-modal-task w-[75%] h-[90%] rounded-[15px] bg bg-white">
-				<header class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-[#F8F8F8] border-b-2 rounded-t-[7px]">
-					<div v-show="mode !== 'read'">
-						{{ mode === "add" ? "New Task" : "Edit Task" }}
+			<div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-white ">
+				<header class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-[#F8F8F8] border-b-2 rounded-t-[2px]">
+					<div class="flex gap-[10px]" v-show="mode !== 'read'">
+						<div>
+							{{ mode === "add" ? "New Task" : "Edit Task" }}
+						</div>
+						<p v-if="mode !== 'read'" class="text-[15px] "
+							:class="taskDetails.title.length > 100 ? 'text-red-500' : 'text-[#AFAFAF]'">
+							{{ taskDetails.title.length }}/100 characters
+						</p>
 					</div>
+
 					<textarea class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all bg-white"
 						:disabled="mode === 'read'" placeholder="input some title" v-model="taskDetails.title"
 						@input="saveBthHandler">{{ taskDetails.title }}</textarea>
-					<p v-if="mode !== 'read'" class="text-[15px] mobile:text-[50px]"
-						:class="taskDetails.title.length > 100 ? 'text-red-500' : 'text-[#AFAFAF]'">
-						{{ taskDetails.title.length }}/100 characters
-					</p>
+
 				</header>
-				<main class="flex flex-row h-[80%] px-[25px]  border border-red-500"
+				<main class="flex flex-row mobile-L:flex-col mobile-L:overflow-auto h-[80%] px-[4%]"
 					:class="mode !== 'read' ? 'pt-[30px]' : ''">
-					<div class="w-[70%] h-[100%] py-[10px]">
+					<div class="w-[70%] mobile-L:w-[100%] h-[100%] py-[10px]">
 						<p class="font-[600]">Description</p>
 						<textarea v-if="mode !== 'read'"
-							class="itbkk-description w-[95%] h-[80%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-white"
+							class="itbkk-description w-[95%] h-[80%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-white overflow-hidden"
 							v-model="taskDetails.description" @input="saveBthHandler">
 						</textarea>
 						<p v-if="mode !== 'read'" class="text-[15px]"
@@ -190,8 +194,8 @@ function closeModal() {
 	}}
 						</div>
 					</div>
-					<div class="flex flex-col w-[30%] h-[94%]">
-						<div class="flex flex-col h-[45%] py-[10px] mb-[15px]">
+					<div class="flex flex-col w-[30%]  mobile-L:w-[100%] mobile-L:mt-[14px] h-[94%]">
+						<div class="flex flex-col h-[45%] py-[10px] mb-[10px]">
 							<p class="font-[650]">Assignees</p>
 							<textarea v-if="mode !== 'read'"
 								class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all bg-white"
@@ -208,11 +212,12 @@ function closeModal() {
 	}}
 							</div>
 						</div>
-						<div class="flex flex-col justify-between h-[55%]">
+						<div class="flex flex-col gap-[20px] h-[55%] mt-[17px]">
 							<div>
-								<p class="font-[600]">
+								<p class=" font-[600]">
 									Status<span v-if="mode !== 'read'"
-										class="text-red-500 text-[14px] font-[500] ml-[5px]">(The limit is
+										class="text-red-500 text-[14px] font-[500] ml-[5px]">(The
+										limit is
 										{{
 		taskManagement.getIsLimit() ? "Enable" : "Disable"
 	}})</span>

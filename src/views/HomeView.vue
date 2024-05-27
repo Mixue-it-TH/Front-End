@@ -186,10 +186,11 @@ function alertMessageHandler(type = "success", text) {
 	</Teleport>
 	<div class="w-full h-[auto] bg-[#F4F4F4] text-gray-700 px-[2%] py-[25px] font-nonto ">
 		<div class="flex flex-row  justify-between tablet:h-[auto] tablet:flex-col  w-[100%] h-[75px] mb-[15px]0">
-			<div class="h-[75%] mt-[20px] mb-[20px]">
-				<h1 class="text-[24px] text-gray-700 font-[800]">
+			<div class="flex h-[85%]">
+				<h1 class="text-[24px] text-gray-700 font-[800] mt-[10px]">
 					IT-Bangmod Kradan Kanban
 				</h1>
+				<img class="ml-[10px] tablet:w-[15%] mobile:w-[5%] mobile-M:hidden" src="/image/SIT-logo.png">
 			</div>
 			<div class="flex mobile:flex-col tablet:justify-between gap-[15px] h-[75%]">
 				<div class="flex mobile:items-center mobile-L:flex-col">

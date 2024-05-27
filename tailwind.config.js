@@ -6,6 +6,7 @@ export default {
 			'mobile': { 'max': '320px' },
 			'mobile-M': { 'max': '376px' },
 			'mobile-L': { 'max': '426px' },
+			'mobile-L2': '425px',
 			'tablet': { 'max': '768px' },
 			'laptop': { 'max': '1024px' },
 			'laptop-L': { 'max': '1440px' },
