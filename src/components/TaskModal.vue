@@ -167,7 +167,7 @@ function closeModal() {
 					</div>
 
 					<textarea
-						class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all bg-white text-[#333333]"
+						class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all bg-white  disabled:text-black disabled:opacity-100"
 						:disabled="mode === 'read'" placeholder="input some title" v-model="taskDetails.title"
 						@input="saveBthHandler">{{ taskDetails.title }}</textarea>
 

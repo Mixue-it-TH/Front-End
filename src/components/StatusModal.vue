@@ -171,7 +171,7 @@ function closeModal() {
 				<div class="mobile-L:mt-[0px] mt-[30px]  px-[14px]">
 					<p class="text-[17px] font-[550] mb-[10px]">Name</p>
 					<textarea
-						class="itbkk-status-name bg-white w-[400px] mobile-M:w-[300px] h-[40px] px-[5px] border-gray-400 border-2 text-black rounded-[5px]"
+						class="itbkk-status-name bg-white w-[400px] mobile-M:w-[300px] h-[40px] px-[5px] border-gray-400 border-2 text-black rounded-[5px] disabled:text-black disabled:opacity-100"
 						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"></textarea>
 					<p v-if="mode !== 'read'" class="text-[15px]"
 						:class="statusDetails.name.length > 50 ? 'text-red-500' : 'text-[#AFAFAF]'">
@@ -183,7 +183,7 @@ function closeModal() {
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Description</p>
 						<textarea
-							class="itbkk-status-description w-[400px] mobile-M:w-[300px] h-[120px] px-[5px] bg-white border-gray-400 border-2 rounded-[5px]"
+							class="itbkk-status-description w-[400px] mobile-M:w-[300px] h-[120px] px-[5px] bg-white border-gray-400 border-2 rounded-[5px] disabled:text-black disabled:opacity-100"
 							v-model="statusDetails.description" :disabled="mode === 'read'"
 							@input="saveBthHandler"></textarea>
 						<p v-if="mode !== 'read'" class="text-[15px]"
