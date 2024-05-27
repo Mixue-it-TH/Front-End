@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue"
+import { onMounted, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import {
 	getStatusById,
@@ -20,7 +20,6 @@ const isDisable = ref(true)
 const statusManagement = useStatus()
 const taskManagement = useTasks()
 const delState = ref(false)
-
 
 onMounted(async () => {
 	const data = router.currentRoute.value.fullPath.split("/")
@@ -132,6 +131,10 @@ async function confirmHandeler() {
 	closeModal()
 }
 function saveBthHandler() {
+	if (statusDetails.value.name?.length > 50 || statusDetails.value.description?.length > 200) {
+		isDisable.value = true
+		return
+	}
 	if (
 		JSON.stringify({ ...oldStatus.value }) !==
 		JSON.stringify({ ...statusDetails.value }) &&
@@ -151,38 +154,47 @@ function closeModal() {
 	router.go(-1)
 }
 
+
 </script>
 
 <template>
 	<div v-if="dataLoaded"
 		class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed flex justify-center items-center top-0 left-0 z-[10] font-nonto">
 		<div
-			class="fade-up itbkk-modal-status flex flex-col w-[full] h-[60%] min-h-[500px] min-w-[350px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
+			class="fade-up itbkk-modal-status mobile-L:mb-[30px] mobile-L:h-[90%] flex flex-col w-[full] h-[60%] min-h-[500px] min-w-[300px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
 			<header class="flex items-center h-[15%] px-[14px] bg bg-[#F8F8F8]  rounded-t-[7px] border-b-2 border">
 				<p class="text-[20px] font-[600]">{{ mode === 'read' ? 'Status Details' : (mode === 'add' ? 'Add Status'
 		: 'Edit Status') }}
 				</p>
 			</header>
 			<main class="flex flex-col h-full">
-				<div class="mt-[30px]  px-[14px]">
-					<p class="text-[17px] font-[550]">Name</p>
+				<div class="mobile-L:mt-[0px] mt-[30px]  px-[14px]">
+					<p class="text-[17px] font-[550] mb-[10px]">Name</p>
 					<textarea
-						class="itbkk-status-name bg-white w-[400px] h-[40px] px-[5px] border-gray-400 border-2 text-black rounded-[5px]"
-						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"
-						maxlength="50"></textarea>
+						class="itbkk-status-name bg-white w-[400px] mobile-M:w-[300px] h-[40px] px-[5px] border-gray-400 border-2 text-black rounded-[5px]"
+						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"></textarea>
+					<p v-if="mode !== 'read'" class="text-[15px]"
+						:class="statusDetails.name.length > 50 ? 'text-red-500' : 'text-[#AFAFAF]'">
+						{{ statusDetails.name.length }}/50 characters
+					</p>
 				</div>
-				<div class="flex flex-row gap-[20px] mt-[25px] px-[14px]">
+				<div
+					class="flex flex-row mobile-L:flex-col gap-[20px] mobile-L:gap-[5px] mt-[25px] mobile-L:mt-[5px] px-[14px]">
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Description</p>
 						<textarea
-							class="itbkk-status-description w-[400px] h-[120px] px-[5px] bg-white border-gray-400 border-2 rounded-[5px]"
-							v-model="statusDetails.description" :disabled="mode === 'read'" @input="saveBthHandler"
-							maxlength="200"></textarea>
+							class="itbkk-status-description w-[400px] mobile-M:w-[300px] h-[120px] px-[5px] bg-white border-gray-400 border-2 rounded-[5px]"
+							v-model="statusDetails.description" :disabled="mode === 'read'"
+							@input="saveBthHandler"></textarea>
+						<p v-if="mode !== 'read'" class="text-[15px]"
+							:class="statusDetails.description?.length > 200 ? 'text-red-500' : 'text-[#AFAFAF]'">
+							{{ statusDetails.description?.length || "0" }}/200 characters</p>
 					</div>
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Color</p>
-						<div class="flex flex-col gap-[10px]">
-							<input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"></input>
+						<div class="flex mobile-L:flex-row flex-col gap-[10px] ">
+							<input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"
+								class="bg-white mobile-M:w-[135px]"></input>
 							<input type="color"
 								class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
 								v-model="statusDetails.statusColor" :disabled="mode === 'read'"
@@ -193,17 +205,17 @@ function closeModal() {
 
 				<div class="timezone flex flex-row justify-between px-[15px] pb-[7px] mt-[auto] mb-[5px]"
 					v-if="mode !== 'add'">
-					<div class="itbkk-timezone">
+					<div class="itbkk-timezone ">
 						<p class="font-[550]">TimeZone:</p>
 						<p>{{ Intl.DateTimeFormat().resolvedOptions().timeZone }}</p>
 					</div>
-					<div class="itbkk-created-on">
+					<div class="itbkk-created-on mobile-M:ml-[10px] ">
 						<p class="font-[550]">Created On:</p>
 						<p>
 							{{ statusDetails.createdOn }}
 						</p>
 					</div>
-					<div class="itbkk-updated-on">
+					<div class="itbkk-updated-on mobile-M:ml-[10px]">
 						<p class="font-[550]">Updated On:</p>
 						<p>
 							{{ statusDetails.updatedOn }}
@@ -233,20 +245,4 @@ function closeModal() {
 
 </template>
 
-<style scoped>
-.fade-up {
-	animation: fadeUp 0.5s ease-out;
-}
-
-@keyframes fadeUp {
-	from {
-		opacity: 0;
-		transform: translateY(20px);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-</style>
+<style scoped></style>

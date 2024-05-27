@@ -59,9 +59,7 @@ async function editTask(url, task) {
 				title: task.title?.trim(),
 				description: task.description?.trim(),
 				assignees: task.assignees?.trim(),
-				status: {
-					id: task.status.id,
-				},
+				status: task.status.id,
 			}),
 		})
 		console.log(respone)

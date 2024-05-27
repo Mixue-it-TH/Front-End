@@ -1,12 +1,10 @@
 <script setup>
-import { onMounted, ref } from "vue"
+import { onMounted, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { useTasks } from "@/store/task.js"
 import { useStatus } from "@/store/status.js"
 import { getTaskById, addTask, editTask } from "@/util/fetchUtils"
 import { convertUtils, convertStatus } from "@/util/formatUtils"
-
-
 
 const emit = defineEmits(["alert"])
 
@@ -29,7 +27,6 @@ const oldTask = ref({
 const isDisable = ref(true)
 const mode = ref("read")
 const dataLoaded = ref(false)
-console.log(taskManagement.getIsLimit())
 
 onMounted(async () => {
 	const fullPath = router.currentRoute.value.fullPath
@@ -59,7 +56,6 @@ async function actionHandler(id, action) {
 			router.push("/task")
 		}
 	} else if (action === "add") {
-		console.log(taskDetails.value)
 		mode.value = "add"
 	} else if (action === "edit") {
 		taskDetails.value = await getTaskById(
@@ -85,10 +81,15 @@ async function confirmHandeler() {
 			taskDetails.value
 		)
 		if (respone !== 400) {
-			emit("alert", 'success', 'The task has been added successfully')
+			emit("alert", "success", "The task has been added successfully")
 			taskManagement.addTask(respone)
 			taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
-		} else emit("alert", "error", `The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`)
+		} else
+			emit(
+				"alert",
+				"error",
+				`The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`
+			)
 
 		closeModal()
 		return
@@ -103,20 +104,35 @@ async function confirmHandeler() {
 			emit("alert", "success", "The task has been updated successfully")
 			taskManagement.editTask(taskDetails.value.id, respone)
 			taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
-		} else emit("alert", "error", `The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`)
+		} else
+			emit(
+				"alert",
+				"error",
+				`The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`
+			)
 
 		closeModal()
 		return
 	}
 }
 function saveBthHandler(isTrue = false) {
-	console.log(taskDetails.value)
-	taskMessage.value = statusManagement.getStatusById(taskDetails.value.status?.id)
+	taskMessage.value = statusManagement.getStatusById(
+		taskDetails.value.status?.id
+	)
+	if (taskDetails.value.title?.length > 100 || taskDetails.value.assignees?.length > 30 || taskDetails.value.description?.length > 500) {
+		isDisable.value = true
+		return
+	}
 	if (isTrue && taskDetails.value.title !== "") {
 		isDisable.value = false
 		return
 	}
-	if ((JSON.stringify({ ...oldTask.value }) !== JSON.stringify({ ...taskDetails.value }) && oldTask.value.title) && mode.value !== "add") {
+	if (
+		JSON.stringify({ ...oldTask.value }) !==
+		JSON.stringify({ ...taskDetails.value }) &&
+		oldTask.value.title &&
+		mode.value !== "add"
+	) {
 		isDisable.value = false
 		return
 	}
@@ -129,27 +145,45 @@ function saveBthHandler(isTrue = false) {
 function closeModal() {
 	router.go(-1)
 }
+
+
+
+
 </script>
 
 <template>
 	<div v-if="dataLoaded" class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
 		<div class="fade-up flex justify-center items-center w-[100%] h-[100%]">
-			<div class="itbkk-modal-task w-[75%] h-[90%] rounded-[15px] bg bg-white">
-				<header class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-[#F8F8F8] border-b-2 rounded-t-[7px]">
-					<div v-show="mode !== 'read'">
-						{{ mode === "add" ? "New Task" : "Edit Task" }}
+			<div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-white ">
+				<header class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-[#F8F8F8] border-b-2 rounded-t-[2px]">
+					<div class="flex gap-[10px]" v-show="mode !== 'read'">
+						<div>
+							{{ mode === "add" ? "New Task" : "Edit Task" }}
+						</div>
+						<p v-if="mode !== 'read'" class="text-[15px] "
+							:class="taskDetails.title.length > 100 ? 'text-red-500' : 'text-[#AFAFAF]'">
+							{{ taskDetails.title.length }}/100 characters
+						</p>
 					</div>
-					<textarea class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all"
+
+					<textarea class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all bg-white"
 						:disabled="mode === 'read'" placeholder="input some title" v-model="taskDetails.title"
-						@input="saveBthHandler" maxlength="100">{{ taskDetails.title }}</textarea>
+						@input="saveBthHandler">{{ taskDetails.title }}</textarea>
+
 				</header>
-				<main class="flex flex-row h-[80%] px-[25px]">
-					<div class="w-[70%] h-[100%] py-[10px]">
+				<main class="flex flex-row mobile-L:flex-col mobile-L:overflow-auto h-[80%] px-[4%]"
+					:class="mode !== 'read' ? 'pt-[30px]' : ''">
+					<div class="w-[70%] mobile-L:w-[100%] h-[100%] py-[10px]">
 						<p class="font-[600]">Description</p>
 						<textarea v-if="mode !== 'read'"
-							class="itbkk-description w-[95%] h-[90%] px-[15px] border-[2px] border-gray-400 rounded-[8px]"
-							v-model="taskDetails.description" @input="saveBthHandler" maxlength="500">
+							class="itbkk-description w-[95%] h-[80%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-white overflow-hidden"
+							v-model="taskDetails.description" @input="saveBthHandler">
 						</textarea>
+						<p v-if="mode !== 'read'" class="text-[15px]"
+							:class="taskDetails.description?.length > 500 ? 'text-red-500' : 'text-[#AFAFAF]'">
+							{{ taskDetails.description?.length || "0" }}/500 characters
+						</p>
+
 						<div v-if="mode === 'read'"
 							class="itbkk-description w-[95%] h-[90%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
 							:class="{ 'italic text-gray-500': !taskDetails.description }">
@@ -160,12 +194,16 @@ function closeModal() {
 	}}
 						</div>
 					</div>
-					<div class="flex flex-col w-[30%] h-[94%]">
-						<div class="flex flex-col h-[45%] py-[10px] mb-[15px]">
+					<div class="flex flex-col w-[30%]  mobile-L:w-[100%] mobile-L:mt-[14px] h-[94%]">
+						<div class="flex flex-col h-[45%] py-[10px] mb-[10px]">
 							<p class="font-[650]">Assignees</p>
 							<textarea v-if="mode !== 'read'"
-								class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
-								v-model="taskDetails.assignees" @input="saveBthHandler" maxlength="30"></textarea>
+								class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all bg-white"
+								v-model="taskDetails.assignees" @input="saveBthHandler"></textarea>
+							<p v-if="mode !== 'read'" class="text-[15px] mt-[8px]"
+								:class="taskDetails.assignees?.length > 30 ? 'text-red-500' : 'text-[#AFAFAF]'">
+								{{ taskDetails.assignees?.length || "0" }}/30 characters
+							</p>
 							<div v-if="mode === 'read'"
 								class="itbkk-assignees min-h-[180px] px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
 								:class="{ 'italic text-gray-500': !taskDetails.assignees }">
@@ -174,17 +212,22 @@ function closeModal() {
 	}}
 							</div>
 						</div>
-						<div class="flex flex-col justify-between h-[55%]">
+						<div class="flex flex-col gap-[20px] h-[55%] mt-[17px]">
 							<div>
-								<p class="font-[600]">Status<span v-if="mode !== 'read'"
+								<p class=" font-[600]">
+									Status<span v-if="mode !== 'read'"
 										class="text-red-500 text-[14px] font-[500] ml-[5px]">(The
-										limit is {{ taskManagement.getIsLimit() ? "Enable" : "Disable" }})</span>
+										limit is
+										{{
+		taskManagement.getIsLimit() ? "Enable" : "Disable"
+	}})</span>
 								</p>
 								<div class="border border-gray-300 min-h-[50px] rounded-[5px]">
-									<select name="status" class="itbkk-status w-full h-full min-h-[50px] px-[15px]"
+									<select name="status"
+										class="itbkk-status w-full h-full min-h-[50px] px-[15px] bg-white"
 										v-model="taskDetails.status.id" @change="saveBthHandler(true)" :required="true">
 										<option v-for="(status, index) in statusManagement.getAllStatus()" :key="index"
-											:value="status.id">
+											:value="status.id" class="bg-white">
 											{{ convertStatus(status.name) }}
 										</option>
 									</select>
@@ -230,20 +273,4 @@ function closeModal() {
 	</div>
 </template>
 
-<style scoped>
-.fade-up {
-	animation: fadeUp 0.5s ease-out;
-}
-
-@keyframes fadeUp {
-	from {
-		opacity: 0;
-		transform: translateY(20px);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-</style>
+<style scoped></style>
