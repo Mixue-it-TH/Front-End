@@ -23,7 +23,7 @@ const props = defineProps({
       </svg>
     </div>
   </router-link>
-  <div class="mt-[20px] text-gray-700 ">
+  <div class="mt-[20px] text-gray-700 min-w-[740px]">
     <div class="flex justify-between items-center w-[100%] px-[20px] min-h-[45px] font-[550]">
       <div class="w-[10%] mobile-L:w-[5%]">
         <p>No</p>
@@ -31,7 +31,7 @@ const props = defineProps({
       <div class="w-[45%] px-[15px]">
         <p>Title</p>
       </div>
-      <div class="w-[10%] tablet:mr-[40px]">
+      <div class="w-[14%] tablet:mr-[40px]">
         <p>Status</p>
       </div>
       <div class="w-[35%]">
@@ -69,7 +69,7 @@ const props = defineProps({
                   {{ slotprop.job.title }}
                 </div>
               </div>
-              <div class="w-[10%] tablet:w-[15%] transition-icon duration-100 ">
+              <div class="w-[13%] transition-icon duration-100 ">
                 <div class="min-w-[95px] max-w-[120px] w-[90%]  rounded-[5px] py-[3px] flex items-center justify-center"
                   :style="{
     backgroundColor: slotprop.job.status.statusColor,
@@ -79,7 +79,7 @@ const props = defineProps({
                   </p>
                 </div>
               </div>
-              <div class="ml-[20px] w-[25%] font-[350] ">
+              <div class="ml-[20px] w-[25%] font-[350] tablet:pl-[15px]">
                 <p class="itbkk-assignees " :class="{
     'italic text-gray-500': !slotprop.job.assignees,
   }">

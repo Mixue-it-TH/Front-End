@@ -187,18 +187,27 @@ function alertMessageHandler(type = "success", text) {
 	<div class="w-full h-[auto] bg-[#F4F4F4] text-gray-700 px-[2%] py-[25px] font-nonto ">
 		<div class="flex flex-row  justify-between tablet:h-[auto] tablet:flex-col  w-[100%] h-[75px] mb-[15px]0">
 			<div class="flex h-[85%]">
-				<h1 class="text-[24px] text-gray-700 font-[800] mt-[10px]">
+				<h1 class="text-[22px] text-gray-700 font-[800] mt-[10px]">
 					IT-Bangmod Kradan Kanban
 				</h1>
-				<img class="ml-[10px] tablet:w-[15%] mobile:w-[5%] mobile-M:hidden" src="/image/SIT-logo.png">
+				<img class="ml-[10px]  tablet:w-[15%] laptop:w-[100px] mobile:w-[5%] mobile-M:hidden"
+					src="/image/SIT-logo.png">
 			</div>
 			<div class="flex mobile:flex-col tablet:justify-between gap-[15px] h-[75%]">
 				<div class="flex mobile:items-center mobile-L:flex-col">
-					<div class="itbkk-manage-status itbkk-button-home mobile-L:w-[235px] hover:bg-gray-200 duration-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px] w-[200px] h-[45px] m-[7px] py-[7px] px-[5px] text-center "
+					<div class="itbkk-manage-status itbkk-button-home mobile-L:w-[235px] cursor-pointer hover:bg-gray-200 duration-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px] w-[200px] h-[45px] m-[7px] py-[7px] px-[5px] text-center "
 						@click="toggleMode">
-						<h1>
-							{{ toggleManage }}
-						</h1>
+						<div v-if="toggleManage === 'Home'" class="flex items-center justify-center gap-[10px]">
+							<h1>
+								{{ toggleManage }}
+							</h1>
+							<img src="/image/home-icon.png" width="30px" />
+						</div>
+						<div v-else>
+							<h1>
+								{{ toggleManage }}
+							</h1>
+						</div>
 					</div>
 					<div
 						class="itbkk-status-filter flex justify-between w-[202px] mobile-L:w-[235px] h-[45px] px-[10px] m-[auto] hover:bg-gray-200 duration-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px]">

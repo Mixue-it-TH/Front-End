@@ -153,7 +153,7 @@ function closeModal() {
 
 <template>
 	<div v-if="dataLoaded" class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
-		<div class="fade-up flex justify-center items-center w-[100%] h-[100%]">
+		<div class="fade-up flex justify-center items-center w-[100%] h-[100%] text-[#333333]">
 			<div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-white ">
 				<header class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-[#F8F8F8] border-b-2 rounded-t-[2px]">
 					<div class="flex gap-[10px]" v-show="mode !== 'read'">
@@ -171,7 +171,7 @@ function closeModal() {
 						@input="saveBthHandler">{{ taskDetails.title }}</textarea>
 
 				</header>
-				<main class="flex flex-row mobile-L:flex-col mobile-L:overflow-auto h-[80%] px-[4%]"
+				<main class="flex flex-row mobile-L:flex-col laptop:overflow-auto h-[80%] px-[4%]"
 					:class="mode !== 'read' ? 'pt-[30px]' : ''">
 					<div class="w-[70%] mobile-L:w-[100%] h-[100%] py-[10px]">
 						<p class="font-[600]">Description</p>
