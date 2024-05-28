@@ -4,21 +4,34 @@
 ## Two Main pages
 * Home page
 * Status page
-# 1. Home Page
+# Home Page Review
 <img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/realhomeview.jpg" alt="">
 
-## features
-## 1. Tasks view <br>
-##### you can see all tasks you created
+## features :hammer_and_wrench:
+## 1. Tasks view </br>
+#### you can see all tasks you created
 <img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/alltask.png" alt="">
 
 
 ## 2. Add tasks
 <img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/addtask.png" alt="">
-                                        When Click :arrow_down:
+                                        When You Click :arrow_down:
+                                        </br>
+                                          
 <img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/addtaskmodal.png" alt="">
 
-##### Each section has a character limit 
+#### you can see the limit character for each textbox
+
+##### - Example for add non over limit character 
+<img src=https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/extasktitle.png alt="">
+
+##### - Example for add over limit character
+<img src=https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/extasktitleforoverlimit.png alt="">
+
+#### Notice :pushpin:
+##### You can't click save for create the task when you add over limit character
+<img src=https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/cannotsave.png alt="">
+
 ### 2. Status Page
 <img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/homeview.jpg" alt="">
 
