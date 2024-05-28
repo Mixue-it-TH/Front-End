@@ -32,6 +32,13 @@
 ##### You can't click save for create the task when you add over limit character
 <img src=https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/cannotsave.png alt="">
 
+## 3. Sort by status
+## 4. filter tasks by status
+#### you can filter more than 1 status
+<img src=https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/filterex.png alt="">
+
+#### 
+
 ### 2. Status Page
 <img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/homeview.jpg" alt="">
 
