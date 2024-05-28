@@ -4,6 +4,8 @@
 ## Two Main pages
 * Home page
 * Status page
+
+When designing a homepage and a status page, there are several functions that can be shared between the two, while others may be unique to each. 
 # Home Page Review
 <img src="https://github.com/Mixue-it-TH/Front-End/blob/main/public/image/realhomeview.jpg" alt="">
 
@@ -56,6 +58,12 @@ When You Click :arrow_down:</br>
 
 ### 4.2 delete all status
 <img src=https://github.com/Mixue-it-TH/Front-End/blob/main/public/image/clickdeleteallfilter.png alt="">
+
+## 5. Edit limit task
+#### when you click you will see this modal page
+<img src=https://github.com/Mixue-it-TH/Front-End/blob/main/public/image/modallimit.png alt="">
+
+* this modal has description about limit task
 
 
 
