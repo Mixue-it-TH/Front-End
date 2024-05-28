@@ -194,7 +194,7 @@ function closeModal() {
 						<p class="text-[17px] font-[550] mb-[10px]">Color</p>
 						<div class="flex mobile-L:flex-row flex-col gap-[10px] ">
 							<input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"
-								class="bg-white mobile-M:w-[135px] disabled:text-black disabled:opacity-100""></input>
+								class="bg-white mobile-M:w-[135px] disabled:text-black disabled:opacity-100"></input>
 							<input type=" color" class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
 								v-model="statusDetails.statusColor" :disabled="mode === 'read'"
 								@input="saveBthHandler" />
