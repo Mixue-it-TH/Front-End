@@ -1,51 +1,43 @@
-# front-kanban
+# Integrated-Frontend-Group-Mixue-it-TH(sy2) :icecream:
+### Details 
+##### This website project is ideal for individuals who want to manage and organize their tasks visually, rather than relying on memory for each task. Each task can be assigned a status indicator, allowing users to see at a glance how far along each task is in its progress.
+## Two Main pages
+* Home page
+* Status page
+# Home Page Review
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/realhomeview.jpg" alt="">
 
-This template should help get you started developing with Vue 3 in Vite.
+## features :hammer_and_wrench:
+## 1. Tasks view </br>
+#### you can see all tasks you created
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/alltask.png" alt="">
 
-## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## 2. Add tasks
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/addtask.png" alt="">
+                                        When You Click :arrow_down:
+                                        </br>
+                                          
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/addtaskmodal.png" alt="">
 
-## Customize configuration
+#### you can see the limit character for each textbox
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+##### - Example for add non over limit character 
+<img src=https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/extasktitle.png alt="">
 
-## Project Setup
+##### - Example for add over limit character
+<img src=https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/extasktitleforoverlimit.png alt="">
 
-```sh
-npm install
-```
+#### Notice :pushpin:
+##### You can't click save for create the task when you add over limit character
+<img src=https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/cannotsave.png alt="">
 
-### Compile and Hot-Reload for Development
+## 3. Sort by status
+## 4. filter tasks by status
+#### you can filter more than 1 status
+<img src=https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/filterex.png alt="">
 
-```sh
-npm run dev
-```
+#### 
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Headed Component Tests with [Cypress Component Testing](https://on.cypress.io/component)
-
-```sh
-npm run test:unit:dev # or `npm run test:unit` for headless testing
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-npm run test:e2e:dev
-```
-
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
-
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
-
-```sh
-npm run build
-npm run test:e2e
-```
+### 2. Status Page
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/homeview.jpg" alt="">
