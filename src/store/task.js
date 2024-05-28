@@ -49,7 +49,6 @@ export const useTasks = defineStore("taskmanager", () => {
 		if (filteredArray.length === 0) {
 			tasks.value = [...originalTasks.value]
 		} else {
-			const filterString = filteredArray.toString()
 			tasks.value = originalTasks.value.filter((task) => {
 				return filteredArray.includes(task.status.name)
 			})
