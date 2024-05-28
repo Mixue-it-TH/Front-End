@@ -64,7 +64,7 @@ const isEnable = ref(prop.isLimit);
               <button class="itbkk-button itbkk-button-cancel 
                      w-[80px] h-[40px] font-[600] text-gary-800
                      bg bg-red-600 text-white hover:bg-red-400 rounded-lg 
-                     mr-5" @click="$emit('cancel', false)"> cancle </button>
+                     mr-5" @click="$emit('cancel', false)"> cancel </button>
             </div>
             <div class="">
               <button class="itbkk-button itbkk-button-confirm  disabled w-[65px] h-[40px] font-[600] 
