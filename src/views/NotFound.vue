@@ -8,7 +8,7 @@ function back() {
 </script>
 
 <template>
-    <div class="w-screen h-screen fixed top-0 left-0 bg-[#F4F4F4]">
+    <div class="w-screen h-screen fixed top-0 left-0 bg-[#F4F4F4] z-[50]">
         <div class="flex flex-col justify-center items-center mt-[auto] h-screen">
             <div class="text-[55px] font-[650]">404 PAGE NOT FOUND
             </div>

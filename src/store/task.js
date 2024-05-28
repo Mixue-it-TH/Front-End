@@ -49,7 +49,6 @@ export const useTasks = defineStore("taskmanager", () => {
 		if (filteredArray.length === 0) {
 			tasks.value = [...originalTasks.value]
 		} else {
-			const filterString = filteredArray.toString()
 			tasks.value = originalTasks.value.filter((task) => {
 				return filteredArray.includes(task.status.name)
 			})
@@ -80,7 +79,9 @@ export const useTasks = defineStore("taskmanager", () => {
 		const index = tasks.value.findIndex((task) => task.id === taskId)
 		if (index !== -1) {
 			tasks.value.splice(index, 1)
-			const originalIndex = originalTasks.value.findIndex((task) => task.id === taskId)
+			const originalIndex = originalTasks.value.findIndex(
+				(task) => task.id === taskId
+			)
 			if (originalIndex !== -1) {
 				originalTasks.value.splice(originalIndex, 1)
 			}
@@ -127,7 +128,9 @@ export const useTasks = defineStore("taskmanager", () => {
 
 	function checkAddEditMaximum(taskdetail) {
 		if (isLimt) {
-			const statusLimit = tasks.value.filter((e) => e.status.name === taskdetail.status.name)
+			const statusLimit = tasks.value.filter(
+				(e) => e.status.name === taskdetail.status.name
+			)
 			return statusLimit.length <= limitMaximum
 		}
 		return true
@@ -148,7 +151,7 @@ export const useTasks = defineStore("taskmanager", () => {
 		checkAddEditMaximum,
 		getState,
 		getCurrentState,
-		getIsLimit
+		getIsLimit,
 	}
 })
 
