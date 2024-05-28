@@ -1,6 +1,25 @@
-<h1>Integrated Frontend Group sy2</h1>
-<br>
-<h1>There is Home page review</h1>
-![image](https://github.com/Mixue-it-TH/Front-End/assets/89565120/dca97a46-417d-4fa1-be13-c223f94773d2)
+# Integrated-Frontend-Group-Mixue-it-TH(sy2) :icecream:
+### Details 
+##### This website project is ideal for individuals who want to manage and organize their tasks visually, rather than relying on memory for each task. Each task can be assigned a status indicator, allowing users to see at a glance how far along each task is in its progress.
+## Two Main pages
+* Home page
+* Status page
+# 1. Home Page
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/realhomeview.jpg" alt="">
 
-This template should help get you started developing with Vue 3 in Vite.
+## features
+## 1. Tasks view <br>
+##### you can see all tasks you created
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/alltask.png" alt="">
+
+
+## 2. Add tasks
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/addtask.png" alt="">
+                                        When Click :arrow_down:
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/addtaskmodal.png" alt="">
+
+##### Each section has a character limit 
+### 2. Status Page
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/dev/public/image/homeview.jpg" alt="">
+
+
