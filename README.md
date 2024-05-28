@@ -1,4 +1,4 @@
-![image](https://github.com/Mixue-it-TH/Front-End/assets/89565120/19b571ff-3021-4bee-834a-a07bc3594741)# Integrated-Frontend-Group-Mixue-it-TH(sy2) :icecream:
+# Integrated-Frontend-Group-Mixue-it-TH(sy2) :icecream:
 ### Details 
 ##### This website project is ideal for individuals who want to manage and organize their tasks visually, rather than relying on memory for each task. Each task can be assigned a status indicator, allowing users to see at a glance how far along each task is in its progress.
 ## Two Main pages
