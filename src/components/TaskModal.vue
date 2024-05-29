@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from "vue"
+import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useTasks } from "@/store/task.js"
 import { useStatus } from "@/store/status.js"
@@ -43,40 +43,34 @@ onMounted(async () => {
 
 async function actionHandler(id, action) {
 	if (action === "read") {
-		taskDetails.value = await getTaskById(
+		const response = await getTaskById(
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			id
 		)
-		if (typeof taskDetails.value === "object") {
+		if (typeof response === "object") {
+			taskDetails.value = response
 			taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
 			taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn)
 			mode.value = "read"
-		} else {
-			emit(
-				"alert",
-				"error",
-				`"The requested task does not exist"`
-			)
-			router.push("/task")
+		} else if (response === 404) {
+			emit("alert", "error", `An error has occurred, the task doesn't exit `)
+			router.push("/")
 		}
 	} else if (action === "add") {
 		mode.value = "add"
 	} else if (action === "edit") {
-		taskDetails.value = await getTaskById(
+		const response = await getTaskById(
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			id
 		)
-		if (typeof taskDetails.value === "object") {
+		if (typeof response === "object") {
+			taskDetails.value = response
 			taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
 			taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn)
 			oldTask.value = { ...taskDetails.value }
 			mode.value = "edit"
-		} else {
-			emit(
-				"alert",
-				"error",
-				`"The requested task does not exist"`
-			)
+		} else if (response === 404) {
+			emit("alert", "error", "The requested task does not exist")
 			router.push("/")
 		}
 	}
@@ -88,16 +82,13 @@ async function confirmHandeler() {
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		if (respone !== 400) {
+		if (typeof respone === "object") {
 			emit("alert", "success", "The task has been added successfully")
 			taskManagement.addTask(respone)
 			taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
-		} else
-			emit(
-				"alert",
-				"error",
-				`The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`
-			)
+		} else if (respone === 400) {
+			emit("alert", "error", "An error has occurred, the status does not exist")
+		}
 
 		closeModal()
 		return
@@ -107,17 +98,19 @@ async function confirmHandeler() {
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		console.log(taskDetails.value)
-		if (respone !== 400) {
+		if (typeof respone === "object") {
 			emit("alert", "success", "The task has been updated successfully")
 			taskManagement.editTask(taskDetails.value.id, respone)
 			taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
-		} else
+		} else if (respone === 400) {
 			emit(
 				"alert",
 				"error",
-				`The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`
+				"An error has occurred, the status limit is excreed"
 			)
+		} else if (respone === 404) {
+			emit("alert", "error", "The requested task does not exist")
+		}
 
 		closeModal()
 		return
@@ -169,8 +162,8 @@ function closeModal() {
 							{{ mode === "add" ? "New Task" : "Edit Task" }}
 						</div>
 						<p v-if="mode !== 'read'" class="text-[15px]" :class="taskDetails.title.length > 100
-			? 'text-red-500'
-			: 'text-[#AFAFAF]'
+		? 'text-red-500'
+		: 'text-[#AFAFAF]'
 		">
 							{{ taskDetails.title.length }}/100 characters
 						</p>
@@ -190,8 +183,8 @@ function closeModal() {
 							v-model="taskDetails.description" @input="saveBthHandler">
 						</textarea>
 						<p v-if="mode !== 'read'" class="text-[15px]" :class="taskDetails.description?.length > 500
-			? 'text-red-500'
-			: 'text-[#AFAFAF]'
+		? 'text-red-500'
+		: 'text-[#AFAFAF]'
 		">
 							{{ taskDetails.description?.length || "0" }}/500 characters
 						</p>
@@ -213,8 +206,8 @@ function closeModal() {
 								class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all bg-white"
 								v-model="taskDetails.assignees" @input="saveBthHandler"></textarea>
 							<p v-if="mode !== 'read'" class="text-[15px] mt-[8px]" :class="taskDetails.assignees?.length > 30
-			? 'text-red-500'
-			: 'text-[#AFAFAF]'
+		? 'text-red-500'
+		: 'text-[#AFAFAF]'
 		">
 								{{ taskDetails.assignees?.length || "0" }}/30 characters
 							</p>
