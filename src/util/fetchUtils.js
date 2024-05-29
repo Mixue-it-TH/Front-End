@@ -16,11 +16,10 @@ async function getTaskById(url, id) {
 		} else {
 			return data.status
 		}
-	} catch (error) { }
+	} catch (error) {}
 }
 
 async function addTask(url, task) {
-	console.log(task)
 	try {
 		const response = await fetch(`${url}`, {
 			method: "POST",
@@ -39,7 +38,6 @@ async function addTask(url, task) {
 			return responseData
 		} else {
 			return response.status
-			throw new Error("Failed to add task")
 		}
 	} catch (e) {
 		console.log(`error: ${e}`)
@@ -47,7 +45,6 @@ async function addTask(url, task) {
 }
 
 async function editTask(url, task) {
-	console.log(task)
 	try {
 		const respone = await fetch(`${url}/${task.id}`, {
 			method: "PUT",
@@ -77,7 +74,9 @@ async function deleteTaskById(url, id) {
 		const response = await fetch(`${url}/${id}`, {
 			method: "DELETE",
 		})
-		return response
+		if (response.ok) {
+			return response
+		} else return response.status
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}

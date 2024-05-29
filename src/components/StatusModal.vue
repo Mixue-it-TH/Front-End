@@ -52,10 +52,11 @@ async function actionHandler(id, action) {
 			)
 			statusDetails.value.name = convertStatus(statusDetails.value.name)
 			mode.value = "read"
-		} else {
-			window.alert("The requested statues does not exist")
+		} else if (statusDetails.value === 404) {
+			emit("alert", "error", "An error has occurred, the request status does not exist")
 			router.push("/task")
-		}
+		} 
+		
 	} else if (action === "add") {
 		mode.value = "add"
 	} else if (action === "edit") {
@@ -102,7 +103,7 @@ async function confirmHandeler() {
 			if (typeof respone === "object") {
 				emit("alert", "success", "The status has been added successfully")
 				statusManagement.addStatus(respone)
-			} else if (typeof respone === "number") emit("alert", "error", "Internal server error")
+			} else if (respone === 400) emit("alert", "error", "Internal server error")
 		} else {
 			emit("alert", "error", "Status name must be uniques, please choose another name.")
 			return

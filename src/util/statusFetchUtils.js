@@ -36,18 +36,16 @@ async function addStatus(url, newStatus) {
 				statusColor: newStatus.statusColor,
 			}),
 		})
-		console.log(response)
 		if (response.ok) {
 			const responseData = await response.json()
 			return responseData
 		} else {
-			throw new Error("Failed to add status")
+			return response.status
 		}
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}
 }
-
 
 async function editStatus(url, status) {
 	try {
@@ -59,7 +57,8 @@ async function editStatus(url, status) {
 			body: JSON.stringify({
 				id: status.id,
 				name: status.name?.trim(),
-				description: status.description !== "" ? status.description.trim() : null,
+				description:
+					status.description !== "" ? status.description.trim() : null,
 				statusColor: status.statusColor,
 			}),
 		})
