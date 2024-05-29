@@ -99,8 +99,10 @@ async function confirmHandeler() {
 				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			)
-			emit("alert", "success", "The status has been added successfully")
-			statusManagement.addStatus(respone)
+			if (typeof respone === "object") {
+				emit("alert", "success", "The status has been added successfully")
+				statusManagement.addStatus(respone)
+			} else if (typeof respone === "number") emit("alert", "error", "Internal server error")
 		} else {
 			emit("alert", "error", "Status name must be uniques, please choose another name.")
 			return
@@ -115,14 +117,14 @@ async function confirmHandeler() {
 				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			);
-			console.log(respone)
-			if (respone === 404) {
-				emit("alert", "error", "An error has occurred, the status does not exist")
-				statusManagement.deleteStatus(statusDetails.value.id)
-			} else {
+			if (typeof respone === "object") {
 				statusManagement.editStatus(statusDetails.value);
-				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)// เล้งเพิ่ม
+				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)
 				emit("alert", "success", "The status has been updated successfully");
+			} else if (respone === 400) {
+				emit("alert", "error", "An error has occurred, the status has duplicate status name")
+			} else if (respone === 404) {
+				emit("alert", "error", "An error has occurred, the status does not exist")
 			}
 		} else {
 			emit("alert", "error", "An error has occurred, the status has duplicate status name")

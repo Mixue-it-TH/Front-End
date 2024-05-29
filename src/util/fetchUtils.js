@@ -62,7 +62,6 @@ async function editTask(url, task) {
 				status: task.status.id,
 			}),
 		})
-		console.log(respone)
 		if (respone.ok) {
 			const responseData = await respone.json()
 			return responseData

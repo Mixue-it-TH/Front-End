@@ -16,11 +16,12 @@ async function getStatusById(url, id) {
 		} else {
 			return data.status
 		}
-	} catch (error) { }
+	} catch (error) {
+		console.log(`error: ${e}`)
+	}
 }
 
 async function addStatus(url, newStatus) {
-	console.log(newStatus)
 	try {
 		const response = await fetch(`${url}`, {
 			method: "POST",
@@ -38,7 +39,6 @@ async function addStatus(url, newStatus) {
 		console.log(response)
 		if (response.ok) {
 			const responseData = await response.json()
-			console.log(responseData)
 			return responseData
 		} else {
 			throw new Error("Failed to add status")
@@ -48,8 +48,8 @@ async function addStatus(url, newStatus) {
 	}
 }
 
+
 async function editStatus(url, status) {
-	console.log(status.description !== "" ? status.description.trim() : null)
 	try {
 		const respone = await fetch(`${url}/${status.id}`, {
 			method: "PUT",
@@ -63,13 +63,10 @@ async function editStatus(url, status) {
 				statusColor: status.statusColor,
 			}),
 		})
-		console.log(respone)
 		if (respone.ok) {
 			const responseData = await respone.json()
 			return responseData
-		} else if (respone.status === 404) {
-			return 404
-		}
+		} else return respone.status
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}
@@ -91,7 +88,6 @@ async function deleteTaskAndTranfer(url, id, newId) {
 		const response = await fetch(`${url}/${id}/${newId}`, {
 			method: "DELETE",
 		})
-		console.log(response.status)
 		return response
 	} catch (e) {
 		console.log(`error: ${e}`)
