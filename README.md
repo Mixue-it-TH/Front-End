@@ -1,4 +1,4 @@
-# Integrated-Frontend-Group-Mixue-it-TH(sy2) :icecream:
+![image](https://github.com/Mixue-it-TH/Front-End/assets/89565120/d9100385-b586-4ea6-8654-78bcec4d3c84)# Integrated-Frontend-Group-Mixue-it-TH(sy2) :icecream:
 ### Details 
 ##### This website project is ideal for individuals who want to manage and organize their tasks visually, rather than relying on memory for each task. Each task can be assigned a status indicator, allowing users to see at a glance how far along each task is in its progress.
 ## Two Main pages
@@ -130,13 +130,21 @@ When designing a homepage and a status page, there are several functions that ca
 <img src="https://github.com/Mixue-it-TH/Front-End/blob/main/public/image/statusmodaltime.png" >
 
 ## 4. Delete status </br>
-<img src="https://github.com/Mixue-it-TH/Front-End/blob/main/public/image/delete-image.png">
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/main/public/image/deletesmall.png">
 
+### 4.1 Delete status with no task in
+#### the modal will like this 
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/main/public/image/deletestatusnotask.png">
 
+### 4.2 Delete status with task and tranfer
+#### the modal will like this
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/main/public/image/deletestatuswithtask.png">
 
-
-
-
+* the modal will show the status and the task(s) in each status
+* you can tranfers a task to another status
+* if you enable the limit task you can't tranfer to status that have a limit of task
+#### fail Example for tranfer to status that have limit 
+<img src="https://github.com/Mixue-it-TH/Front-End/blob/main/public/image/tranferex.png">
 
 ## 5. Edit limit task </br>
 #### when you click Edit limit task you will see this modal page
