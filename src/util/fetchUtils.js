@@ -10,13 +10,12 @@ async function getTaskList(url) {
 async function getTaskById(url, id) {
 	try {
 		const data = await fetch(`${url}/${id}`)
-		const item = await data.json()
-		if (data.status === 200) {
-			return item
+		if (data.ok) {
+			return await data.json()
 		} else {
 			return data.status
 		}
-	} catch (error) {}
+	} catch (error) { }
 }
 
 async function addTask(url, task) {
