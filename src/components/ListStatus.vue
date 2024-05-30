@@ -45,7 +45,6 @@ async function delConfirm(id, tranferId) {
 			import.meta.env.VITE_BASE_URL + "/statuses",
 			id
 		)
-		statusManagement.deleteStatus(id)
 		if (delRespond.ok) {
 			emit("alert", "success", "The status has been deleted successfully")
 			closeDelModal(false)
@@ -53,6 +52,7 @@ async function delConfirm(id, tranferId) {
 			emit("alert", "error", "An error has occurred, the status does not exist")
 			closeDelModal(false)
 		}
+		statusManagement.deleteStatus(id)
 	} else if (stage.value === "tranfer") {
 		delRespond = await deleteTaskAndTranfer(
 			import.meta.env.VITE_BASE_URL + "/statuses",
