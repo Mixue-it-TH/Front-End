@@ -58,7 +58,7 @@ async function editStatus(url, status) {
 				id: status.id,
 				name: status.name?.trim(),
 				description:
-					status.description !== "" ? status.description.trim() : null,
+					status.description !== "" && status.description !== null ? status.description.trim() : null,
 				statusColor: status.statusColor,
 			}),
 		})
@@ -102,7 +102,7 @@ async function handelLimitMaximum(url, isLimit, amountMaximum) {
 			},
 			body: JSON.stringify({
 				limitMaximumTask: isLimit,
-				number: amountMaximum,
+				noOfTasks: amountMaximum,
 			}),
 		})
 		if (response.ok) {
