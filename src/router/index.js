@@ -5,6 +5,7 @@ import Empty from "@/components/Empty.vue"
 import TaskModal from "@/components/TaskModal.vue"
 import StatusModal from "@/components/StatusModal.vue"
 import LoginModal from "@/components/LoginModal.vue"
+import HomeView from "@/views/HomeView.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
