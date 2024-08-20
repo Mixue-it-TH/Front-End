@@ -353,24 +353,25 @@ function loginHandle(login){
             </div>
           </div>
         </div>
-        <div v-if="!accountStore.getisLogin()" class="flex btn btn-outline mt-[5px]">
+        <div v-if="!accountStore.getisLogin()" class="flex btn btn-outline mt-[5px] ">
           <RouterLink :to="{name:'login'}">Login</RouterLink :to="{name:'login'}">
         </div>
-        <div v-else class="dropdown dropdown-end flex">
-          
+        
+        <div v-else class="dropdown dropdown-end flex ">
           <div
             tabindex="0"
             role="button"
-            class=" btn btn-ghost btn-circle avatar"
+            class=" btn btn-ghost btn-circle avatar "
           >
             <div class="w-[50px] rounded-full">
               <img src="https://static.vecteezy.com/system/resources/thumbnails/008/442/086/small_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg">
-              
+            
             </div>
             
-          
-          </div>
-          <div>{{ accountStore.getData().name }}</div>
+          </div><div class="w-[230px] break-words text-center border font-mono border-red-500">
+          <p class="text-black">1ggdgdgd45678911234567891
+          </p></div>
+          <!-- <div>{{ accountStore.getData().name }}</div> -->
           <ul
             tabindex="0"
             class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"

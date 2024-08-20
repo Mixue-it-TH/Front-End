@@ -1,38 +1,38 @@
 <script setup>
-import { ref } from "vue"
-import router from "@/router"
-import { login } from "@/util/accountFetchUtil"
-import { useAccount } from "@/store/account"
-const emit = defineEmits(["alert"])
-const userName = ref("")
-const password = ref("")
-const accountStore = useAccount()
-const isValid = ref(false)
+import { ref } from "vue";
+import router from "@/router";
+import { login } from "@/util/accountFetchUtil";
+import { useAccount } from "@/store/account";
+const emit = defineEmits(["alert"]);
+const userName = ref("");
+const password = ref("");
+const accountStore = useAccount();
+const isValid = ref(false);
 
 async function register(e) {
-  e.preventDefault()
+  e.preventDefault();
   // fetch api
   const response = await login(
     import.meta.env.VITE_BASE_URL + "/authentications/login",
     userName.value,
     password.value
-  )
+  );
   if (response.access_token) {
-    accountStore.decodedToken(response.access_token)
-    console.log("data", accountStore.getData())
-    accountStore.setToken(response.access_token)
-    router.push("/task")
+    console.log("kuy");
+    accountStore.decodedToken(response.access_token);
+    console.log("data", accountStore.getData());
+    accountStore.setToken(response.access_token);
   } else {
     emit(
       "alert",
       "error",
       "An error has occurred, Username or Password is incorrect"
-    )
-    password.value = ""
-    isValid.value = true
+    );
+    password.value = "";
+    isValid.value = true;
   }
   // localStorage.setItem("token", token)
-  console.log("response", response)
+  console.log("response", response);
 }
 </script>
 
@@ -52,7 +52,7 @@ async function register(e) {
           <form class="card-body">
             <div class="form-control">
               <label class="label">
-                <span class="label-text">UserName </span>
+                <span class="label-text itbkk-username">UserName </span>
               </label>
 
               <input
@@ -69,7 +69,7 @@ async function register(e) {
 
             <div class="form-control">
               <label class="label">
-                <span class="label-text">Password</span>
+                <span class="label-text itbkk-password">Password</span>
               </label>
               <input
                 v-model="password"
@@ -91,7 +91,7 @@ async function register(e) {
                 >
               </label>
             </div>
-            <div class="form-control mt-6">
+            <div class="form-control mt-6 itbkk-button-signin">
               <button
                 class="btn btn-primary text-xl"
                 @click="register"
