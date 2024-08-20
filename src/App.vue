@@ -30,12 +30,7 @@ function statusHandler(type, text) {
 
 <template>
   <div class="w-[auto] h-screen overflow-auto bg bg-[#F4F4F4]">
-    <AlertMessage
-      v-if="showAlertModal"
-      @close="closeStatusModal"
-      :message="message"
-      :type="statusType"
-    />
+    <AlertMessage v-if="showAlertModal" @close="closeStatusModal" :message="message" :type="statusType" />
     <HomeView @alert="statusHandler" />
     <RouterView @alert="statusHandler" />
   </div>

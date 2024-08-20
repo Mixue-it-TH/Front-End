@@ -1,6 +1,6 @@
 <script setup>
 import router from "@/router"
-import { onMounted, ref } from "vue"
+import { onMounted, ref, watch } from "vue"
 import { getTaskList, deleteTaskById } from "@/util/fetchUtils"
 import { getStatusList, handelLimitMaximum } from "@/util/statusFetchUtils"
 import { useTasks } from "@/store/task.js"
@@ -29,17 +29,15 @@ const limitMaximux = ref(10)
 const isLimit = ref(false)
 const limitReached = ref([])
 const accountStore = useAccount()
-const userDetails = ref()
 
 onMounted(async () => {
-
   if (localStorage.getItem("token")) {
     const token = localStorage.getItem("token")
     accountStore.setisLogin(true)
     accountStore.decodedToken(token)
-    userDetails.value = accountStore.getData()
   }
-  console.log('user', userDetails.value);
+
+
   const listTasks = await getTaskList(import.meta.env.VITE_BASE_URL + "/tasks")
   const listStatuses = await getStatusList(
     import.meta.env.VITE_BASE_URL + "/statuses"
@@ -62,11 +60,9 @@ onMounted(async () => {
   taskManagement.addTasks(listTasks)
   statusManagement.addStatuses(listStatuses)
   if (listTasks.length === 0) isEmptyTask.value = true
-
   if (router.currentRoute.value.fullPath.includes("status")) toggleMode()
-
-
 })
+
 
 function deleteModalHandler(tasks, number) {
   taskDetails.value = tasks
@@ -289,9 +285,8 @@ function loginHandle(login) {
           </div>
         </div>
         <div v-if="!accountStore.getisLogin()" class="flex btn btn-outline mt-[5px] ">
-          <RouterLink :to="{ name: 'login' }">Login</RouterLink :to="{name:'login'}">
+          <RouterLink :to="{ name: 'login' }">Login</RouterLink>
         </div>
-
         <div v-else class="dropdown dropdown-end flex items-center ">
           <div tabindex="0" role="button" class=" w-[170px] h-[60px] btn btn-ghost btn-circle avatar flex">
             <div class="w-[50px] rounded-full mb-[40px]">
@@ -299,8 +294,9 @@ function loginHandle(login) {
                 src="https://static.vecteezy.com/system/resources/thumbnails/008/442/086/small_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg">
             </div>
             <div class="ml-2 pt-[15px]  font-inter">
-              <div>{{ userDetails?.name }}</div>
-              <div class="flex justify-center text-black text-opacity-40 text-[10px]"> {{ userDetails?.role }}</div>
+              <div>{{ accountStore.getData().name }}</div>
+              <div class="flex justify-center text-black text-opacity-40 text-[10px]"> {{ accountStore.getData().role }}
+              </div>
             </div>
           </div>
 
@@ -311,6 +307,7 @@ function loginHandle(login) {
             </li>
           </ul>
         </div>
+
 
       </div>
     </div>
