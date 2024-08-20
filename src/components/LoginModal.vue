@@ -51,14 +51,14 @@ async function register(e) {
           <form class="card-body">
             <div class="form-control">
               <label class="label">
-                <span class="label-text itbkk-username">UserName </span>
+                <span class="label-text">UserName </span>
               </label>
 
               <input
                 v-model="userName"
                 type="text"
                 placeholder="username"
-                class="input input-bordered bg-gray-200"
+                class="itbkk-username input input-bordered bg-gray-200"
                 @click="isValid = false"
                 :class="isValid === true ? 'border border-red-600' : ''"
                 maxlength="50"
@@ -68,13 +68,13 @@ async function register(e) {
 
             <div class="form-control">
               <label class="label">
-                <span class="label-text itbkk-password">Password</span>
+                <span class="label-text">Password</span>
               </label>
               <input
                 v-model="password"
                 type="password"
                 placeholder="password"
-                class="input input-bordered bg-gray-200"
+                class="itbkk-password input input-bordered bg-gray-200"
                 :class="
                   isValid === true && password === ''
                     ? 'border border-red-600'
