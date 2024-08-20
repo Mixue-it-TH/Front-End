@@ -45,7 +45,6 @@ async function delConfirm(id, tranferId) {
 			import.meta.env.VITE_BASE_URL + "/statuses",
 			id
 		)
-		statusManagement.deleteStatus(id)
 		if (delRespond.ok) {
 			emit("alert", "success", "The status has been deleted successfully")
 			closeDelModal(false)
@@ -53,6 +52,7 @@ async function delConfirm(id, tranferId) {
 			emit("alert", "error", "An error has occurred, the status does not exist")
 			closeDelModal(false)
 		}
+		statusManagement.deleteStatus(id)
 	} else if (stage.value === "tranfer") {
 		delRespond = await deleteTaskAndTranfer(
 			import.meta.env.VITE_BASE_URL + "/statuses",
@@ -153,30 +153,30 @@ function modalHandler(id, action) {
 		</router-link>
 
 
-		<ListModel :statuses="statusManagement.getAllStatus()">
-			<template #status="slotprop">
+		<ListModel :jobs="statusManagement.getAllStatus()">
+			<template #default="slotprop">
 				<div
 					class="transition itbkk-item flex justify-between w-[100%] min-h-[55px] px-[20px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] reak-all hover:drop-shadow-2xl">
-					<router-link :to="{ name: 'statusDetail', params: { id: slotprop.status.id } }" class="w-full">
+					<router-link :to="{ name: 'statusDetail', params: { id: slotprop.job.id } }" class="w-full">
 						<div class="w-[100%] flex gap-[5px]">
 							<div class="w-[11%] font-[350]">
 								<p class="m-[auto]">{{ slotprop.key + 1 }}</p>
 							</div>
 							<div class="w-[33%]">
 								<div class="text-white min-w-[80px] max-w-[150px] px-[10px] rounded-[5px] m-[auto] inline-block transition-icon duration-100 hover:drop-shadow-2xl"
-									:style="{ backgroundColor: slotprop.status.statusColor }">
-									<p class="itbkk-status-name">{{ slotprop.status.name }}</p>
+									:style="{ backgroundColor: slotprop.job.statusColor }">
+									<p class="itbkk-status-name">{{ slotprop.job.name }}</p>
 								</div>
 							</div>
 
 							<div class="w-[50%]">
 								<div class="">
 									<p :class="{
-		'italic text-gray-500': !slotprop.status.description,
+		'italic text-gray-500': !slotprop.job.description,
 	}" class="itbkk-status-description">
 										{{
-		slotprop.status.description
-			? slotprop.status.description
+		slotprop.job.description
+			? slotprop.job.description
 			: "No description is provided"
 	}}
 									</p>
@@ -186,11 +186,11 @@ function modalHandler(id, action) {
 					</router-link>
 					<div class="w-[12%]">
 						<!-- เล้งเพิ่มการเช็คด้วยชื่อ -->
-						<div class="flex tablet:flex-col w-[100px]" v-if="slotprop.status.name.toLowerCase() !==
+						<div class="flex tablet:flex-col w-[100px]" v-if="slotprop.job.name.toLowerCase() !==
 		'No Status'.toLowerCase() &&
-		slotprop.status.name.toLowerCase() !== 'Done'.toLowerCase()
+		slotprop.job.name.toLowerCase() !== 'Done'.toLowerCase()
 		">
-							<router-link :to="{ name: 'statusEdit', params: { id: slotprop.status.id } }"
+							<router-link :to="{ name: 'statusEdit', params: { id: slotprop.job.id } }"
 								class="itbkk-button-edit">
 								<div
 									class="transition-icon w-[50px] px-[6px] rounded-[10px] hover:drop-shadow-2xl duration-150">
@@ -202,7 +202,7 @@ function modalHandler(id, action) {
 								class="transition-icon itbkk-button-deletew-[50px] text-red-500 rounded-[10px] hover:drop-shadow-2xl duration-150">
 								Delete
 								<img src="/image/delete-image.png" class="w-[30px] ml-[5px] cursor-pointer"
-									@click="delAction(slotprop.status, slotprop.status.id)" />
+									@click="delAction(slotprop.job, slotprop.job.id)" />
 							</div>
 						</div>
 					</div>

@@ -10,9 +10,8 @@ async function getTaskList(url) {
 async function getTaskById(url, id) {
 	try {
 		const data = await fetch(`${url}/${id}`)
-		const item = await data.json()
-		if (data.status === 200) {
-			return item
+		if (data.ok) {
+			return await data.json()
 		} else {
 			return data.status
 		}
@@ -20,7 +19,6 @@ async function getTaskById(url, id) {
 }
 
 async function addTask(url, task) {
-	console.log(task)
 	try {
 		const response = await fetch(`${url}`, {
 			method: "POST",
@@ -39,7 +37,6 @@ async function addTask(url, task) {
 			return responseData
 		} else {
 			return response.status
-			throw new Error("Failed to add task")
 		}
 	} catch (e) {
 		console.log(`error: ${e}`)
@@ -47,7 +44,6 @@ async function addTask(url, task) {
 }
 
 async function editTask(url, task) {
-	console.log(task)
 	try {
 		const respone = await fetch(`${url}/${task.id}`, {
 			method: "PUT",
@@ -62,7 +58,6 @@ async function editTask(url, task) {
 				status: task.status.id,
 			}),
 		})
-		console.log(respone)
 		if (respone.ok) {
 			const responseData = await respone.json()
 			return responseData
@@ -78,7 +73,9 @@ async function deleteTaskById(url, id) {
 		const response = await fetch(`${url}/${id}`, {
 			method: "DELETE",
 		})
-		return response
+		if (response.ok) {
+			return response
+		} else return response.status
 	} catch (e) {
 		console.log(`error: ${e}`)
 	}

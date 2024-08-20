@@ -52,10 +52,11 @@ async function actionHandler(id, action) {
 			)
 			statusDetails.value.name = convertStatus(statusDetails.value.name)
 			mode.value = "read"
-		} else {
-			window.alert("The requested statues does not exist")
+		} else if (statusDetails.value === 404) {
+			emit("alert", "error", "An error has occurred, the request status does not exist")
 			router.push("/task")
-		}
+		} 
+		
 	} else if (action === "add") {
 		mode.value = "add"
 	} else if (action === "edit") {
@@ -99,8 +100,10 @@ async function confirmHandeler() {
 				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			)
-			emit("alert", "success", "The status has been added successfully")
-			statusManagement.addStatus(respone)
+			if (typeof respone === "object") {
+				emit("alert", "success", "The status has been added successfully")
+				statusManagement.addStatus(respone)
+			} else if (respone === 400) emit("alert", "error", "Internal server error")
 		} else {
 			emit("alert", "error", "Status name must be uniques, please choose another name.")
 			return
@@ -115,14 +118,14 @@ async function confirmHandeler() {
 				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			);
-			console.log(respone)
-			if (respone === 404) {
-				emit("alert", "error", "An error has occurred, the status does not exist")
-				statusManagement.deleteStatus(statusDetails.value.id)
-			} else {
+			if (typeof respone === "object") {
 				statusManagement.editStatus(statusDetails.value);
-				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)// เล้งเพิ่ม
+				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)
 				emit("alert", "success", "The status has been updated successfully");
+			} else if (respone === 400) {
+				emit("alert", "error", "An error has occurred, the status has duplicate status name")
+			} else if (respone === 404) {
+				emit("alert", "error", "An error has occurred, the status does not exist")
 			}
 		} else {
 			emit("alert", "error", "An error has occurred, the status has duplicate status name")
@@ -194,10 +197,12 @@ function closeModal() {
 						<p class="text-[17px] font-[550] mb-[10px]">Color</p>
 						<div class="flex mobile-L:flex-row flex-col gap-[10px] ">
 							<input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"
-								class="bg-white mobile-M:w-[135px] disabled:text-black disabled:opacity-100""></input>
-							<input type=" color" class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
+								class="bg-white mobile-M:w-[135px] disabled:text-black disabled:opacity-100"></input>
+							<input type="color"
+								class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
 								v-model="statusDetails.statusColor" :disabled="mode === 'read'"
 								@input="saveBthHandler" />
+							<div>{{ statusDetails.statusColor }}</div>
 						</div>
 					</div>
 				</div>

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from "vue"
+import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useTasks } from "@/store/task.js"
 import { useStatus } from "@/store/status.js"
@@ -43,32 +43,34 @@ onMounted(async () => {
 
 async function actionHandler(id, action) {
 	if (action === "read") {
-		taskDetails.value = await getTaskById(
+		const response = await getTaskById(
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			id
 		)
-		if (typeof taskDetails.value === "object") {
+		if (typeof response === "object") {
+			taskDetails.value = response
 			taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
 			taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn)
 			mode.value = "read"
-		} else {
-			window.alert("The requested task does not exist")
-			router.push("/task")
+		} else if (response === 404) {
+			emit("alert", "error", `An error has occurred, the task doesn't exit `)
+			router.push("/")
 		}
 	} else if (action === "add") {
 		mode.value = "add"
 	} else if (action === "edit") {
-		taskDetails.value = await getTaskById(
+		const response = await getTaskById(
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			id
 		)
-		if (typeof taskDetails.value === "object") {
+		if (typeof response === "object") {
+			taskDetails.value = response
 			taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
 			taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn)
 			oldTask.value = { ...taskDetails.value }
 			mode.value = "edit"
-		} else {
-			window.alert("The requested task does not exist")
+		} else if (response === 404) {
+			emit("alert", "error", "The requested task does not exist")
 			router.push("/")
 		}
 	}
@@ -80,16 +82,13 @@ async function confirmHandeler() {
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		if (respone !== 400) {
+		if (typeof respone === "object") {
 			emit("alert", "success", "The task has been added successfully")
 			taskManagement.addTask(respone)
 			taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
-		} else
-			emit(
-				"alert",
-				"error",
-				`The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`
-			)
+		} else if (respone === 400) {
+			emit("alert", "error", "An error has occurred, the status does not exist")
+		}
 
 		closeModal()
 		return
@@ -99,17 +98,19 @@ async function confirmHandeler() {
 			import.meta.env.VITE_BASE_URL + "/tasks",
 			taskDetails.value
 		)
-		console.log(taskDetails.value)
-		if (respone !== 400) {
+		if (typeof respone === "object") {
 			emit("alert", "success", "The task has been updated successfully")
 			taskManagement.editTask(taskDetails.value.id, respone)
 			taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
-		} else
+		} else if (respone === 400) {
 			emit(
 				"alert",
 				"error",
-				`The status ${taskMessage.value.name} will have too many tasks. Please make progress and update status of existing taks first.`
+				"An error has occurred, the status limit is excreed"
 			)
+		} else if (respone === 404) {
+			emit("alert", "error", "The requested task does not exist")
+		}
 
 		closeModal()
 		return
@@ -119,7 +120,11 @@ function saveBthHandler(isTrue = false) {
 	taskMessage.value = statusManagement.getStatusById(
 		taskDetails.value.status?.id
 	)
-	if (taskDetails.value.title?.length > 100 || taskDetails.value.assignees?.length > 30 || taskDetails.value.description?.length > 500) {
+	if (
+		taskDetails.value.title?.length > 100 ||
+		taskDetails.value.assignees?.length > 30 ||
+		taskDetails.value.description?.length > 500
+	) {
 		isDisable.value = true
 		return
 	}
@@ -145,32 +150,29 @@ function saveBthHandler(isTrue = false) {
 function closeModal() {
 	router.go(-1)
 }
-
-
-
-
 </script>
 
 <template>
 	<div v-if="dataLoaded" class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
 		<div class="fade-up flex justify-center items-center w-[100%] h-[100%] text-[#333333]">
-			<div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-white ">
+			<div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-white">
 				<header class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-[#F8F8F8] border-b-2 rounded-t-[2px]">
 					<div class="flex gap-[10px]" v-show="mode !== 'read'">
 						<div>
 							{{ mode === "add" ? "New Task" : "Edit Task" }}
 						</div>
-						<p v-if="mode !== 'read'" class="text-[15px] "
-							:class="taskDetails.title.length > 100 ? 'text-red-500' : 'text-[#AFAFAF]'">
+						<p v-if="mode !== 'read'" class="text-[15px]" :class="taskDetails.title.length > 100
+		? 'text-red-500'
+		: 'text-[#AFAFAF]'
+		">
 							{{ taskDetails.title.length }}/100 characters
 						</p>
 					</div>
 
 					<textarea
-						class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all bg-white  disabled:text-black disabled:opacity-100"
+						class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all bg-white disabled:text-black disabled:opacity-100"
 						:disabled="mode === 'read'" placeholder="input some title" v-model="taskDetails.title"
 						@input="saveBthHandler">{{ taskDetails.title }}</textarea>
-
 				</header>
 				<main class="flex flex-row mobile-L:flex-col laptop:overflow-auto h-[80%] px-[4%]"
 					:class="mode !== 'read' ? 'pt-[30px]' : ''">
@@ -180,8 +182,10 @@ function closeModal() {
 							class="itbkk-description w-[95%] h-[80%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-white overflow-hidden"
 							v-model="taskDetails.description" @input="saveBthHandler">
 						</textarea>
-						<p v-if="mode !== 'read'" class="text-[15px]"
-							:class="taskDetails.description?.length > 500 ? 'text-red-500' : 'text-[#AFAFAF]'">
+						<p v-if="mode !== 'read'" class="text-[15px]" :class="taskDetails.description?.length > 500
+		? 'text-red-500'
+		: 'text-[#AFAFAF]'
+		">
 							{{ taskDetails.description?.length || "0" }}/500 characters
 						</p>
 
@@ -195,14 +199,16 @@ function closeModal() {
 	}}
 						</div>
 					</div>
-					<div class="flex flex-col w-[30%]  mobile-L:w-[100%] mobile-L:mt-[14px] h-[94%]">
+					<div class="flex flex-col w-[30%] mobile-L:w-[100%] mobile-L:mt-[14px] h-[94%]">
 						<div class="flex flex-col h-[45%] py-[10px] mb-[10px]">
 							<p class="font-[650]">Assignees</p>
 							<textarea v-if="mode !== 'read'"
 								class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all bg-white"
 								v-model="taskDetails.assignees" @input="saveBthHandler"></textarea>
-							<p v-if="mode !== 'read'" class="text-[15px] mt-[8px]"
-								:class="taskDetails.assignees?.length > 30 ? 'text-red-500' : 'text-[#AFAFAF]'">
+							<p v-if="mode !== 'read'" class="text-[15px] mt-[8px]" :class="taskDetails.assignees?.length > 30
+		? 'text-red-500'
+		: 'text-[#AFAFAF]'
+		">
 								{{ taskDetails.assignees?.length || "0" }}/30 characters
 							</p>
 							<div v-if="mode === 'read'"
@@ -215,10 +221,9 @@ function closeModal() {
 						</div>
 						<div class="flex flex-col gap-[20px] h-[55%] mt-[17px]">
 							<div>
-								<p class=" font-[600]">
+								<p class="font-[600]">
 									Status<span v-if="mode !== 'read'"
-										class="text-red-500 text-[14px] font-[500] ml-[5px]">(The
-										limit is
+										class="text-red-500 text-[14px] font-[500] ml-[5px]">(The limit is
 										{{
 		taskManagement.getIsLimit() ? "Enable" : "Disable"
 	}})</span>
