@@ -28,16 +28,18 @@ const statusFilter = ref([])
 const limitMaximux = ref(10)
 const isLimit = ref(false)
 const limitReached = ref([])
-const isLogin = ref(false)
 const accountStore = useAccount()
-const userDetails = ref(accountStore.getData())
+const userDetails = ref()
 
 onMounted(async () => {
+ 
   if(localStorage.getItem("token")) {
     const token = localStorage.getItem("token")
     accountStore.setisLogin(true)
     accountStore.decodedToken(token)
+    userDetails.value = accountStore.getData()
   }
+  console.log('user', userDetails.value);
   const listTasks = await getTaskList(import.meta.env.VITE_BASE_URL + "/tasks")
   const listStatuses = await getStatusList(
     import.meta.env.VITE_BASE_URL + "/statuses"
@@ -183,6 +185,7 @@ function alertMessageHandler(type = "success", text) {
 
 function loginHandle(login){
   if(!login){
+    console.log('555');
     accountStore.setisLogin(login)
     localStorage.removeItem("token")
   }
@@ -357,24 +360,24 @@ function loginHandle(login){
           <RouterLink :to="{name:'login'}">Login</RouterLink :to="{name:'login'}">
         </div>
         
-        <div v-else class="dropdown dropdown-end flex ">
+        <div v-else class="dropdown dropdown-end flex items-center ">
           <div
             tabindex="0"
             role="button"
-            class=" btn btn-ghost btn-circle avatar "
+            class=" w-[170px] h-[60px] btn btn-ghost btn-circle avatar flex"
           >
-            <div class="w-[50px] rounded-full">
+            <div class="w-[50px] rounded-full mb-[40px]">
               <img src="https://static.vecteezy.com/system/resources/thumbnails/008/442/086/small_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg">
-            
             </div>
-            
-          </div><div class="w-[230px] break-words text-center border font-mono border-red-500">
-          <p class="text-black">1ggdgdgd45678911234567891
-          </p></div>
-          <!-- <div>{{ accountStore.getData().name }}</div> -->
+            <div class="ml-2 pt-[15px]  font-inter">
+            <div>{{ userDetails.name }}</div>
+            <div class="flex justify-center text-black text-opacity-40 text-[10px]"> {{ userDetails.role }}</div>
+          </div>
+          </div>
+          
           <ul
             tabindex="0"
-            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-[100px] w-52 p-2  shadow"
           >
             <li>
               <a @click="loginHandle(false)">Logout</a>

@@ -1,38 +1,37 @@
 <script setup>
-import { ref } from "vue";
-import router from "@/router";
-import { login } from "@/util/accountFetchUtil";
-import { useAccount } from "@/store/account";
-const emit = defineEmits(["alert"]);
-const userName = ref("");
-const password = ref("");
-const accountStore = useAccount();
-const isValid = ref(false);
+import { ref } from "vue"
+import router from "@/router"
+import { login } from "@/util/accountFetchUtil"
+import { useAccount } from "@/store/account"
+const emit = defineEmits(["alert"])
+const userName = ref("")
+const password = ref("")
+const accountStore = useAccount()
+const isValid = ref(false)
 
 async function register(e) {
-  e.preventDefault();
+  e.preventDefault()
   // fetch api
   const response = await login(
     import.meta.env.VITE_BASE_URL + "/authentications/login",
     userName.value,
     password.value
-  );
+  )
   if (response.access_token) {
-    console.log("kuy");
-    accountStore.decodedToken(response.access_token);
-    console.log("data", accountStore.getData());
-    accountStore.setToken(response.access_token);
+    accountStore.decodedToken(response.access_token)
+    accountStore.setToken(response.access_token)
+    accountStore.setisLogin(true)
+    router.push("/task")
   } else {
     emit(
       "alert",
       "error",
       "An error has occurred, Username or Password is incorrect"
-    );
-    password.value = "";
-    isValid.value = true;
+    )
+    password.value = ""
+    isValid.value = true
   }
-  // localStorage.setItem("token", token)
-  console.log("response", response);
+  console.log("response", response)
 }
 </script>
 

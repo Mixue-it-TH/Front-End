@@ -54,7 +54,7 @@ const router = createRouter({
       component: StatusModal
     },
     {
-      path: "/login",
+      path: "/task/login",
       name: "login",
       component: LoginModal
     },
