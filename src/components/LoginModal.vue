@@ -1,35 +1,35 @@
 <script setup>
-import { ref } from "vue"
-import router from "@/router"
-import { login } from "@/util/accountFetchUtil"
-import { useAccount } from "@/store/account"
-const emit = defineEmits(["alert"])
-const userName = ref("")
-const password = ref("")
-const accountStore = useAccount()
-const isValid = ref(false)
+import {ref} from "vue";
+import router from "@/router";
+import {login} from "@/util/accountFetchUtil";
+import {useAccount} from "@/store/account";
+const emit = defineEmits(["alert"]);
+const userName = ref("");
+const password = ref("");
+const accountStore = useAccount();
+const isValid = ref(false);
 
 async function register(e) {
-  e.preventDefault()
+  e.preventDefault();
   // fetch api
   const response = await login(
     "http://localhost:8080/login",
     userName.value,
     password.value
-  )
+  );
   if (response.access_token) {
-    accountStore.decodedToken(response.access_token)
-    accountStore.setToken(response.access_token)
-    accountStore.setisLogin(true)
-    router.push("/task")
+    accountStore.decodedToken(response.access_token);
+    accountStore.setToken(response.access_token);
+    accountStore.setisLogin(true);
+    router.push("/task");
   } else {
     emit(
       "alert",
       "error",
       "An error has occurred, Username or Password is incorrect"
-    )
-    password.value = ""
-    isValid.value = true
+    );
+    password.value = "";
+    isValid.value = true;
   }
 }
 </script>
@@ -91,9 +91,10 @@ async function register(e) {
             </div>
             <div class="form-control mt-6">
               <button
-                class="itbkk-button-signin btn btn-primary text-xl disabled:opacity-50"
-                @click="register"
+                class="itbkk-button-signin btn btn-primary text-xl"
+                :class="userName === '' || password === '' ? 'disabled' : ''"
                 :disabled="userName === '' || password === ''"
+                @click="register"
               >
                 Login
               </button>
