@@ -363,7 +363,7 @@ function loginHandle(login) {
             style="min-width: 170px; padding: 0 10px"
           >
             <div
-              class="flex-shrink-0 w-[50px] h-[50px] mb-auto border border-black rounded-full overflow-hidden"
+              class="flex-shrink-0 w-[50px] h-[50px] mb-auto rounded-full overflow-hidden"
             >
               <img
                 src="https://static.vecteezy.com/system/resources/thumbnails/008/442/086/small_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
@@ -371,10 +371,8 @@ function loginHandle(login) {
                 class="w-full h-full object-cover"
               />
             </div>
-            <div
-              class="ml-2 mt-2 font-inter flex-1 flex flex-col justify-center"
-            >
-              <div class="itbkk-fullname">
+            <div class="ml-2 font-inter flex-1 flex flex-col justify-center">
+              <div class="itbkk-fullname mt-2">
                 {{ accountStore.getData().name }}
               </div>
               <div class="text-black text-opacity-40 text-[10px]">
@@ -382,6 +380,14 @@ function loginHandle(login) {
               </div>
             </div>
           </div>
+          <ul
+            tabindex="0"
+            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-[100px] w-52 p-2 shadow"
+          >
+            <li>
+              <a @click="loginHandle(false)">Logout</a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
