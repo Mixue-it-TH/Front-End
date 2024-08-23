@@ -359,33 +359,29 @@ function loginHandle(login) {
           <div
             tabindex="0"
             role="button"
-            class="w-[170px] h-[60px] btn btn-ghost btn-circle avatar flex"
+            class="btn btn-ghost btn-circle avatar flex items-center w-auto"
+            style="min-width: 170px; padding: 0 10px"
           >
-            <div class="w-[50px] rounded-full mb-[40px]">
+            <div
+              class="flex-shrink-0 w-[50px] h-[50px] mb-auto border border-black rounded-full overflow-hidden"
+            >
               <img
                 src="https://static.vecteezy.com/system/resources/thumbnails/008/442/086/small_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+                alt="Avatar"
+                class="w-full h-full object-cover"
               />
             </div>
-            <div class="ml-2 pt-[15px] font-inter">
+            <div
+              class="ml-2 mt-2 font-inter flex-1 flex flex-col justify-center"
+            >
               <div class="itbkk-fullname">
                 {{ accountStore.getData().name }}
               </div>
-              <div
-                class="flex justify-center text-black text-opacity-40 text-[10px]"
-              >
+              <div class="text-black text-opacity-40 text-[10px]">
                 {{ accountStore.getData().role }}
               </div>
             </div>
           </div>
-
-          <ul
-            tabindex="0"
-            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-[100px] w-52 p-2 shadow"
-          >
-            <li>
-              <a @click="loginHandle(false)">Logout</a>
-            </li>
-          </ul>
         </div>
       </div>
     </div>
