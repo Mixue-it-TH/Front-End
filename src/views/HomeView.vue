@@ -1,147 +1,147 @@
 <script setup>
-import router from "@/router"
-import { onMounted, ref, watch } from "vue"
-import { getTaskList, deleteTaskById } from "@/util/fetchUtils"
-import { getStatusList, handelLimitMaximum } from "@/util/statusFetchUtils"
-import { useTasks } from "@/store/task.js"
-import { useStatus } from "@/store/status.js"
-import ListTask from "@/components/ListTask.vue"
-import DeleteTaskModal from "@/components/DeleteTaskModal.vue"
-import LimitTaskModal from "@/components/LimitTaskModal.vue"
-import ListStatus from "@/components/ListStatus.vue"
-import { RouterLink } from "vue-router"
-import { useAccount } from "@/store/account"
+import router from "@/router";
+import {onMounted, ref, watch} from "vue";
+import {getTaskList, deleteTaskById} from "@/util/fetchUtils";
+import {getStatusList, handelLimitMaximum} from "@/util/statusFetchUtils";
+import {useTasks} from "@/store/task.js";
+import {useStatus} from "@/store/status.js";
+import ListTask from "@/components/ListTask.vue";
+import DeleteTaskModal from "@/components/DeleteTaskModal.vue";
+import LimitTaskModal from "@/components/LimitTaskModal.vue";
+import ListStatus from "@/components/ListStatus.vue";
+import {RouterLink} from "vue-router";
+import {useAccount} from "@/store/account";
 
-const emit = defineEmits(["alert"])
+const emit = defineEmits(["alert"]);
 
-const taskManagement = useTasks()
-const statusManagement = useStatus()
-const isEmptyTask = ref(false)
-const taskDetails = ref({})
-const showDeleteModal = ref(false)
-const showLimitModal = ref(false)
-const taskNumber = ref()
-const showTask = ref(true)
-const toggleManage = ref(" Manage Status")
-const sortState = ref(0)
-const statusFilter = ref([])
-const limitMaximux = ref(10)
-const isLimit = ref(false)
-const limitReached = ref([])
-const accountStore = useAccount()
+const taskManagement = useTasks();
+const statusManagement = useStatus();
+const isEmptyTask = ref(false);
+const taskDetails = ref({});
+const showDeleteModal = ref(false);
+const showLimitModal = ref(false);
+const taskNumber = ref();
+const showTask = ref(true);
+const toggleManage = ref(" Manage Status");
+const sortState = ref(0);
+const statusFilter = ref([]);
+const limitMaximux = ref(10);
+const isLimit = ref(false);
+const limitReached = ref([]);
+const accountStore = useAccount();
 
 onMounted(async () => {
   if (localStorage.getItem("token")) {
-    const token = localStorage.getItem("token")
-    accountStore.setisLogin(true)
-    accountStore.decodedToken(token)
+    const token = localStorage.getItem("token");
+    accountStore.setisLogin(true);
+    accountStore.decodedToken(token);
   }
 
-  const listTasks = await getTaskList(import.meta.env.VITE_BASE_URL + "/tasks")
+  const listTasks = await getTaskList(import.meta.env.VITE_BASE_URL + "/tasks");
   const listStatuses = await getStatusList(
     import.meta.env.VITE_BASE_URL + "/statuses"
-  )
+  );
   const isEnbleLimit = await getTaskList(
     import.meta.env.VITE_BASE_URL + "/statuses/islimit"
-  )
-  isLimit.value = isEnbleLimit.limitMaximumTask
-  limitMaximux.value = isEnbleLimit.noOfTasks
+  );
+  isLimit.value = isEnbleLimit.limitMaximumTask;
+  limitMaximux.value = isEnbleLimit.noOfTasks;
   const responese = await handelLimitMaximum(
     import.meta.env.VITE_BASE_URL + `/statuses/maximum-task`,
     isLimit.value,
     limitMaximux.value
-  )
-  limitReached.value = responese.statusList
+  );
+  limitReached.value = responese.statusList;
   taskManagement.setLimitMaximumTask(
     isEnbleLimit.limitMaximumTask,
     isEnbleLimit.noOfTasks
-  )
-  taskManagement.addTasks(listTasks)
-  statusManagement.addStatuses(listStatuses)
-  if (listTasks.length === 0) isEmptyTask.value = true
-  if (router.currentRoute.value.fullPath.includes("status")) toggleMode()
-})
+  );
+  taskManagement.addTasks(listTasks);
+  statusManagement.addStatuses(listStatuses);
+  if (listTasks.length === 0) isEmptyTask.value = true;
+  if (router.currentRoute.value.fullPath.includes("status")) toggleMode();
+});
 
 function deleteModalHandler(tasks, number) {
-  taskDetails.value = tasks
-  taskNumber.value = number
-  showDeleteModal.value = true
+  taskDetails.value = tasks;
+  taskNumber.value = number;
+  showDeleteModal.value = true;
 }
 function closeDeleteModal(isClose) {
-  taskDetails.value = {}
-  showDeleteModal.value = isClose
+  taskDetails.value = {};
+  showDeleteModal.value = isClose;
 }
 async function confirmDelete(id) {
   const response = await deleteTaskById(
     import.meta.env.VITE_BASE_URL + "/tasks",
     id
-  )
+  );
   if (typeof response === "object") {
-    taskManagement.deleteTask(id)
-    showDeleteModal.value = false
-    taskDetails.value = {}
-    emit("alert", "success", "The task has been deleted successfully")
+    taskManagement.deleteTask(id);
+    showDeleteModal.value = false;
+    taskDetails.value = {};
+    emit("alert", "success", "The task has been deleted successfully");
   } else if (response === 404) {
-    emit("alert", "error", "An error has occurred, the task does not exist")
-    taskManagement.deleteTask(id)
-    showDeleteModal.value = false
-    taskDetails.value = {}
+    emit("alert", "error", "An error has occurred, the task does not exist");
+    taskManagement.deleteTask(id);
+    showDeleteModal.value = false;
+    taskDetails.value = {};
   }
 }
 function limitModalHandler(isClose) {
-  showLimitModal.value = isClose
+  showLimitModal.value = isClose;
 }
 
 async function filterSelection(statusName) {
   const isDuplicate = statusFilter.value.filter((status) => {
-    return status === statusName
-  })
+    return status === statusName;
+  });
   if (isDuplicate.length === 0) {
-    statusFilter.value.push(statusName)
+    statusFilter.value.push(statusName);
   } else {
     statusFilter.value = statusFilter.value.filter((status) => {
-      return status !== statusName
-    })
+      return status !== statusName;
+    });
   }
-  taskManagement.addFilter(statusFilter.value)
+  taskManagement.addFilter(statusFilter.value);
   if (sortState.value === 0) {
-    taskManagement.sortTaskByStatusName(2)
+    taskManagement.sortTaskByStatusName(2);
   } else {
-    taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
+    taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
   }
 }
 function filterDeleteSelection(statusName) {
   statusFilter.value = statusFilter.value.filter((status) => {
-    return status !== statusName
-  })
-  taskManagement.addFilter(statusFilter.value)
+    return status !== statusName;
+  });
+  taskManagement.addFilter(statusFilter.value);
   if (sortState.value === 0) {
-    taskManagement.sortTaskByStatusName(2)
-  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
+    taskManagement.sortTaskByStatusName(2);
+  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
 }
 
 function filterClearSelection() {
-  statusFilter.value = []
-  taskManagement.addFilter(statusFilter.value)
+  statusFilter.value = [];
+  taskManagement.addFilter(statusFilter.value);
   if (sortState.value === 0) {
-    taskManagement.sortTaskByStatusName(2)
-  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
+    taskManagement.sortTaskByStatusName(2);
+  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
 }
 
 function toggleMode() {
   if (showTask.value) {
-    showTask.value = false
-    toggleManage.value = "Home"
+    showTask.value = false;
+    toggleManage.value = "Home";
     if (!router.currentRoute.value.fullPath.includes("status"))
-      router.push("/status")
+      router.push("/status");
   } else {
-    showTask.value = true
-    toggleManage.value = " Manage Status"
-    router.push("/task")
+    showTask.value = true;
+    toggleManage.value = " Manage Status";
+    router.push("/task");
   }
 }
 function sortTask() {
-  sortState.value = taskManagement.sortTaskByStatusName(sortState.value)
+  sortState.value = taskManagement.sortTaskByStatusName(sortState.value);
 }
 
 async function handelLimit(enable, amountLimit) {
@@ -149,39 +149,39 @@ async function handelLimit(enable, amountLimit) {
     import.meta.env.VITE_BASE_URL + `/statuses/maximum-task`,
     enable,
     amountLimit
-  )
+  );
   if (responese.limitMaximumTask) {
     emit(
       "alert",
       "success",
       `The Kanban board now limits ${responese.noOfTasks} tasks in each status`
-    )
+    );
   } else {
     emit(
       "alert",
       "success",
       `The Kanban board has disabled the task limit in each status`
-    )
+    );
   }
   taskManagement.setLimitMaximumTask(
     responese.limitMaximumTask,
     responese.noOfTasks
-  )
+  );
 
-  limitReached.value = responese.statusList
-  limitMaximux.value = amountLimit
-  showLimitModal.value = false
-  isLimit.value = enable
+  limitReached.value = responese.statusList;
+  limitMaximux.value = amountLimit;
+  showLimitModal.value = false;
+  isLimit.value = enable;
 }
 function alertMessageHandler(type = "success", text) {
-  emit("alert", type, text)
+  emit("alert", type, text);
 }
 
 function loginHandle(login) {
   if (!login) {
-    console.log("555")
-    accountStore.setisLogin(login)
-    localStorage.removeItem("token")
+    console.log("555");
+    accountStore.setisLogin(login);
+    localStorage.removeItem("token");
   }
 }
 </script>
@@ -349,12 +349,9 @@ function loginHandle(login) {
             </div>
           </div>
         </div>
-        <div
-          v-if="!accountStore.getisLogin()"
-          class="flex btn btn-outline mt-[5px]"
-        >
-          <RouterLink :to="{ name: 'login' }">Login</RouterLink>
-        </div>
+        <RouterLink v-if="!accountStore.getisLogin()" :to="{name: 'login'}">
+          <div class="flex btn btn-outline mt-[5px]"> Login </div>
+        </RouterLink>
         <div v-else class="dropdown dropdown-end flex items-center">
           <div
             tabindex="0"

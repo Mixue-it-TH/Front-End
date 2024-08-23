@@ -1,69 +1,69 @@
-import { createRouter, createWebHistory } from "vue-router"
+import {createRouter, createWebHistory} from "vue-router";
 
-import NotFound from "@/views/NotFound.vue"
-import Empty from "@/components/Empty.vue"
-import TaskModal from "@/components/TaskModal.vue"
-import StatusModal from "@/components/StatusModal.vue"
-import LoginModal from "@/components/LoginModal.vue"
-import HomeView from "@/views/HomeView.vue"
+import NotFound from "@/views/NotFound.vue";
+import Empty from "@/components/Empty.vue";
+import TaskModal from "@/components/TaskModal.vue";
+import StatusModal from "@/components/StatusModal.vue";
+import LoginModal from "@/components/LoginModal.vue";
+import HomeView from "@/views/HomeView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      redirect: "/task"
+      redirect: "/task",
     },
     {
       path: "/task",
       name: "taskList	",
-      component: Empty
+      component: Empty,
     },
     {
       path: "/task/:id",
       name: "taskDetail",
-      component: TaskModal
+      component: TaskModal,
     },
     {
       path: "/task/add",
       name: "taskAdd",
-      component: TaskModal
+      component: TaskModal,
     },
     {
       path: "/task/:id/edit",
       name: "taskEdit",
-      component: TaskModal
+      component: TaskModal,
     },
     {
       path: "/status",
       name: "status",
-      component: Empty
+      component: Empty,
     },
     {
       path: "/status/add",
       name: "statusAdd",
-      component: StatusModal
+      component: StatusModal,
     },
     {
       path: "/status/:id",
       name: "statusDetail",
-      component: StatusModal
+      component: StatusModal,
     },
     {
       path: "/status/:id/edit",
       name: "statusEdit",
-      component: StatusModal
+      component: StatusModal,
     },
     {
-      path: "/task/login",
+      path: "/login",
       name: "login",
-      component: LoginModal
+      component: LoginModal,
     },
     {
       path: "/:notfound(.*)",
-      component: NotFound
-    }
-  ]
-})
+      component: NotFound,
+    },
+  ],
+});
 
-export default router
+export default router;
