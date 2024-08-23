@@ -6,7 +6,7 @@ export async function login(url, userName, password) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        username: userName,
+        userName: userName,
         password: password
       })
     })
