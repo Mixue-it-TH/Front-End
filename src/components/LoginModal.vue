@@ -91,7 +91,7 @@ async function register(e) {
             </div>
             <div class="form-control mt-6">
               <button
-                class="itbkk-button-signin btn btn-primary text-xl"
+                class="itbkk-button-signin btn btn-primary text-xl disabled:opacity-50"
                 @click="register"
                 :disabled="userName === '' || password === ''"
               >
