@@ -13,7 +13,7 @@ async function register(e) {
   e.preventDefault();
   // fetch api
   const response = await login(
-    "http://localhost:8080/login",
+    import.meta.env.VITE_LOGIN_URL,
     userName.value,
     password.value
   );
@@ -50,7 +50,7 @@ async function register(e) {
           <form class="card-body">
             <div class="form-control">
               <label class="label">
-                <span class="label-text">UserName </span>
+                <span class="label-text">Username</span>
               </label>
 
               <input
@@ -150,8 +150,6 @@ async function register(e) {
         </nav>
       </footer>
     </div>
-
-    <!-- footer -->
   </div>
 </template>
 
