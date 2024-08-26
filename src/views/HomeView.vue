@@ -1,16 +1,16 @@
 <script setup>
 import router from "@/router";
-import {onMounted, ref, watch} from "vue";
+import {RouterLink} from "vue-router";
+import {onMounted, ref} from "vue";
 import {getTaskList, deleteTaskById} from "@/util/fetchUtils";
 import {getStatusList, handelLimitMaximum} from "@/util/statusFetchUtils";
 import {useTasks} from "@/store/task.js";
+import {useAccount} from "@/store/account";
 import {useStatus} from "@/store/status.js";
 import ListTask from "@/components/ListTask.vue";
 import DeleteTaskModal from "@/components/DeleteTaskModal.vue";
 import LimitTaskModal from "@/components/LimitTaskModal.vue";
 import ListStatus from "@/components/ListStatus.vue";
-import {RouterLink} from "vue-router";
-import {useAccount} from "@/store/account";
 
 const emit = defineEmits(["alert"]);
 
@@ -179,9 +179,9 @@ function alertMessageHandler(type = "success", text) {
 
 function loginHandle(login) {
   if (!login) {
-    console.log("555");
     accountStore.setisLogin(login);
     localStorage.removeItem("token");
+    router.push("/login");
   }
 }
 </script>
