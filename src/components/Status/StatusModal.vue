@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from "vue"
+import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 import {
 	getStatusById,
@@ -11,8 +11,8 @@ import { useStatus } from "@/store/status"
 import { useTasks } from "@/store/task"
 const emit = defineEmits(["alert"])
 
-const statusDetails = ref({ name: "", description: "", statusColor: "#6b7280" })
 const router = useRouter()
+const statusDetails = ref({ name: "", description: "", statusColor: "#6b7280" })
 const oldStatus = ref({})
 const dataLoaded = ref(false)
 const mode = ref("read")
@@ -23,14 +23,14 @@ const delState = ref(false)
 
 onMounted(async () => {
 	const data = router.currentRoute.value.fullPath.split("/")
-	if (data.length === 3 && !data.includes("add")) {
-		actionHandler(data[2], "read")
+	if (data.length === 5 && !data.includes("add")) {
+		actionHandler(data[4], "read")
 	} else if (data.includes("add")) {
 		actionHandler(null, "add")
 	} else if (data.includes("edit")) {
-		actionHandler(data[2], "edit")
+		actionHandler(data[4], "edit")
 	} else if (data.includes("delete")) {
-		actionHandler(data[2], "delete")
+		actionHandler(data[4], "delete")
 		delState.value = true
 	}
 	dataLoaded.value = true
@@ -51,6 +51,8 @@ async function actionHandler(id, action) {
 				statusDetails.value.updatedOn
 			)
 			statusDetails.value.name = convertStatus(statusDetails.value.name)
+			console.log(statusDetails.value);
+			
 			mode.value = "read"
 		} else if (statusDetails.value === 404) {
 			emit("alert", "error", "An error has occurred, the request status does not exist")

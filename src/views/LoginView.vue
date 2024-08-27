@@ -21,7 +21,7 @@ async function register(e) {
     accountStore.decodedToken(response.access_token);
     accountStore.setToken(response.access_token);
     accountStore.setisLogin(true);
-    router.push("/task");
+    router.push("/board");
   } else {
     emit(
       "alert",
