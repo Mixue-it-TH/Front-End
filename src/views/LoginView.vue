@@ -1,8 +1,8 @@
 <script setup>
-import {ref} from "vue";
+import { ref } from "vue";
 import router from "@/router";
-import {login} from "@/util/accountFetchUtil";
-import {useAccount} from "@/store/account";
+import { login } from "@/util/accountFetchUtil";
+import { useAccount } from "@/store/account";
 const emit = defineEmits(["alert"]);
 const userName = ref("");
 const password = ref("");
@@ -21,7 +21,7 @@ async function register(e) {
     accountStore.decodedToken(response.access_token);
     accountStore.setToken(response.access_token);
     accountStore.setisLogin(true);
-    router.push("/task");
+    router.push("/board");
   } else {
     emit(
       "alert",
@@ -84,7 +84,9 @@ async function register(e) {
               />
 
               <label class="label">
-                <a href="#" class="label-text-alt link link-hover"
+                <a
+                  href="#"
+                  class="label-text-alt link link-hover"
                   >Forgot password?</a
                 >
               </label>
