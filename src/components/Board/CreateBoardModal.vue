@@ -1,16 +1,16 @@
 <script setup>
-import { useRouter } from "vue-router";
-import { ref } from "vue";
-import Board from "./Board.vue";
+import { useRouter } from "vue-router"
+import { ref } from "vue"
+import Board from "./Board.vue"
 
-const router = useRouter();
-const emit = defineEmits(["cancel", "save"]);
+const router = useRouter()
+const emit = defineEmits(["cancel", "save"])
 const prop = defineProps({
   name: {
-    type: String,
-  },
-});
-const boardName = ref(prop.name);
+    type: String
+  }
+})
+const boardName = ref(prop.name)
 </script>
 
 <template>
@@ -26,7 +26,7 @@ const boardName = ref(prop.name);
         >
           <p class="pl-[5px] pt-[10px]">Create Your Board</p>
         </div>
-        <div class="border border-red-500 mx-[5px]">
+        <div class="mx-[5px]">
           <p class="font-bold">Name</p>
           <input
             v-model="boardName"

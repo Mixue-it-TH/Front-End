@@ -1,59 +1,56 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { RouterLink, useRouter } from "vue-router";
-import { useStatus } from "@/store/status";
-import { useTasks } from "@/store/task";
-import { useAccount } from "@/store/account";
-import { getStatusList, getTaskList } from "@/util/fetchUtils";
-import CreateBoardModal from "./CreateBoardModal.vue";
+import { ref, onMounted } from "vue"
+import { RouterLink, useRouter } from "vue-router"
+import { useStatus } from "@/store/status"
+import { useTasks } from "@/store/task"
+import { useAccount } from "@/store/account"
+import { getStatusList, getTaskList } from "@/util/fetchUtils"
+import CreateBoardModal from "./CreateBoardModal.vue"
 
-const accountStore = useAccount();
-const taskManagement = useTasks();
-const statusManagement = useStatus();
-const isCreated = ref(false);
-const isClicked = ref(false);
-const router = useRouter();
+const accountStore = useAccount()
+const taskManagement = useTasks()
+const statusManagement = useStatus()
+const isCreated = ref(false)
+const isClicked = ref(false)
+const router = useRouter()
 
 onMounted(async () => {
   if (localStorage.getItem("token")) {
-    const token = localStorage.getItem("token");
-    accountStore.setisLogin(true);
-    accountStore.decodedToken(token);
+    const token = localStorage.getItem("token")
+    accountStore.setisLogin(true)
+    accountStore.decodedToken(token)
   }
 
-  isCreated.value = false; // Simulate check if the board is created
+  isCreated.value = false // Simulate check if the board is created
 
   // if board is created, Fetch Data
   const listStatuses = await getStatusList(
     import.meta.env.VITE_BASE_URL + "/statuses"
-  );
-  const listTasks = await getTaskList(import.meta.env.VITE_BASE_URL + "/tasks");
+  )
+  const listTasks = await getTaskList(import.meta.env.VITE_BASE_URL + "/tasks")
 
   // Assign value to global management
-  statusManagement.addStatuses(listStatuses);
-  taskManagement.addTasks(listTasks);
+  statusManagement.addStatuses(listStatuses)
+  taskManagement.addTasks(listTasks)
 
-  if (isCreated.value) router.push("/board");
-});
+  if (isCreated.value) router.push("/board")
+})
 
 function closeModal() {
-  router.push("/board ");
+  router.push("/board ")
   // router.go(-1);
-  router.go(-1); // previous page
+  router.go(-1) // previous page
 }
 
 function saveBoard() {
-  console.log("Fetching new data...");
-  console.log(11);
-  closeModal();
+  console.log("Fetching new data...")
+  console.log(11)
+  closeModal()
 } // ปิด modal}
 </script>
 
 <template>
-  <div
-    v-if="!isCreated"
-    class="border border-black mt-[50px] flex justify-end"
-  >
+  <div v-if="!isCreated" class="border border-black mt-[50px] flex justify-end">
     <router-link :to="{ name: 'boardAdd' }">
       <button
         @click="isClicked = !isClicked"
