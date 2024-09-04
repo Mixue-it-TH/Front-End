@@ -4,7 +4,7 @@ import {RouterLink} from "vue-router";
 import {useStatus} from "@/store/status.js";
 import ListModel from "../Ui/ListModel.vue";
 
-const emit = defineEmits(["alert", "delAction"]);
+const emit = defineEmits(["delAction"]);
 const prop = defineProps({
   limitExceed: {
     type: Array,
@@ -166,13 +166,7 @@ function delBtnHandler(id, tranferId) {
             </div>
           </router-link>
           <div class="w-[12%]">
-            <div
-              class="flex tablet:flex-col w-[100px]"
-              v-if="
-                slotprop.job.name.toLowerCase() !== 'No Status'.toLowerCase() &&
-                slotprop.job.name.toLowerCase() !== 'Done'.toLowerCase()
-              "
-            >
+            <div class="flex tablet:flex-col w-[100px]">
               <router-link
                 :to="{name: 'statusEdit', params: {statusId: slotprop.job.id}}"
                 class="itbkk-button-edit"

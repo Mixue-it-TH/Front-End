@@ -1,16 +1,16 @@
 <script setup>
 import router from "@/router";
 import {handelLimitMaximum} from "@/util/statusFetchUtils";
-import {useAccount} from "@/store/account";
 import {useStatus} from "@/store/status";
 import {useTasks} from "@/store/task";
 import {onMounted, ref} from "vue";
-import {getTaskList} from "@/util/fetchUtils";
+import {getEnableLimit} from "@/util/fetchUtils";
+import {useAlert} from "@/store/alert";
+import {useAccount} from "@/store/account";
 import {useLimit} from "@/store/limitReached";
 import LimitTaskModal from "./LimitTaskModal.vue";
 
-const emit = defineEmits(["alert"]);
-
+const alertManagement = useAlert();
 const statusManagement = useStatus();
 const accountStore = useAccount();
 const taskManagement = useTasks();
@@ -23,16 +23,12 @@ const isLimit = ref(false);
 const toggleManage = ref(" Manage Status");
 
 onMounted(async () => {
-  const isEnbleLimit = await getTaskList(
-    import.meta.env.VITE_BASE_URL + "/statuses/islimit"
-  );
+  const isEnbleLimit = await getEnableLimit();
+
   isLimit.value = isEnbleLimit.limitMaximumTask;
   limitMaximux.value = isEnbleLimit.noOfTasks;
-  const responese = await handelLimitMaximum(
-    import.meta.env.VITE_BASE_URL + `/statuses/maximum-task`,
-    isLimit.value,
-    limitMaximux.value
-  );
+
+  const responese = await handelLimitMaximum(isLimit.value, limitMaximux.value);
 
   if (isEnbleLimit.limitMaximumTask)
     limitManagement.addLimitReached(responese.statusList);
@@ -86,16 +82,18 @@ function loginHandle(login) {
   if (!login) {
     accountStore.setisLogin(login);
     localStorage.removeItem("token");
+    localStorage.removeItem("boardId");
     router.push("/login");
   }
 }
 
 function toggleMode() {
+  const boardId = accountStore.getBoardId();
   if (toggleManage.value === " Manage Status") {
-    router.push("/board/777/status");
+    router.push(`/board/${boardId}/status`);
     toggleManage.value = "Home";
   } else if (toggleManage.value === "Home") {
-    router.push("/board/777");
+    router.push(`/board/${boardId}`);
     toggleManage.value = " Manage Status";
   }
 }
@@ -105,24 +103,18 @@ function limitModalHandler(isClose) {
 }
 
 async function handelLimit(enable, amountLimit) {
-  const responese = await handelLimitMaximum(
-    import.meta.env.VITE_BASE_URL + `/statuses/maximum-task`,
-    enable,
-    amountLimit
-  );
+  const responese = await handelLimitMaximum(enable, amountLimit);
   console.log(responese);
 
   if (responese.limitMaximumTask) {
     limitManagement.addLimitReached(responese.statusList);
-    emit(
-      "alert",
+    alertManagement.statusHandler(
       "success",
       `The Kanban board now limits ${responese.noOfTasks} tasks in each status`
     );
   } else {
     limitManagement.clearLimitReached();
-    emit(
-      "alert",
+    alertManagement.statusHandler(
       "success",
       `The Kanban board has disabled the task limit in each status`
     );

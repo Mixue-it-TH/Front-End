@@ -5,9 +5,9 @@ import {useTasks} from "@/store/task.js";
 import {useStatus} from "@/store/status.js";
 import {getTaskById, addTask, editTask} from "@/util/fetchUtils";
 import {convertUtils, convertStatus} from "@/util/formatUtils";
+import {useAlert} from "@/store/alert";
 
-const emit = defineEmits(["alert"]);
-
+const alertManagement = useAlert();
 const taskManagement = useTasks();
 const taskMessage = ref();
 const statusManagement = useStatus();
@@ -44,26 +44,25 @@ onMounted(async () => {
 
 async function actionHandler(id, action) {
   if (action === "read") {
-    const response = await getTaskById(
-      import.meta.env.VITE_BASE_URL + "/tasks",
-      id
-    );
+    const response = await getTaskById(id);
+
     if (typeof response === "object") {
       taskDetails.value = response;
+
       taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn);
       taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn);
       mode.value = "read";
     } else if (response === 404) {
-      emit("alert", "error", `An error has occurred, the task doesn't exit `);
+      alertManagement.statusHandler(
+        "error",
+        `An error has occurred, the task doesn't exit `
+      );
       router.push("/");
     }
   } else if (action === "add") {
     mode.value = "add";
   } else if (action === "edit") {
-    const response = await getTaskById(
-      import.meta.env.VITE_BASE_URL + "/tasks",
-      id
-    );
+    const response = await getTaskById(id);
     if (typeof response === "object") {
       taskDetails.value = response;
       taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn);
@@ -71,7 +70,10 @@ async function actionHandler(id, action) {
       oldTask.value = {...taskDetails.value};
       mode.value = "edit";
     } else if (response === 404) {
-      emit("alert", "error", "The requested task does not exist");
+      alertManagement.statusHandler(
+        "error",
+        "The requested task does not exist"
+      );
       router.push("/");
     }
   }
@@ -80,16 +82,18 @@ async function confirmHandeler() {
   if (mode.value === "add") {
     if (!taskDetails.value?.status) taskDetails.value.status = 1;
     const respone = await addTask(
-      import.meta.env.VITE_BASE_URL + "/tasks",
+    
       taskDetails.value
     );
     if (typeof respone === "object") {
-      emit("alert", "success", "The task has been added successfully");
+      alertManagement.statusHandler(
+        "success",
+        "The task has been added successfully"
+      );
       taskManagement.addTask(respone);
       taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
     } else if (respone === 400) {
-      emit(
-        "alert",
+      alertManagement.statusHandler(
         "error",
         "An error has occurred, the status limit is excreed"
       );
@@ -100,21 +104,25 @@ async function confirmHandeler() {
   }
   if (mode.value === "edit") {
     const respone = await editTask(
-      import.meta.env.VITE_BASE_URL + "/tasks",
       taskDetails.value
     );
     if (typeof respone === "object") {
-      emit("alert", "success", "The task has been updated successfully");
+      alertManagement.statusHandler(
+        "success",
+        "The task has been updated successfully"
+      );
       taskManagement.editTask(taskDetails.value.id, respone);
       taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
     } else if (respone === 400) {
-      emit(
-        "alert",
+      alertManagement.statusHandler(
         "error",
         "An error has occurred, the status limit is excreed"
       );
     } else if (respone === 404) {
-      emit("alert", "error", "The requested task does not exist");
+      alertManagement.statusHandler(
+        "error",
+        "The requested task does not exist"
+      );
     }
 
     closeModal();

@@ -67,9 +67,9 @@ const router = createRouter({
 
 // Global Navigation Guard
 router.beforeEach((to, from, next) => {
-  if (to.path !== "/login") {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
+  if (to.path !== "/login") {
     if (!token) {
       next({
         path: "/login",

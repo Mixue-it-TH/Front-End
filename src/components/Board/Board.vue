@@ -6,43 +6,40 @@ import {getStatusList, getTaskList} from "@/util/fetchUtils";
 import {onMounted, ref} from "vue";
 import router from "@/router";
 
-const emit = defineEmits(["alert"]);
-
 const accountStore = useAccount();
 const taskManagement = useTasks();
 const statusManagement = useStatus();
 const isCraeted = ref(false);
 
 onMounted(async () => {
-  if (localStorage.getItem("token")) {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  const boardId = localStorage.getItem("boardId");
+
+  if (token && boardId) {
     accountStore.setisLogin(true);
     accountStore.decodedToken(token);
+    accountStore.setBoardId(boardId);
   }
 
-  isCraeted.value = true; // Simulate check is board is craeted
-
   // if board craeted Fetch Data
-  const listStatuses = await getStatusList(
-    import.meta.env.VITE_BASE_URL + "/statuses"
-  );
-  const listTasks = await getTaskList(import.meta.env.VITE_BASE_URL + "/tasks");
+  const listStatuses = await getStatusList();
+
+  const listTasks = await getTaskList();
 
   // Assign value to global management
   statusManagement.addStatuses(listStatuses);
   taskManagement.addTasks(listTasks);
 
-  if (isCraeted.value) router.push("/board/777");
+  if (boardId !== undefined) {
+    router.push(`/board/${accountStore.getBoardId()}`);
+    isCraeted.value = true;
+  }
 });
-
-function alertMessage(type, message) {
-  emit("alert", type, message);
-}
 </script>
 
 <template>
   <button v-if="!isCraeted">Create new Board</button>
-  <RouterView @alert="alertMessage"></RouterView>
+  <RouterView></RouterView>
 </template>
 
 <style scoped></style>
