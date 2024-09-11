@@ -9,7 +9,8 @@ import {
 import { convertStatus, convertUtils } from "@/util/formatUtils"
 import { useStatus } from "@/store/status"
 import { useTasks } from "@/store/task"
-const emit = defineEmits(["alert"])
+import { useAlert } from "@/store/alert"
+
 
 const router = useRouter()
 const statusDetails = ref({ name: "", description: "", statusColor: "#6b7280" })
@@ -17,6 +18,7 @@ const oldStatus = ref({})
 const dataLoaded = ref(false)
 const mode = ref("read")
 const isDisable = ref(true)
+const alertManagement = useAlert()
 const statusManagement = useStatus()
 const taskManagement = useTasks()
 const delState = ref(false)
@@ -39,7 +41,6 @@ onMounted(async () => {
 async function actionHandler(id, action) {
 	if (action === "read") {
 		statusDetails.value = await getStatusById(
-			import.meta.env.VITE_BASE_URL + "/statuses",
 			id
 		)
 
@@ -55,7 +56,7 @@ async function actionHandler(id, action) {
 			
 			mode.value = "read"
 		} else if (statusDetails.value === 404) {
-			emit("alert", "error", "An error has occurred, the request status does not exist")
+			alertManagement.statusHandler("error", "An error has occurred, the request status does not exist")
 			router.push("/task")
 		} 
 		
@@ -63,7 +64,7 @@ async function actionHandler(id, action) {
 		mode.value = "add"
 	} else if (action === "edit") {
 		statusDetails.value = await getStatusById(
-			import.meta.env.VITE_BASE_URL + "/statuses",
+			
 			id
 		);
 		if (typeof statusDetails.value === "object") {
@@ -76,7 +77,7 @@ async function actionHandler(id, action) {
 			oldStatus.value = { ...statusDetails.value }
 			mode.value = "edit";
 		} else {
-			emit("alert", "error", "An error has occurred, the status does not exist")
+			alertManagement.statusHandler("error", "An error has occurred, the status does not exist")
 			router.push("/status");
 		}
 	} else if (action === "delete") {
@@ -86,7 +87,7 @@ async function actionHandler(id, action) {
 			router.push("/status")
 		}
 		statusDetails.value = await getStatusById(
-			import.meta.env.VITE_BASE_URL + "/statuses",
+			
 			id
 		)
 	}
@@ -99,15 +100,15 @@ async function confirmHandeler() {
 		})
 		if (duplicateName.length === 0) {
 			const respone = await addStatus(
-				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			)
 			if (typeof respone === "object") {
-				emit("alert", "success", "The status has been added successfully")
+				alertManagement.statusHandler("success", "The status has been added successfully")
 				statusManagement.addStatus(respone)
-			} else if (respone === 400) emit("alert", "error", "Internal server error")
+			} else if (respone === 400) alertManagement.statusHandler("error", "Internal server error")
 		} else {
-			emit("alert", "error", "Status name must be uniques, please choose another name.")
+			
+			alertManagement.statusHandler("error", "Status name must be uniques, please choose another name.")
 			return
 		}
 	}
@@ -117,20 +118,20 @@ async function confirmHandeler() {
 		})
 		if (duplicateName.length === 0) {
 			const respone = await editStatus(
-				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			);
 			if (typeof respone === "object") {
 				statusManagement.editStatus(statusDetails.value);
 				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)
-				emit("alert", "success", "The status has been updated successfully");
+				alertManagement.statusHandler( "success", "The status has been updated successfully");
 			} else if (respone === 400) {
-				emit("alert", "error", "An error has occurred, the status has duplicate status name")
+				alertManagement.statusHandler("error", "An error has occurred, the status has duplicate status name")
 			} else if (respone === 404) {
-				emit("alert", "error", "An error has occurred, the status does not exist")
+				
+				alertManagement.statusHandler("error", "An error has occurred, the status does not exist")
 			}
 		} else {
-			emit("alert", "error", "An error has occurred, the status has duplicate status name")
+			alertManagement.statusHandler("error", "An error has occurred, the status has duplicate status name")
 		}
 	}
 	closeModal()

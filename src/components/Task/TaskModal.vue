@@ -1,159 +1,162 @@
 <script setup>
-import {onMounted, ref} from "vue";
-import {useRouter} from "vue-router";
-import {useTasks} from "@/store/task.js";
-import {useStatus} from "@/store/status.js";
-import {getTaskById, addTask, editTask} from "@/util/fetchUtils";
-import {convertUtils, convertStatus} from "@/util/formatUtils";
+import { onMounted, ref } from "vue"
+import { useRouter } from "vue-router"
+import { useTasks } from "@/store/task.js"
+import { useStatus } from "@/store/status.js"
+import { getTaskById, addTask, editTask } from "@/util/fetchUtils"
+import { convertUtils, convertStatus } from "@/util/formatUtils"
+import { useAlert } from "@/store/alert"
 
-const emit = defineEmits(["alert"]);
-
-const taskManagement = useTasks();
-const taskMessage = ref();
-const statusManagement = useStatus();
-const router = useRouter();
+const alertManagement = useAlert()
+const taskManagement = useTasks()
+const taskMessage = ref()
+const statusManagement = useStatus()
+const router = useRouter()
 const taskDetails = ref({
   title: "",
   assignees: "",
   description: "",
-  status: {id: 1},
-});
+  status: { id: 1 }
+})
 const oldTask = ref({
   title: "",
   assignees: "",
   description: "",
-  status: {id: 1},
-});
-const isDisable = ref(true);
-const mode = ref("read");
-const dataLoaded = ref(false);
+  status: { id: 1 }
+})
+const isDisable = ref(true)
+const mode = ref("read")
+const dataLoaded = ref(false)
 
 onMounted(async () => {
-  const fullPath = router.currentRoute.value.fullPath;
-  const data = fullPath.split("/");
+  const fullPath = router.currentRoute.value.fullPath
+  const data = fullPath.split("/")
 
   if (data.length === 5 && !data.includes("add")) {
-    actionHandler(data[4], "read");
+    actionHandler(data[4], "read")
   } else if (data.includes("add")) {
-    actionHandler(null, "add");
+    actionHandler(null, "add")
   } else if (data.includes("edit")) {
-    actionHandler(data[4], "edit");
+    actionHandler(data[4], "edit")
   }
-  dataLoaded.value = true;
-});
+  dataLoaded.value = true
+})
 
 async function actionHandler(id, action) {
   if (action === "read") {
-    const response = await getTaskById(
-      import.meta.env.VITE_BASE_URL + "/tasks",
-      id
-    );
+    const response = await getTaskById(id)
+
     if (typeof response === "object") {
-      taskDetails.value = response;
-      taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn);
-      taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn);
-      mode.value = "read";
+      taskDetails.value = response
+
+      taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
+      taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn)
+      mode.value = "read"
     } else if (response === 404) {
-      emit("alert", "error", `An error has occurred, the task doesn't exit `);
-      router.push("/");
+      alertManagement.statusHandler(
+        "error",
+        `An error has occurred, the task doesn't exit `
+      )
+      router.push("/")
     }
   } else if (action === "add") {
-    mode.value = "add";
+    mode.value = "add"
   } else if (action === "edit") {
-    const response = await getTaskById(
-      import.meta.env.VITE_BASE_URL + "/tasks",
-      id
-    );
+    const response = await getTaskById(id)
     if (typeof response === "object") {
-      taskDetails.value = response;
-      taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn);
-      taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn);
-      oldTask.value = {...taskDetails.value};
-      mode.value = "edit";
+      taskDetails.value = response
+      taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
+      taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn)
+      oldTask.value = { ...taskDetails.value }
+      mode.value = "edit"
     } else if (response === 404) {
-      emit("alert", "error", "The requested task does not exist");
-      router.push("/");
+      alertManagement.statusHandler(
+        "error",
+        "The requested task does not exist"
+      )
+      router.push("/")
     }
   }
 }
 async function confirmHandeler() {
   if (mode.value === "add") {
-    if (!taskDetails.value?.status) taskDetails.value.status = 1;
-    const respone = await addTask(
-      import.meta.env.VITE_BASE_URL + "/tasks",
-      taskDetails.value
-    );
+    if (!taskDetails.value?.status) taskDetails.value.status = 1
+    const respone = await addTask(taskDetails.value)
     if (typeof respone === "object") {
-      emit("alert", "success", "The task has been added successfully");
-      taskManagement.addTask(respone);
-      taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
+      alertManagement.statusHandler(
+        "success",
+        "The task has been added successfully"
+      )
+      taskManagement.addTask(respone)
+      taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
     } else if (respone === 400) {
-      emit(
-        "alert",
+      alertManagement.statusHandler(
         "error",
         "An error has occurred, the status limit is excreed"
-      );
+      )
     }
 
-    closeModal();
-    return;
+    closeModal()
+    return
   }
   if (mode.value === "edit") {
-    const respone = await editTask(
-      import.meta.env.VITE_BASE_URL + "/tasks",
-      taskDetails.value
-    );
+    const respone = await editTask(taskDetails.value)
     if (typeof respone === "object") {
-      emit("alert", "success", "The task has been updated successfully");
-      taskManagement.editTask(taskDetails.value.id, respone);
-      taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
+      alertManagement.statusHandler(
+        "success",
+        "The task has been updated successfully"
+      )
+      taskManagement.editTask(taskDetails.value.id, respone)
+      taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
     } else if (respone === 400) {
-      emit(
-        "alert",
+      alertManagement.statusHandler(
         "error",
         "An error has occurred, the status limit is excreed"
-      );
+      )
     } else if (respone === 404) {
-      emit("alert", "error", "The requested task does not exist");
+      alertManagement.statusHandler(
+        "error",
+        "The requested task does not exist"
+      )
     }
 
-    closeModal();
-    return;
+    closeModal()
+    return
   }
 }
 function saveBthHandler(isTrue = false) {
   taskMessage.value = statusManagement.getStatusById(
     taskDetails.value.status?.id
-  );
+  )
   if (
     taskDetails.value.title?.length > 100 ||
     taskDetails.value.assignees?.length > 30 ||
     taskDetails.value.description?.length > 500
   ) {
-    isDisable.value = true;
-    return;
+    isDisable.value = true
+    return
   }
   if (isTrue && taskDetails.value.title !== "") {
-    isDisable.value = false;
-    return;
+    isDisable.value = false
+    return
   }
   if (
-    JSON.stringify({...oldTask.value}) !==
-      JSON.stringify({...taskDetails.value}) &&
+    JSON.stringify({ ...oldTask.value }) !==
+      JSON.stringify({ ...taskDetails.value }) &&
     oldTask.value.title &&
     mode.value !== "add"
   ) {
-    isDisable.value = false;
-    return;
+    isDisable.value = false
+    return
   }
   if (mode.value === "add" && taskDetails.value.title !== "") {
-    isDisable.value = false;
-    return;
+    isDisable.value = false
+    return
   }
-  isDisable.value = true;
+  isDisable.value = true
 }
 function closeModal() {
-  router.go(-1);
+  router.go(-1)
 }
 </script>
 
@@ -225,7 +228,7 @@ function closeModal() {
             <div
               v-if="mode === 'read'"
               class="itbkk-description w-[95%] h-[90%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
-              :class="{'italic text-gray-500': !taskDetails.description}"
+              :class="{ 'italic text-gray-500': !taskDetails.description }"
             >
               {{
                 taskDetails.description
@@ -259,7 +262,7 @@ function closeModal() {
               <div
                 v-if="mode === 'read'"
                 class="itbkk-assignees min-h-[180px] px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
-                :class="{'italic text-gray-500': !taskDetails.assignees}"
+                :class="{ 'italic text-gray-500': !taskDetails.assignees }"
               >
                 {{
                   taskDetails.assignees ? taskDetails.assignees : "Unassigned"

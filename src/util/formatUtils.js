@@ -10,7 +10,7 @@ function formatTimeZone(timestampString) {
     const formattedtimestamp = timestamp.toLocaleString("en-GB", {
         timeZone: userTimeZone,
     })
-    return formattedtimestamp
+    return formattedtimestamp   
 }
 function convertStatus(statusString) {
     const words = statusString.split('_');

@@ -2,6 +2,7 @@ import { defineStore } from "pinia"
 import { ref } from "vue"
 export const useAccount = defineStore("account", () => {
   const token = ref("")
+  const boardId = ref("")
   const data = ref()
   const isLogin = ref(false)
 
@@ -31,6 +32,7 @@ export const useAccount = defineStore("account", () => {
 
   function logOut() {
     localStorage.removeItem("token")
+    localStorage.removeItem("boardId")
   }
 
   function getData() {
@@ -43,6 +45,13 @@ export const useAccount = defineStore("account", () => {
     isLogin.value = islogin
   }
 
+  function setBoardId(rawboardId) {
+    boardId.value = rawboardId
+  }
+  function getBoardId() {
+    return boardId.value
+  }
+
   return {
     decodedToken,
     setToken,
@@ -50,6 +59,8 @@ export const useAccount = defineStore("account", () => {
     logOut,
     getData,
     getisLogin,
-    setisLogin
+    setisLogin,
+    setBoardId,
+    getBoardId
   }
 })
