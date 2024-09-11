@@ -20,40 +20,43 @@ const routes = [
         path: "board",
         component: Board,
         children: [
-          { path: "add", name: "boardAdd", component: CreateBoardModal },
+          { path: "add", name: "boardAdd", component: CreateBoardModal }
+        ]
+      },
+
+      {
+        path: "/board/:id",
+        name: "boardTask",
+        component: Tasks,
+        children: [
+          { path: "task/add", name: "taskAdd", component: TaskModal },
           {
-            path: ":id",
-            component: Tasks,
-            children: [
-              { path: "task/add", name: "taskAdd", component: TaskModal },
-              {
-                path: "task/:taskId",
-                name: "taskDetail",
-                component: TaskModal
-              },
-              {
-                path: "task/:taskId/edit",
-                name: "taskEdit",
-                component: TaskModal
-              }
-            ]
+            path: "task/:taskId",
+            name: "taskDetail",
+            component: TaskModal
           },
           {
-            path: ":id/status",
-            component: Statuses,
-            children: [
-              { path: "add", name: "statusAdd", component: StatusModal },
-              {
-                path: ":statusId",
-                name: "statusDetail",
-                component: StatusModal
-              },
-              {
-                path: ":statusId/edit",
-                name: "statusEdit",
-                component: StatusModal
-              }
-            ]
+            path: "task/:taskId/edit",
+            name: "taskEdit",
+            component: TaskModal
+          }
+        ]
+      },
+
+      {
+        path: "/board/:id/status",
+        component: Statuses,
+        children: [
+          { path: "add", name: "statusAdd", component: StatusModal },
+          {
+            path: ":statusId",
+            name: "statusDetail",
+            component: StatusModal
+          },
+          {
+            path: ":statusId/edit",
+            name: "statusEdit",
+            component: StatusModal
           }
         ]
       }
@@ -77,9 +80,9 @@ const router = createRouter({
 
 // Global Navigation Guard
 router.beforeEach((to, from, next) => {
-  if (to.path !== "/login") {
-    const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token")
 
+  if (to.path !== "/login") {
     if (!token) {
       next({
         path: "/login"

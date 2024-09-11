@@ -1,36 +1,36 @@
 <script setup>
-import {ref} from "vue";
-import {RouterLink} from "vue-router";
-import {useStatus} from "@/store/status.js";
-import ListModel from "../Ui/ListModel.vue";
+import { ref } from "vue"
+import { RouterLink } from "vue-router"
+import { useStatus } from "@/store/status.js"
+import ListModel from "../Ui/ListModel.vue"
 
-const emit = defineEmits(["alert", "delAction"]);
+const emit = defineEmits(["delAction"])
 const prop = defineProps({
   limitExceed: {
-    type: Array,
-  },
-});
+    type: Array
+  }
+})
 
-const statusManagement = useStatus();
-const mode = ref("read");
+const statusManagement = useStatus()
+const mode = ref("read")
 
 function modalHandler(id, action) {
   if (action === "add") {
-    mode.value = "add";
+    mode.value = "add"
   } else if (action === "read") {
   } else if (action === "edit") {
-    mode.value = "edit";
+    mode.value = "edit"
   }
 }
 
 function delBtnHandler(id, tranferId) {
-  emit("delAction", id, tranferId);
+  emit("delAction", id, tranferId)
 }
 </script>
 
 <template>
   <router-link
-    :to="{name: 'statusAdd'}"
+    :to="{ name: 'statusAdd' }"
     class="invisible mobile-L:visible absolute left-0 bottom-0 mb-[20px] ml-[20px]"
   >
     <div
@@ -91,7 +91,7 @@ function delBtnHandler(id, tranferId) {
         </div>
       </div>
     </div>
-    <router-link :to="{name: 'statusAdd'}" class="mobile-L:hidden">
+    <router-link :to="{ name: 'statusAdd' }" class="mobile-L:hidden">
       <div
         class="transition itbkk-button-add flex items-center min-h-[55px] mb-[5px] px-[15px] bg bg-[#F6F6F6] hover:bg-white border-dashed border-[3px] border-[#FFCB45] rounded-[8px]"
       >
@@ -131,7 +131,10 @@ function delBtnHandler(id, tranferId) {
           class="transition itbkk-item flex justify-between w-[100%] min-h-[55px] px-[20px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] reak-all hover:drop-shadow-2xl"
         >
           <router-link
-            :to="{name: 'statusDetail', params: {statusId: slotprop.job.id}}"
+            :to="{
+              name: 'statusDetail',
+              params: { statusId: slotprop.job.id }
+            }"
             class="w-full"
           >
             <div class="w-[100%] flex gap-[5px]">
@@ -141,7 +144,7 @@ function delBtnHandler(id, tranferId) {
               <div class="w-[33%]">
                 <div
                   class="text-white min-w-[80px] max-w-[150px] px-[10px] rounded-[5px] m-[auto] inline-block transition-icon duration-100 hover:drop-shadow-2xl"
-                  :style="{backgroundColor: slotprop.job.statusColor}"
+                  :style="{ backgroundColor: slotprop.job.statusColor }"
                 >
                   <p class="itbkk-status-name">{{ slotprop.job.name }}</p>
                 </div>
@@ -151,7 +154,7 @@ function delBtnHandler(id, tranferId) {
                 <div class="">
                   <p
                     :class="{
-                      'italic text-gray-500': !slotprop.job.description,
+                      'italic text-gray-500': !slotprop.job.description
                     }"
                     class="itbkk-status-description"
                   >
@@ -166,15 +169,12 @@ function delBtnHandler(id, tranferId) {
             </div>
           </router-link>
           <div class="w-[12%]">
-            <div
-              class="flex tablet:flex-col w-[100px]"
-              v-if="
-                slotprop.job.name.toLowerCase() !== 'No Status'.toLowerCase() &&
-                slotprop.job.name.toLowerCase() !== 'Done'.toLowerCase()
-              "
-            >
+            <div class="flex tablet:flex-col w-[100px]">
               <router-link
-                :to="{name: 'statusEdit', params: {statusId: slotprop.job.id}}"
+                :to="{
+                  name: 'statusEdit',
+                  params: { statusId: slotprop.job.id }
+                }"
                 class="itbkk-button-edit"
               >
                 <div
