@@ -1,0 +1,26 @@
+server {
+    listen       80 default_server;
+    server_name  ip23sy2.sit.kmutt.ac.th;
+    
+    location / {
+       root   /usr/share/nginx/html/;
+       index  index.html index.htm;
+       try_files $uri $uri/ /index.html;
+    }
+#        location /task {
+#        root   /usr/share/nginx/html/;
+#        index  index.html index.htm;
+#        try_files $uri $uri/ /index.html;
+#    }
+#        location /status {
+#        root   /usr/share/nginx/html/;
+#        index  index.html index.htm;
+#        try_files $uri $uri/ /index.html;
+#    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+}
