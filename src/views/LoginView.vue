@@ -1,35 +1,49 @@
 <script setup>
-import {ref} from "vue";
-import router from "@/router";
-import {login} from "@/util/accountFetchUtil";
-import {useAccount} from "@/store/account";
-const emit = defineEmits(["alert"]);
-const userName = ref("");
-const password = ref("");
-const accountStore = useAccount();
-const isValid = ref(false);
+import { ref } from "vue"
+import router from "@/router"
+import { login } from "@/util/accountFetchUtil"
+import { useAlert } from "@/store/alert"
+import { useAccount } from "@/store/account"
+import toggleIconShowHidePassword from "@/compasable/toggleIconShowHidePassword"
+import { getBoardIdByUserOIDs } from "@/util/fetchUtils"
+
+const userName = ref("")
+const password = ref("")
+const passwordField = ref(null)
+const accountStore = useAccount()
+const alertManagement = useAlert()
+const isValid = ref(false)
 
 async function register(e) {
-  e.preventDefault();
+  e.preventDefault()
   // fetch api
+
   const response = await login(
     import.meta.env.VITE_LOGIN_URL,
     userName.value,
     password.value
-  );
+  )
+
   if (response.access_token) {
-    accountStore.decodedToken(response.access_token);
-    accountStore.setToken(response.access_token);
-    accountStore.setisLogin(true);
-    router.push("/task");
+    console.log("true")
+
+    accountStore.decodedToken(response.access_token)
+    accountStore.setToken(response.access_token)
+    accountStore.setisLogin(true)
+    const oid = accountStore.getData().oid
+    // const board = await getBoardIdByUserOIDs(oid)
+    // const boardId = board[0]?.id
+    localStorage.setItem("token", accountStore.getToken())
+    // localStorage.setItem("boardId", boardId)
+    router.push("/board")
   } else {
-    emit(
-      "alert",
+    console.log("false")
+    alertManagement.statusHandler(
       "error",
       "An error has occurred, Username or Password is incorrect"
-    );
-    password.value = "";
-    isValid.value = true;
+    )
+    password.value = ""
+    isValid.value = true
   }
 }
 </script>
@@ -69,20 +83,27 @@ async function register(e) {
               <label class="label">
                 <span class="label-text">Password</span>
               </label>
-              <input
-                v-model="password"
-                type="password"
-                placeholder="password"
-                class="itbkk-password input input-bordered bg-gray-200"
-                :class="
-                  isValid === true && password === ''
-                    ? 'border border-red-600'
-                    : ''
-                "
-                maxlength="14"
-                required
-              />
-
+              <div class="relative">
+                <input
+                  v-model="password"
+                  type="password"
+                  placeholder="Enter password here..."
+                  class="itbkk-password input input-bordered bg-gray-200 w-full"
+                  :class="
+                    isValid === true && password === ''
+                      ? 'border border-red-600'
+                      : ''
+                  "
+                  maxlength="14"
+                  required
+                  ref="passwordField"
+                />
+                <img
+                  src="https://api.iconify.design/dashicons:hidden.svg?color=%23888888"
+                  class="w-5 h-5 absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer mr-2"
+                  @click="toggleIconShowHidePassword($event, passwordField)"
+                />
+              </div>
               <label class="label">
                 <a href="#" class="label-text-alt link link-hover"
                   >Forgot password?</a
