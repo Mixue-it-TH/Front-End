@@ -5,7 +5,7 @@ import {useAlert} from "./store/alert";
 
 const alertManagement = useAlert();
 
-console.log("this is new version!!");
+console.log("test CD operation!!");
 
 const {showAlertModal, message, statusType} = alertManagement.getAlertData();
 </script>
