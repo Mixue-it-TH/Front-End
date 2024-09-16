@@ -31,6 +31,6 @@ jobs:
       run: docker tag xsmity01/task-frontend:latest xsmity01/task-frontend:version${{ github.run_number }}
 
     - name: Push Docker image tag:version
-      run: docker push xsmity01/task-frontend:version${{ github.run_number }
+      run: docker push xsmity01/task-frontend:version${{ github.run_number }}
     
 
