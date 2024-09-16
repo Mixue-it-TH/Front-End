@@ -30,5 +30,9 @@ jobs:
     - name: Build Docker image
       run: docker build -t xsmity01/task-fronend:latest .
 
-    - name: Push Docker image
+    - name: Push Docker image tag:latest
       run: docker push xsmity01/task-fronend:latest
+
+    - name: Push Docker iamge tag:(version_number)
+      run: docker tag xsmity01/task-fronend:latest xsmity01/task-fronend:${{ github.run_number }}
+      run: docker push xsmity01/task-fronend:${{ github.run_number }}
