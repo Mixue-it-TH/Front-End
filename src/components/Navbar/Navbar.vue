@@ -1,156 +1,159 @@
 <script setup>
-import router from "@/router";
-import {handelLimitMaximum} from "@/util/statusFetchUtils";
-import {useStatus} from "@/store/status";
-import {useTasks} from "@/store/task";
-import {onMounted, ref, watch} from "vue";
-import {getEnableLimit} from "@/util/fetchUtils";
-import {useAlert} from "@/store/alert";
-import {useAccount} from "@/store/account";
-import {useLimit} from "@/store/limitReached";
-import LimitTaskModal from "./LimitTaskModal.vue";
-import {useRoute} from "vue-router";
-const alertManagement = useAlert();
-const statusManagement = useStatus();
-const accountStore = useAccount();
-const taskManagement = useTasks();
-const limitManagement = useLimit();
-const sortState = ref(0);
-const showLimitModal = ref(false);
-const statusFilter = ref([]);
-const limitMaximux = ref(10);
-const isLimit = ref(false);
-const toggleManage = ref(" Manage Status");
-const route = useRoute();
-const isboardSelect = ref(true);
+import router from "@/router"
+import { handelLimitMaximum } from "@/util/statusFetchUtils"
+import { useStatus } from "@/store/status"
+import { useTasks } from "@/store/task"
+import { onMounted, ref, watch } from "vue"
+import { getEnableLimit, getBoardIdByUserOIDs } from "@/util/fetchUtils"
+import { useAlert } from "@/store/alert"
+import { useAccount } from "@/store/account"
+import { useLimit } from "@/store/limitReached"
+import LimitTaskModal from "./LimitTaskModal.vue"
+import { useRoute } from "vue-router"
+const alertManagement = useAlert()
+const statusManagement = useStatus()
+const accountStore = useAccount()
+const taskManagement = useTasks()
+const limitManagement = useLimit()
+const sortState = ref(0)
+const showLimitModal = ref(false)
+const statusFilter = ref([])
+const limitMaximux = ref(10)
+const isLimit = ref(false)
+const toggleManage = ref(" Manage Status")
+const route = useRoute()
+const isboardSelect = ref(true)
+const boardName = ref("")
 
 watch(
   () => route.fullPath,
-  (newPath) => {
+  async (newPath) => {
     if (newPath === "/board") {
-      isboardSelect.value = false;
-      toggleManage.value = " Manage Status";
+      isboardSelect.value = false
+      toggleManage.value = " Manage Status"
     } else {
-      isboardSelect.value = true;
+      isboardSelect.value = true
     }
     if (newPath.includes("status")) {
-      toggleManage.value = "Home";
+      toggleManage.value = "Home"
     }
   },
-  {immediate: true}
-);
+  { immediate: true }
+)
 
 onMounted(async () => {
-  const isEnbleLimit = await getEnableLimit();
+  boardName.value = localStorage.getItem("boardName")
+  const isEnbleLimit = await getEnableLimit()
 
-  isLimit.value = isEnbleLimit.limitMaximumTask;
-  limitMaximux.value = isEnbleLimit.noOfTasks;
+  isLimit.value = isEnbleLimit.limitMaximumTask
+  limitMaximux.value = isEnbleLimit.noOfTasks
 
-  const responese = await handelLimitMaximum(isLimit.value, limitMaximux.value);
+  const responese = await handelLimitMaximum(isLimit.value, limitMaximux.value)
 
   if (isEnbleLimit.limitMaximumTask)
-    limitManagement.addLimitReached(responese.statusList);
+    limitManagement.addLimitReached(responese.statusList)
   taskManagement.setLimitMaximumTask(
     isEnbleLimit.limitMaximumTask,
     isEnbleLimit.noOfTasks
-  );
-  console.log("toggle", toggleManage.value);
-});
+  )
+  console.log("toggle", toggleManage.value)
+})
 
 async function filterSelection(statusName) {
   const isDuplicate = statusFilter.value.filter((status) => {
-    return status === statusName;
-  });
+    return status === statusName
+  })
   if (isDuplicate.length === 0) {
-    statusFilter.value.push(statusName);
+    statusFilter.value.push(statusName)
   } else {
     statusFilter.value = statusFilter.value.filter((status) => {
-      return status !== statusName;
-    });
+      return status !== statusName
+    })
   }
-  taskManagement.addFilter(statusFilter.value);
+  taskManagement.addFilter(statusFilter.value)
   if (sortState.value === 0) {
-    taskManagement.sortTaskByStatusName(2);
+    taskManagement.sortTaskByStatusName(2)
   } else {
-    taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
+    taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
   }
 }
 function filterDeleteSelection(statusName) {
   statusFilter.value = statusFilter.value.filter((status) => {
-    return status !== statusName;
-  });
-  taskManagement.addFilter(statusFilter.value);
+    return status !== statusName
+  })
+  taskManagement.addFilter(statusFilter.value)
   if (sortState.value === 0) {
-    taskManagement.sortTaskByStatusName(2);
-  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
+    taskManagement.sortTaskByStatusName(2)
+  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
 }
 
 function filterClearSelection() {
-  statusFilter.value = [];
-  taskManagement.addFilter(statusFilter.value);
+  statusFilter.value = []
+  taskManagement.addFilter(statusFilter.value)
   if (sortState.value === 0) {
-    taskManagement.sortTaskByStatusName(2);
-  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
+    taskManagement.sortTaskByStatusName(2)
+  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
 }
 
 function sortTask() {
-  sortState.value = taskManagement.sortTaskByStatusName(sortState.value);
+  sortState.value = taskManagement.sortTaskByStatusName(sortState.value)
 }
 
 function loginHandle(login) {
   if (!login) {
-    accountStore.setisLogin(login);
-    localStorage.removeItem("token");
-    localStorage.removeItem("boardId");
-    router.push("/login");
+    accountStore.setisLogin(login)
+    localStorage.removeItem("token")
+    localStorage.removeItem("boardId")
+    localStorage.removeItem("boardName")
+    router.push("/login")
   }
 }
 
 function toggleMode() {
-  const boardId = accountStore.getBoardId();
+  const boardId = accountStore.getBoardId()
   if (toggleManage.value === " Manage Status") {
-    router.push(`/board/${boardId}/status`);
-    toggleManage.value = "Home";
+    router.push(`/board/${boardId}/status`)
+    toggleManage.value = "Home"
   } else if (toggleManage.value === "Home") {
-    router.push(`/board/${boardId}`);
-    toggleManage.value = " Manage Status";
+    router.push(`/board/${boardId}`)
+    toggleManage.value = " Manage Status"
   }
 }
 
 function limitModalHandler(isClose) {
-  showLimitModal.value = isClose;
+  showLimitModal.value = isClose
 }
 
 async function handelLimit(enable, amountLimit) {
-  const responese = await handelLimitMaximum(enable, amountLimit);
-  console.log(responese);
+  const responese = await handelLimitMaximum(enable, amountLimit)
+  console.log(responese)
 
   if (responese.limitMaximumTask) {
-    limitManagement.addLimitReached(responese.statusList);
+    limitManagement.addLimitReached(responese.statusList)
     alertManagement.statusHandler(
       "success",
       `The Kanban board now limits ${responese.noOfTasks} tasks in each status`
-    );
+    )
   } else {
-    limitManagement.clearLimitReached();
+    limitManagement.clearLimitReached()
     alertManagement.statusHandler(
       "success",
       `The Kanban board has disabled the task limit in each status`
-    );
+    )
   }
   taskManagement.setLimitMaximumTask(
     responese.limitMaximumTask,
     responese.noOfTasks
-  );
+  )
 
-  limitMaximux.value = amountLimit;
-  showLimitModal.value = false;
-  isLimit.value = enable;
+  limitMaximux.value = amountLimit
+  showLimitModal.value = false
+  isLimit.value = enable
 }
 
 function backToPrevious() {
-  router.push("/board");
-  taskManagement.clearAllTask();
+  router.push("/board")
+  taskManagement.clearAllTask()
 }
 </script>
 
@@ -304,7 +307,7 @@ function backToPrevious() {
           </div>
         </div>
       </div>
-      <RouterLink v-if="!accountStore.getisLogin()" :to="{name: 'login'}">
+      <RouterLink v-if="!accountStore.getisLogin()" :to="{ name: 'login' }">
         <div class="flex btn btn-outline mt-[5px]">Login</div>
       </RouterLink>
       <div v-else class="dropdown dropdown-end flex items-center">
@@ -351,6 +354,11 @@ function backToPrevious() {
     <ul>
       <li></li>
       <li><a>Home</a></li>
+      <li>
+        {{
+          accountStore.getBoardName() ? accountStore.getBoardName() : boardName
+        }}
+      </li>
     </ul>
   </div>
 </template>

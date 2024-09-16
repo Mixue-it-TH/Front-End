@@ -39,7 +39,9 @@ onMounted(async () => {
           >
             <div>
               <span
-                @click="$emit('isCreate', false, slotprop.job.id)"
+                @click="
+                  $emit('isCreate', false, slotprop.job.id, slotprop.job.name)
+                "
                 class="flex justify-center p-2"
               >
                 {{ slotprop.key + 1 }}. {{ slotprop.job.name }}

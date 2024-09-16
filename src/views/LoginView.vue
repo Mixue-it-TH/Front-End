@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import router from "@/router"
 import { login } from "@/util/accountFetchUtil"
 import { useAlert } from "@/store/alert"
@@ -14,10 +14,13 @@ const accountStore = useAccount()
 const alertManagement = useAlert()
 const isValid = ref(false)
 
+onMounted(() => {
+  localStorage.removeItem("token")
+})
+
 async function register(e) {
   e.preventDefault()
   // fetch api
-
   const response = await login(
     import.meta.env.VITE_LOGIN_URL,
     userName.value,

@@ -10,6 +10,7 @@ import { convertStatus, convertUtils } from "@/util/formatUtils"
 import { useStatus } from "@/store/status"
 import { useTasks } from "@/store/task"
 import { useAlert } from "@/store/alert"
+import { useAccount } from "@/store/account"
 
 
 const router = useRouter()
@@ -21,6 +22,7 @@ const isDisable = ref(true)
 const alertManagement = useAlert()
 const statusManagement = useStatus()
 const taskManagement = useTasks()
+const accountStore = useAccount()
 const delState = ref(false)
 
 onMounted(async () => {
@@ -58,7 +60,13 @@ async function actionHandler(id, action) {
 		} else if (statusDetails.value === 404) {
 			alertManagement.statusHandler("error", "An error has occurred, the request status does not exist")
 			router.push("/task")
-		} 
+		}else {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
+    }
 		
 	} else if (action === "add") {
 		mode.value = "add"
@@ -76,7 +84,14 @@ async function actionHandler(id, action) {
 			);
 			oldStatus.value = { ...statusDetails.value }
 			mode.value = "edit";
-		} else {
+		}else if(statusDetails.value === 401){	
+      		alertManagement.statusHandler(
+       	 "error",
+        `For security reasons, your session has expired. Please log back in.`
+     	 )
+      accountStore.unAuthorizeHandle()
+		} 
+		else {
 			alertManagement.statusHandler("error", "An error has occurred, the status does not exist")
 			router.push("/status");
 		}

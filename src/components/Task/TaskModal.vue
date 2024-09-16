@@ -6,9 +6,11 @@ import { useStatus } from "@/store/status.js"
 import { getTaskById, addTask, editTask } from "@/util/fetchUtils"
 import { convertUtils, convertStatus } from "@/util/formatUtils"
 import { useAlert } from "@/store/alert"
+import { useAccount } from "@/store/account"
 
 const alertManagement = useAlert()
 const taskManagement = useTasks()
+const accountStore = useAccount()
 const taskMessage = ref()
 const statusManagement = useStatus()
 const router = useRouter()
@@ -58,6 +60,12 @@ async function actionHandler(id, action) {
         `An error has occurred, the task doesn't exit `
       )
       router.push("/")
+    } else {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
     }
   } else if (action === "add") {
     mode.value = "add"
@@ -75,6 +83,12 @@ async function actionHandler(id, action) {
         "The requested task does not exist"
       )
       router.push("/")
+    } else {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
     }
   }
 }

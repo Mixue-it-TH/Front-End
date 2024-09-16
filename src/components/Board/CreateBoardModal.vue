@@ -3,6 +3,7 @@ import { useRouter } from "vue-router"
 import { ref } from "vue"
 import { createBoard } from "@/util/fetchUtils"
 import { useAlert } from "@/store/alert"
+import { useAccount } from "@/store/account"
 
 const router = useRouter()
 const prop = defineProps({
@@ -10,26 +11,34 @@ const prop = defineProps({
     type: String
   }
 })
-const boardName = ref("")
+
 const alertManagement = useAlert()
-const isDisable = ref(true)
+const accountStore = useAccount()
+const boardName = ref(accountStore.getData().name)
 
 async function saveBoard(name) {
   const newBoard = await createBoard(name)
-  console.log(11)
-  closeModal()
+  if (newBoard === 401) {
+    alertManagement.statusHandler(
+      "error",
+      `For security reasons, your session has expired. Please log back in.`
+    )
+    accountStore.unAuthorizeHandle()
+  } else {
+    closeModal()
+  }
 } // ปิด modal}
 
 function handleCreateBoard() {
-  if (boardName.value !== "") {
-    isDisable.value = false
-  } else {
-    isDisable.value = true
-  }
+  // if (boardName.value !== "") {
+  //   isDisable.value = false
+  // } else {
+  //   isDisable.value = true
+  // }
 }
 
 function closeModal() {
-  router.push("/board ")
+  router.push("/board")
   // router.go(-1);
   router.go(-1) // previous page
 }
@@ -49,11 +58,16 @@ function closeModal() {
           <p class="pl-[5px] pt-[10px]">Create Your Board</p>
         </div>
         <div class="mx-[5px]">
-          <p class="font-bold">Name</p>
+          <div class="flex gap-1 my-2">
+            <p class="font-bold">Name</p>
+            <p class="text-[#AFAFAF] text-[15px]">{{ boardName.length }}/120</p>
+          </div>
+
           <input
             v-model="boardName"
             type="text"
             @input="handleCreateBoard"
+            maxlength="120"
             placeholder="Your board name here"
             class="itbkk-board-name mt-[10px] w-[100%] border-[2px] border-gray-200 rounded-[4px] bg-white placeholder-slate-200 h-[50px] pl-[10px]"
           />
@@ -67,8 +81,6 @@ function closeModal() {
             </button>
             <button
               @click="saveBoard(boardName)"
-              :disabled="isDisable"
-              :class="isDisable ? 'opacity-35' : ''"
               class="itbkk-button itbkk-button-confirm disabled w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-400 rounded-lg mr-5"
             >
               save
