@@ -5,6 +5,8 @@ import {useAlert} from "./store/alert";
 
 const alertManagement = useAlert();
 
+console.log("this is new version!!");
+
 const {showAlertModal, message, statusType} = alertManagement.getAlertData();
 </script>
 
