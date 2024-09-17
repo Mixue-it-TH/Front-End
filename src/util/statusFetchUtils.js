@@ -1,13 +1,13 @@
 function getToken() {
-  const token = localStorage.getItem("token")
-  if (token) return token
+  const token = localStorage.getItem("token");
+  if (token) return token;
 }
 function getBoardId() {
-  return localStorage.getItem("boardId")
+  return localStorage.getItem("boardId");
 }
 
-const token = getToken()
-const boardId = getBoardId()
+const token = getToken();
+const boardId = getBoardId();
 
 async function getStatusById(id) {
   try {
@@ -15,18 +15,18 @@ async function getStatusById(id) {
       `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses/${id}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       }
-    )
-    const item = await data.json()
+    );
+    const item = await data.json();
     if (data.status === 200) {
-      return item
+      return item;
     } else {
-      return data.status
+      return data.status;
     }
   } catch (error) {
-    console.log(`error: ${e}`)
+    console.log(`error: ${e}`);
   }
 }
 
@@ -38,25 +38,25 @@ async function addStatus(newStatus) {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: newStatus.name?.trim(),
           description: newStatus.description
             ? newStatus.description.trim()
             : null,
-          statusColor: newStatus.statusColor
-        })
+          statusColor: newStatus.statusColor,
+        }),
       }
-    )
+    );
     if (response.ok) {
-      const responseData = await response.json()
-      return responseData
+      const responseData = await response.json();
+      return responseData;
     } else {
-      return response.status
+      return response.status;
     }
   } catch (e) {
-    console.log(`error: ${e}`)
+    console.log(`error: ${e}`);
   }
 }
 
@@ -68,7 +68,7 @@ async function editStatus(status) {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           id: status.id,
@@ -77,16 +77,16 @@ async function editStatus(status) {
             status.description !== "" && status.description !== null
               ? status.description.trim()
               : null,
-          statusColor: status.statusColor
-        })
+          statusColor: status.statusColor,
+        }),
       }
-    )
+    );
     if (respone.ok) {
-      const responseData = await respone.json()
-      return responseData
-    } else return respone.status
+      const responseData = await respone.json();
+      return responseData;
+    } else return respone.status;
   } catch (e) {
-    console.log(`error: ${e}`)
+    console.log(`error: ${e}`);
   }
 }
 async function deleteStatusById(id) {
@@ -95,16 +95,16 @@ async function deleteStatusById(id) {
       `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses/${id}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        method: "DELETE"
+        method: "DELETE",
       }
-    )
+    );
     if (response.ok) {
-      return response
-    } else return response.status
+      return response;
+    } else return response.status;
   } catch (e) {
-    console.log(`error: ${e}`)
+    console.log(`error: ${e}`);
   }
 }
 async function deleteTaskAndTranfer(id, newId) {
@@ -113,20 +113,19 @@ async function deleteTaskAndTranfer(id, newId) {
       `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses/${id}/${newId}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        method: "DELETE"
+        method: "DELETE",
       }
-    )
-    return response
+    );
+    return response;
   } catch (e) {
-    console.log(`error: ${e}`)
+    console.log(`error: ${e}`);
   }
 }
 
 async function handelLimitMaximum(isLimit, amountMaximum) {
-  const token = getToken()
-  console.log(boardId)
+  const token = getToken();
 
   try {
     const response = await fetch(
@@ -135,22 +134,22 @@ async function handelLimitMaximum(isLimit, amountMaximum) {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           limitMaximumTask: isLimit ? 1 : 0,
-          noOfTasks: amountMaximum
-        })
+          noOfTasks: amountMaximum,
+        }),
       }
-    )
+    );
     if (response.ok) {
-      const responseData = await response.json()
-      return responseData
+      const responseData = await response.json();
+      return responseData;
     } else {
-      throw new Error("Failed to add status")
+      throw new Error("Failed to add status");
     }
   } catch (e) {
-    console.log(`error: ${e}`)
+    console.log(`error: ${e}`);
   }
 }
 export {
@@ -159,5 +158,5 @@ export {
   editStatus,
   deleteTaskAndTranfer,
   deleteStatusById,
-  handelLimitMaximum
-}
+  handelLimitMaximum,
+};
