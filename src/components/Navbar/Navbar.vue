@@ -119,6 +119,8 @@ function loginHandle(login) {
     localStorage.removeItem("token")
     localStorage.removeItem("boardId")
     localStorage.removeItem("boardName")
+    taskManagement.clearAllTask()
+    statusManagement.clearAllStatus()
     router.push("/login")
   }
 }
@@ -343,10 +345,10 @@ function backToPrevious() {
           </div>
           <div class="ml-2 font-inter flex-1 flex flex-col justify-center">
             <div class="itbkk-fullname mt-2">
-              {{ accountStore.getData().name }}
+              {{ accountStore.getData()?.name }}
             </div>
             <div class="text-black text-opacity-40 text-[10px]">
-              {{ accountStore.getData().role }}
+              {{ accountStore.getData()?.role }}
             </div>
           </div>
         </div>

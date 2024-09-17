@@ -100,7 +100,7 @@ router.beforeEach((to, from, next) => {
     } else {
       accountStore.decodedToken(token)
 
-      if (accountStore.getData().exp < Date.now() / 1000) {
+      if (accountStore.getData()?.exp < Date.now() / 1000) {
         next({
           path: "/login"
         })

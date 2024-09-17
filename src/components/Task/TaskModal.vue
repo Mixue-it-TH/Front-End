@@ -34,6 +34,9 @@ const dataLoaded = ref(false)
 onMounted(async () => {
   const fullPath = router.currentRoute.value.fullPath
   const data = fullPath.split("/")
+  if (statusManagement.getAllStatus().length === 0) {
+    statusManagement.addStatuses(listStatuses)
+  }
 
   if (data.length === 5 && !data.includes("add")) {
     actionHandler(data[4], "read")
@@ -111,6 +114,12 @@ async function confirmHandeler() {
         "error",
         "An error has occurred, the status limit is excreed"
       )
+    } else {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
     }
 
     closeModal()

@@ -124,6 +124,8 @@ export const useTasks = defineStore("taskmanager", () => {
   function clearAllTask() {
     tasks.value = []
     originalTasks.value = []
+    console.log(tasks.value)
+    console.log(originalTasks.value)
   }
 
   function setLimitMaximumTask(isEnble, amount) {

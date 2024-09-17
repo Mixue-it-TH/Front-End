@@ -6,6 +6,8 @@ import { useAlert } from "@/store/alert"
 import { useAccount } from "@/store/account"
 import toggleIconShowHidePassword from "@/compasable/toggleIconShowHidePassword"
 import { getBoardIdByUserOIDs } from "@/util/fetchUtils"
+import { useTasks } from "@/store/task"
+import { useStatus } from "@/store/status"
 
 const userName = ref("")
 const password = ref("")
@@ -13,9 +15,14 @@ const passwordField = ref(null)
 const accountStore = useAccount()
 const alertManagement = useAlert()
 const isValid = ref(false)
+const taskManagement = useTasks()
+const statusManagement = useStatus()
 
 onMounted(() => {
   localStorage.removeItem("token")
+  taskManagement.clearAllTask()
+  statusManagement.clearAllStatus()
+  console.log("AHA")
 })
 
 async function register(e) {
