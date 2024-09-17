@@ -21,6 +21,9 @@ describe(`TC-PBI19-PERSIONAL-BOARD-3-FE-1\n
   })
 
   it("should have add task button and click to open task add modal", () => {
+    cy.contains(
+      "Software Development Kanban Board for the course INT222 Integrated Project II at School of Information Technology in 202"
+    ).click()
     cy.get(".itbkk-button-add").should("exist").click()
 
     cy.get(".itbkk-modal-task").should("exist").as("modal")

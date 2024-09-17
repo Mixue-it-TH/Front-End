@@ -27,13 +27,12 @@ onMounted(async () => {
   } else if (listTasks.status === 401) {
     router.push("/login")
   }
-
+  if (taskManagement.getAllTask().length === 0 && listTasks.status !== 400) {
+    taskManagement.clearAllTask()
+    taskManagement.addTasks(listTasks)
+  }
   if (statusManagement.getAllStatus().length === 0) {
     statusManagement.addStatuses(listStatuses)
-  }
-  if (taskManagement.getAllTask().length === 0) {
-    console.log("555")
-    taskManagement.addTasks(listTasks)
   }
 })
 

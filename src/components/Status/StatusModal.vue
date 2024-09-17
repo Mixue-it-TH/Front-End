@@ -42,11 +42,11 @@ onMounted(async () => {
 })
 
 async function actionHandler(id, action) {
-	console.log('routeId', route.params.id);
+	
 	if (action === "read") {
-		console.log('routeId', route.params.id);
+		
 		statusDetails.value = await getStatusById(id,route.params.id)
-		console.log(statusDetails.value);
+		
 
 		if (typeof statusDetails.value === "object") {
 			statusDetails.value.createdOn = convertUtils(
@@ -56,7 +56,7 @@ async function actionHandler(id, action) {
 				statusDetails.value.updatedOn
 			)
 			statusDetails.value.name = convertStatus(statusDetails.value.name)
-			console.log(statusDetails.value);
+			
 			
 			mode.value = "read"
 		} else if (statusDetails.value === 404) {
@@ -73,6 +73,7 @@ async function actionHandler(id, action) {
 	} else if (action === "add") {
 		mode.value = "add"
 	} else if (action === "edit") {
+		console.log(route.params.id);
 		statusDetails.value = await getStatusById(
 			id,route.params.id
 		);

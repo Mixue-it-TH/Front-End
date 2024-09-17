@@ -38,6 +38,7 @@ async function register(e) {
     // const boardId = board[0]?.id
     localStorage.setItem("token", accountStore.getToken())
     // localStorage.setItem("boardId", boardId)
+    accountStore.getBoardList()
     router.push("/board")
   } else {
     console.log("false")

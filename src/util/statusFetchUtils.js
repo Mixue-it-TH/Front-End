@@ -1,15 +1,17 @@
 function getToken() {
   const token = localStorage.getItem("token")
+  console.log("token", token)
   if (token) return token
 }
 // function getparamId() {
 //   return localStorage.getItem("paramId")
 // }
 
-const token = getToken()
 // const paramId = getBoardId()
 
 async function getStatusById(id, paramId) {
+  const token = getToken()
+  console.log("token", token)
   try {
     const data = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${id}`,
@@ -31,6 +33,7 @@ async function getStatusById(id, paramId) {
 }
 
 async function addStatus(newStatus, paramId) {
+  const token = getToken()
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses`,
@@ -61,6 +64,7 @@ async function addStatus(newStatus, paramId) {
 }
 
 async function editStatus(status, paramId) {
+  const token = getToken()
   try {
     const respone = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${status.id}`,
@@ -90,6 +94,7 @@ async function editStatus(status, paramId) {
   }
 }
 async function deleteStatusById(id, paramId) {
+  const token = getToken()
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${id}`,
@@ -108,6 +113,7 @@ async function deleteStatusById(id, paramId) {
   }
 }
 async function deleteTaskAndTranfer(id, newId, paramId) {
+  const token = getToken()
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${id}/${newId}`,

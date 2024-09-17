@@ -19,13 +19,13 @@ const taskDetails = ref({
   title: "",
   assignees: "",
   description: "",
-  status: { id: 1 }
+  status: { id: statusManagement.getAllStatus()[0].id }
 })
 const oldTask = ref({
   title: "",
   assignees: "",
   description: "",
-  status: { id: 1 }
+  status: { id: statusManagement.getAllStatus()[0].id }
 })
 const isDisable = ref(true)
 const mode = ref("read")

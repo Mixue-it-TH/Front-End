@@ -28,7 +28,7 @@ onMounted(async () => {
   <div class="mt-[50px] flex justify-end">
     <router-link :to="{ name: 'boardAdd' }">
       <button
-        class="itbkk-button-add bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
+        class="itbkk-button-create bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
       >
         Create personal board
       </button>
@@ -42,13 +42,13 @@ onMounted(async () => {
     >
       <template #default="slotprop">
         <div
-          class="itbkk-item relative mx-auto py-2 inline-block w-[80%] bg-slate-500 text-white rounded-[30px] transition-all duration-300 ease-in-out hover:-translate-x-[12px] hover:-translate-y-[12px] h-[auto] cursor-pointer"
+          class="relative mx-auto py-2 inline-block w-[80%] bg-slate-500 text-white rounded-[30px] transition-all duration-300 ease-in-out hover:-translate-x-[12px] hover:-translate-y-[12px] h-[auto] cursor-pointer"
         >
           <router-link
             :to="{ name: 'boardTask', params: { id: slotprop.job.id } }"
           >
             <div>
-              <span class="itbkk-title flex justify-center p-2">
+              <span class="flex justify-center p-2">
                 {{ slotprop.key + 1 }}. {{ slotprop.job.name }}
               </span>
             </div>
