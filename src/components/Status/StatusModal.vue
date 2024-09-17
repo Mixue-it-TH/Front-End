@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from "vue"
+import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 import {
 	getStatusById,
@@ -9,28 +9,32 @@ import {
 import { convertStatus, convertUtils } from "@/util/formatUtils"
 import { useStatus } from "@/store/status"
 import { useTasks } from "@/store/task"
-const emit = defineEmits(["alert"])
+import { useAlert } from "@/store/alert"
+import { useAccount } from "@/store/account"
 
-const statusDetails = ref({ name: "", description: "", statusColor: "#6b7280" })
+
 const router = useRouter()
+const statusDetails = ref({ name: "", description: "", statusColor: "#6b7280" })
 const oldStatus = ref({})
 const dataLoaded = ref(false)
 const mode = ref("read")
 const isDisable = ref(true)
+const alertManagement = useAlert()
 const statusManagement = useStatus()
 const taskManagement = useTasks()
+const accountStore = useAccount()
 const delState = ref(false)
 
 onMounted(async () => {
 	const data = router.currentRoute.value.fullPath.split("/")
-	if (data.length === 3 && !data.includes("add")) {
-		actionHandler(data[2], "read")
+	if (data.length === 5 && !data.includes("add")) {
+		actionHandler(data[4], "read")
 	} else if (data.includes("add")) {
 		actionHandler(null, "add")
 	} else if (data.includes("edit")) {
-		actionHandler(data[2], "edit")
+		actionHandler(data[4], "edit")
 	} else if (data.includes("delete")) {
-		actionHandler(data[2], "delete")
+		actionHandler(data[4], "delete")
 		delState.value = true
 	}
 	dataLoaded.value = true
@@ -39,7 +43,6 @@ onMounted(async () => {
 async function actionHandler(id, action) {
 	if (action === "read") {
 		statusDetails.value = await getStatusById(
-			import.meta.env.VITE_BASE_URL + "/statuses",
 			id
 		)
 
@@ -51,17 +54,25 @@ async function actionHandler(id, action) {
 				statusDetails.value.updatedOn
 			)
 			statusDetails.value.name = convertStatus(statusDetails.value.name)
+			console.log(statusDetails.value);
+			
 			mode.value = "read"
 		} else if (statusDetails.value === 404) {
-			emit("alert", "error", "An error has occurred, the request status does not exist")
+			alertManagement.statusHandler("error", "An error has occurred, the request status does not exist")
 			router.push("/task")
-		} 
+		}else {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
+    }
 		
 	} else if (action === "add") {
 		mode.value = "add"
 	} else if (action === "edit") {
 		statusDetails.value = await getStatusById(
-			import.meta.env.VITE_BASE_URL + "/statuses",
+			
 			id
 		);
 		if (typeof statusDetails.value === "object") {
@@ -73,8 +84,15 @@ async function actionHandler(id, action) {
 			);
 			oldStatus.value = { ...statusDetails.value }
 			mode.value = "edit";
-		} else {
-			emit("alert", "error", "An error has occurred, the status does not exist")
+		}else if(statusDetails.value === 401){	
+      		alertManagement.statusHandler(
+       	 "error",
+        `For security reasons, your session has expired. Please log back in.`
+     	 )
+      accountStore.unAuthorizeHandle()
+		} 
+		else {
+			alertManagement.statusHandler("error", "An error has occurred, the status does not exist")
 			router.push("/status");
 		}
 	} else if (action === "delete") {
@@ -84,7 +102,7 @@ async function actionHandler(id, action) {
 			router.push("/status")
 		}
 		statusDetails.value = await getStatusById(
-			import.meta.env.VITE_BASE_URL + "/statuses",
+			
 			id
 		)
 	}
@@ -97,15 +115,15 @@ async function confirmHandeler() {
 		})
 		if (duplicateName.length === 0) {
 			const respone = await addStatus(
-				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			)
 			if (typeof respone === "object") {
-				emit("alert", "success", "The status has been added successfully")
+				alertManagement.statusHandler("success", "The status has been added successfully")
 				statusManagement.addStatus(respone)
-			} else if (respone === 400) emit("alert", "error", "Internal server error")
+			} else if (respone === 400) alertManagement.statusHandler("error", "Internal server error")
 		} else {
-			emit("alert", "error", "Status name must be uniques, please choose another name.")
+			
+			alertManagement.statusHandler("error", "Status name must be uniques, please choose another name.")
 			return
 		}
 	}
@@ -115,20 +133,20 @@ async function confirmHandeler() {
 		})
 		if (duplicateName.length === 0) {
 			const respone = await editStatus(
-				import.meta.env.VITE_BASE_URL + "/statuses",
 				statusDetails.value
 			);
 			if (typeof respone === "object") {
 				statusManagement.editStatus(statusDetails.value);
 				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)
-				emit("alert", "success", "The status has been updated successfully");
+				alertManagement.statusHandler( "success", "The status has been updated successfully");
 			} else if (respone === 400) {
-				emit("alert", "error", "An error has occurred, the status has duplicate status name")
+				alertManagement.statusHandler("error", "An error has occurred, the status has duplicate status name")
 			} else if (respone === 404) {
-				emit("alert", "error", "An error has occurred, the status does not exist")
+				
+				alertManagement.statusHandler("error", "An error has occurred, the status does not exist")
 			}
 		} else {
-			emit("alert", "error", "An error has occurred, the status has duplicate status name")
+			alertManagement.statusHandler("error", "An error has occurred, the status has duplicate status name")
 		}
 	}
 	closeModal()

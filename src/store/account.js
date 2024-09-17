@@ -1,9 +1,13 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 export const useAccount = defineStore("account", () => {
   const token = ref("")
+  const boardId = ref("")
+  const boardName = ref("")
   const data = ref()
   const isLogin = ref(false)
+  const router = useRouter()
 
   function decodedToken(token) {
     const base64Url = token.split(".")[1]
@@ -31,6 +35,8 @@ export const useAccount = defineStore("account", () => {
 
   function logOut() {
     localStorage.removeItem("token")
+    localStorage.removeItem("boardId")
+    localStorage.removeItem("boardName")
   }
 
   function getData() {
@@ -43,6 +49,26 @@ export const useAccount = defineStore("account", () => {
     isLogin.value = islogin
   }
 
+  function setBoardId(rawboardId) {
+    boardId.value = rawboardId
+  }
+  function getBoardId() {
+    return boardId.value
+  }
+
+  function setBoardName(name) {
+    boardName.value = name
+  }
+
+  function getBoardName() {
+    return boardName.value
+  }
+
+  function unAuthorizeHandle() {
+    logOut()
+    router.push("/login")
+  }
+
   return {
     decodedToken,
     setToken,
@@ -50,6 +76,11 @@ export const useAccount = defineStore("account", () => {
     logOut,
     getData,
     getisLogin,
-    setisLogin
+    setisLogin,
+    setBoardId,
+    getBoardId,
+    getBoardName,
+    setBoardName,
+    unAuthorizeHandle
   }
 })
