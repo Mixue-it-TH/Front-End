@@ -24,9 +24,9 @@ onMounted(async () => {
     accountStore.decodedToken(token)
     accountStore.setBoardId(boardId)
   }
-  if (boardId) {
-    const listStatuses = await getStatusList()
-    const listTasks = await getTaskList()
+  if (route.params.id) {
+    const listStatuses = await getStatusList(route.params.id)
+    const listTasks = await getTaskList(route.params.id)
 
     if (listStatuses.status !== 400) statusManagement.addStatuses(listStatuses)
     if (listTasks.status !== 400) taskManagement.addTasks(listTasks)

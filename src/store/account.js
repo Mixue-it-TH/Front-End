@@ -8,6 +8,7 @@ export const useAccount = defineStore("account", () => {
   const data = ref()
   const isLogin = ref(false)
   const router = useRouter()
+  const boardList = ref([])
 
   function decodedToken(token) {
     const base64Url = token.split(".")[1]
@@ -56,16 +57,20 @@ export const useAccount = defineStore("account", () => {
     return boardId.value
   }
 
-  function setBoardName(name) {
-    boardName.value = name
+  function setBoardList(boards) {
+    boardList.value = boards
   }
 
-  function getBoardName() {
-    return boardName.value
+  function getBoardList() {
+    return boardList.value
+  }
+  function addBoard(newBoard) {
+    boardList.value.push(newBoard)
   }
 
   function unAuthorizeHandle() {
-    logOut()
+    // logOut()
+
     router.push("/login")
   }
 
@@ -79,8 +84,9 @@ export const useAccount = defineStore("account", () => {
     setisLogin,
     setBoardId,
     getBoardId,
-    getBoardName,
-    setBoardName,
-    unAuthorizeHandle
+    unAuthorizeHandle,
+    setBoardList,
+    getBoardList,
+    addBoard
   }
 })

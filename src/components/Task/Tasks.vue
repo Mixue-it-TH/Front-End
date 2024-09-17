@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue"
 import { useTasks } from "@/store/task"
-import { deleteTaskById } from "@/util/fetchUtils"
+import { deleteTaskById, getTaskList, getStatusList } from "@/util/fetchUtils"
 import { useAlert } from "@/store/alert"
 import DeleteTaskModal from "./DeleteTaskModal.vue"
 import ListTask from "./ListTask.vue"
@@ -17,7 +17,20 @@ const router = useRouter()
 const route = useRoute()
 const statusManagement = useStatus()
 
-onMounted(() => {})
+onMounted(async () => {
+  const listTasks = await getTaskList(route.params.id)
+  const listStatuses = await getStatusList(route.params.id)
+  if (listTasks.status === 404) {
+    router.push("/board")
+  }
+  if (taskManagement.getAllTask().length === 0 && listTasks.status !== 400) {
+    taskManagement.addTasks(listTasks)
+  }
+  if (statusManagement.getAllStatus().length === 0) {
+    statusManagement.addStatuses(listStatuses)
+    console.log(statusManagement.getAllStatus())
+  }
+})
 
 function deleteModalHandler(tasks, number) {
   taskDetails.value = tasks
@@ -31,7 +44,7 @@ function closeDeleteModal(isClose) {
 }
 
 async function confirmDelete(id) {
-  const response = await deleteTaskById(id)
+  const response = await deleteTaskById(id, route.params.id)
   if (typeof response === "object") {
     taskManagement.deleteTask(id)
     showDeleteModal.value = false

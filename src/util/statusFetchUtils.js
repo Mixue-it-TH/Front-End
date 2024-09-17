@@ -2,17 +2,17 @@ function getToken() {
   const token = localStorage.getItem("token")
   if (token) return token
 }
-function getBoardId() {
-  return localStorage.getItem("boardId")
-}
+// function getparamId() {
+//   return localStorage.getItem("paramId")
+// }
 
 const token = getToken()
-const boardId = getBoardId()
+// const paramId = getBoardId()
 
-async function getStatusById(id) {
+async function getStatusById(id, paramId) {
   try {
     const data = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses/${id}`,
+      `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -30,10 +30,10 @@ async function getStatusById(id) {
   }
 }
 
-async function addStatus(newStatus) {
+async function addStatus(newStatus, paramId) {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses`,
+      `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses`,
       {
         method: "POST",
         headers: {
@@ -60,10 +60,10 @@ async function addStatus(newStatus) {
   }
 }
 
-async function editStatus(status) {
+async function editStatus(status, paramId) {
   try {
     const respone = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses/${status.id}`,
+      `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${status.id}`,
       {
         method: "PUT",
         headers: {
@@ -89,10 +89,10 @@ async function editStatus(status) {
     console.log(`error: ${e}`)
   }
 }
-async function deleteStatusById(id) {
+async function deleteStatusById(id, paramId) {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses/${id}`,
+      `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -107,10 +107,10 @@ async function deleteStatusById(id) {
     console.log(`error: ${e}`)
   }
 }
-async function deleteTaskAndTranfer(id, newId) {
+async function deleteTaskAndTranfer(id, newId, paramId) {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses/${id}/${newId}`,
+      `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${id}/${newId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -124,13 +124,13 @@ async function deleteTaskAndTranfer(id, newId) {
   }
 }
 
-async function handelLimitMaximum(isLimit, amountMaximum) {
+async function handelLimitMaximum(isLimit, amountMaximum, paramId) {
   const token = getToken()
-  console.log(boardId)
+  console.log(paramId)
 
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses/maximum-task`,
+      `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/maximum-task`,
       {
         method: "PATCH",
         headers: {

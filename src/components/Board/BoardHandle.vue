@@ -14,22 +14,27 @@ const boardList = ref([])
 
 onMounted(async () => {
   boardList.value = await getBoardIdByUserOIDs(accountStore.getData()?.oid)
+  const boards = await getBoardIdByUserOIDs(accountStore.getData()?.oid)
+  accountStore.setBoardList(boards)
 })
 </script>
 
 <template>
-  <div class="border border-black mt-[50px] flex justify-end">
+  <div class="mt-[50px] flex justify-end">
     <router-link :to="{ name: 'boardAdd' }">
       <button
         class="bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
       >
-        Create new Board
+        Create personal board
       </button>
     </router-link>
   </div>
 
   <div v-if="boardList.length !== 0" class="gap-2 p-3">
-    <ListModel class="grid grid-cols-3 mx-auto gap-3" :jobs="boardList">
+    <ListModel
+      class="grid grid-cols-3 mx-auto gap-3"
+      :jobs="accountStore.getBoardList()"
+    >
       <template #default="slotprop">
         <div
           class="relative mx-auto py-2 inline-block w-[80%] bg-slate-500 text-white rounded-[30px] transition-all duration-300 ease-in-out hover:-translate-x-[12px] hover:-translate-y-[12px] h-[auto] cursor-pointer"
@@ -38,12 +43,7 @@ onMounted(async () => {
             :to="{ name: 'boardTask', params: { id: slotprop.job.id } }"
           >
             <div>
-              <span
-                @click="
-                  $emit('isCreate', false, slotprop.job.id, slotprop.job.name)
-                "
-                class="flex justify-center p-2"
-              >
+              <span class="flex justify-center p-2">
                 {{ slotprop.key + 1 }}. {{ slotprop.job.name }}
               </span>
             </div>

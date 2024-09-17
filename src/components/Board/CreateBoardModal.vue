@@ -24,9 +24,10 @@ async function saveBoard(name) {
       `For security reasons, your session has expired. Please log back in.`
     )
     accountStore.unAuthorizeHandle()
-  } else {
-    closeModal()
+    console.log("AHA")
   }
+  accountStore.addBoard(newBoard)
+  closeModal()
 } // ปิด modal}
 
 function handleCreateBoard() {
@@ -40,7 +41,7 @@ function handleCreateBoard() {
 function closeModal() {
   router.push("/board")
   // router.go(-1);
-  router.go(-1) // previous page
+  // router.go(-1) // previous page
 }
 </script>
 

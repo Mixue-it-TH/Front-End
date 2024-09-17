@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { useTasks } from "@/store/task.js"
 import { useStatus } from "@/store/status.js"
 import { getTaskById, addTask, editTask } from "@/util/fetchUtils"
@@ -14,6 +14,7 @@ const accountStore = useAccount()
 const taskMessage = ref()
 const statusManagement = useStatus()
 const router = useRouter()
+const route = useRoute()
 const taskDetails = ref({
   title: "",
   assignees: "",
@@ -46,9 +47,10 @@ onMounted(async () => {
 
 async function actionHandler(id, action) {
   if (action === "read") {
-    const response = await getTaskById(id)
+    const response = await getTaskById(id, route.params.id)
 
     if (typeof response === "object") {
+      console.log(response)
       taskDetails.value = response
 
       taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
@@ -70,7 +72,7 @@ async function actionHandler(id, action) {
   } else if (action === "add") {
     mode.value = "add"
   } else if (action === "edit") {
-    const response = await getTaskById(id)
+    const response = await getTaskById(id, route.params.id)
     if (typeof response === "object") {
       taskDetails.value = response
       taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
@@ -95,7 +97,7 @@ async function actionHandler(id, action) {
 async function confirmHandeler() {
   if (mode.value === "add") {
     if (!taskDetails.value?.status) taskDetails.value.status = 1
-    const respone = await addTask(taskDetails.value)
+    const respone = await addTask(taskDetails.value, route.params.id)
     if (typeof respone === "object") {
       alertManagement.statusHandler(
         "success",
@@ -114,7 +116,7 @@ async function confirmHandeler() {
     return
   }
   if (mode.value === "edit") {
-    const respone = await editTask(taskDetails.value)
+    const respone = await editTask(taskDetails.value, route.params.id)
     if (typeof respone === "object") {
       alertManagement.statusHandler(
         "success",

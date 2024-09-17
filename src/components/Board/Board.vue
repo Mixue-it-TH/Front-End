@@ -15,24 +15,24 @@ const isClicked = ref(false)
 const boardList = ref([])
 const accountStore = useAccount()
 
-async function boardSelect(isCreate, boardId, boardName) {
-  isCreated.value = isCreate
-  localStorage.setItem("boardId", boardId)
-  taskManagement.clearAllTask()
-  statusManagement.clearAllStatus()
-  accountStore.setBoardId(boardId)
-  localStorage.setItem("boardName", boardName)
-  accountStore.setBoardName(boardName)
-  const listStatuses = await getStatusList()
-  const listTasks = await getTaskList()
-  statusManagement.addStatuses(listStatuses)
-  taskManagement.addTasks(listTasks)
-}
+// async function boardSelect(isCreate, boardId, boardName) {
+//   isCreated.value = isCreate
+//   localStorage.setItem("boardId", boardId)
+//   taskManagement.clearAllTask()
+//   statusManagement.clearAllStatus()
+//   accountStore.setBoardId(boardId)
+//   localStorage.setItem("boardName", boardName)
+//   accountStore.setBoardName(boardName)
+//   // const listStatuses = await getStatusList()
+//   // const listTasks = await getTaskList()
+//   // statusManagement.addStatuses(listStatuses)
+//   // taskManagement.addTasks(listTasks)
+// }
 </script>
 
 <template>
   <div>
-    <BoardHandle @isCreate="boardSelect" />
+    <BoardHandle />
   </div>
 </template>
 

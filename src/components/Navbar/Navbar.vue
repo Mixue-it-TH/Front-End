@@ -31,32 +31,46 @@ watch(
     if (newPath === "/board") {
       isboardSelect.value = false
       toggleManage.value = " Manage Status"
+      // statusManagement.clearAllStatus() //เดี๋ยวกลับมา
     } else {
       isboardSelect.value = true
     }
     if (newPath.includes("status")) {
       toggleManage.value = "Home"
     }
+    if (route.params.id) {
+      if (accountStore.getBoardList().length === 0) {
+        const boards = await getBoardIdByUserOIDs(accountStore.getData()?.oid)
+        accountStore.setBoardList(boards)
+      }
+      boardName.value = accountStore
+        .getBoardList()
+        .find((board) => board.id === route.params.id)
+    }
   },
   { immediate: true }
 )
 
 onMounted(async () => {
-  boardName.value = localStorage.getItem("boardName")
-  const isEnbleLimit = await getEnableLimit()
+  if (route.params.id) {
+    const isEnbleLimit = await getEnableLimit(route.params.id)
 
-  isLimit.value = isEnbleLimit.limitMaximumTask
-  limitMaximux.value = isEnbleLimit.noOfTasks
+    isLimit.value = isEnbleLimit.limitMaximumTask
+    limitMaximux.value = isEnbleLimit.noOfTasks
 
-  const responese = await handelLimitMaximum(isLimit.value, limitMaximux.value)
+    const responese = await handelLimitMaximum(
+      isLimit.value,
+      limitMaximux.value,
+      route.params.id
+    )
 
-  if (isEnbleLimit.limitMaximumTask)
-    limitManagement.addLimitReached(responese.statusList)
-  taskManagement.setLimitMaximumTask(
-    isEnbleLimit.limitMaximumTask,
-    isEnbleLimit.noOfTasks
-  )
-  console.log("toggle", toggleManage.value)
+    if (isEnbleLimit.limitMaximumTask)
+      limitManagement.addLimitReached(responese.statusList)
+    taskManagement.setLimitMaximumTask(
+      isEnbleLimit.limitMaximumTask,
+      isEnbleLimit.noOfTasks
+    )
+  }
 })
 
 async function filterSelection(statusName) {
@@ -110,7 +124,7 @@ function loginHandle(login) {
 }
 
 function toggleMode() {
-  const boardId = accountStore.getBoardId()
+  const boardId = route.params.id
   if (toggleManage.value === " Manage Status") {
     router.push(`/board/${boardId}/status`)
     toggleManage.value = "Home"
@@ -154,6 +168,7 @@ async function handelLimit(enable, amountLimit) {
 function backToPrevious() {
   router.push("/board")
   taskManagement.clearAllTask()
+  statusManagement.clearAllStatus()
 }
 </script>
 
@@ -355,9 +370,7 @@ function backToPrevious() {
       <li></li>
       <li><a>Home</a></li>
       <li>
-        {{
-          accountStore.getBoardName() ? accountStore.getBoardName() : boardName
-        }}
+        {{ boardName?.name }}
       </li>
     </ul>
   </div>

@@ -7,10 +7,10 @@ function getBoardId() {
 }
 const boardId = getBoardId()
 
-async function getTaskList() {
+async function getTaskList(paramId) {
   try {
     const token = getToken()
-    const boardId = getBoardId()
+    const boardId = paramId
 
     const data = await fetch(
       `
@@ -28,10 +28,10 @@ async function getTaskList() {
   }
 }
 
-async function getTaskById(id) {
+async function getTaskById(id, paramId) {
   try {
     const token = getToken()
-    const boardId = getBoardId()
+    const boardId = paramId
 
     const data = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${id}`,
@@ -51,11 +51,11 @@ async function getTaskById(id) {
   }
 }
 
-async function addTask(task) {
+async function addTask(task, paramId) {
   try {
     console.log(task)
     const token = getToken()
-    const boardId = getBoardId()
+    const boardId = paramId
 
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks`,
@@ -86,10 +86,10 @@ async function addTask(task) {
   }
 }
 
-async function editTask(task) {
+async function editTask(task, paramId) {
   try {
     const token = getToken()
-    const boardId = getBoardId()
+    const boardId = paramId
 
     const respone = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${task.id}`,
@@ -118,10 +118,10 @@ async function editTask(task) {
     console.log(`error: ${e}`)
   }
 }
-async function deleteTaskById(id) {
+async function deleteTaskById(id, paramId) {
   try {
     const token = getToken()
-    const boardId = getBoardId()
+    const boardId = paramId
 
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${id}`,
@@ -140,9 +140,9 @@ async function deleteTaskById(id) {
   }
 }
 
-async function getStatusList() {
+async function getStatusList(paramId) {
   const token = getToken()
-  const boardId = getBoardId()
+  const boardId = paramId
 
   try {
     const data = await fetch(
@@ -160,10 +160,10 @@ async function getStatusList() {
   }
 }
 
-async function getEnableLimit() {
+async function getEnableLimit(paramId) {
   try {
     const token = getToken()
-    const boardId = getBoardId()
+    const boardId = paramId
 
     const data = await fetch(
       `
