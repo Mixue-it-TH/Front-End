@@ -8,19 +8,24 @@ export const useAccount = defineStore("account", () => {
   const data = ref()
   const isLogin = ref(false)
   const router = useRouter()
+  const boardList = ref([])
 
   function decodedToken(token) {
-    const base64Url = token.split(".")[1]
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map(function (c) {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
-        })
-        .join("")
-    )
-    data.value = JSON.parse(jsonPayload)
+    if (isValidTokenToken(token)) {
+      const base64Url = token.split(".")[1]
+      const base64 = base64Url?.replace(/-/g, "+")?.replace(/_/g, "/")
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map(function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+          })
+          .join("")
+      )
+      data.value = JSON.parse(jsonPayload)
+    } else {
+      return null
+    }
   }
 
   function setToken(rawToken) {
@@ -56,17 +61,28 @@ export const useAccount = defineStore("account", () => {
     return boardId.value
   }
 
-  function setBoardName(name) {
-    boardName.value = name
+  function setBoardList(boards) {
+    boardList.value = boards
   }
 
-  function getBoardName() {
-    return boardName.value
+  function getBoardList() {
+    return boardList.value
+  }
+  function addBoard(newBoard) {
+    boardList.value.push(newBoard)
   }
 
   function unAuthorizeHandle() {
     logOut()
     router.push("/login")
+  }
+  function isValidTokenToken(token) {
+    const validToken = token.split(".")
+    if (validToken.length < 3) {
+      return false
+    } else {
+      return true
+    }
   }
 
   return {
@@ -79,8 +95,9 @@ export const useAccount = defineStore("account", () => {
     setisLogin,
     setBoardId,
     getBoardId,
-    getBoardName,
-    setBoardName,
-    unAuthorizeHandle
+    unAuthorizeHandle,
+    setBoardList,
+    getBoardList,
+    addBoard
   }
 })

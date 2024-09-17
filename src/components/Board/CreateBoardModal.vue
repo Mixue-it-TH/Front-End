@@ -1,52 +1,55 @@
 <script setup>
-import {useRouter} from "vue-router";
-import {ref} from "vue";
-import {createBoard} from "@/util/fetchUtils";
-import {useAlert} from "@/store/alert";
-import {useAccount} from "@/store/account";
+import { useRouter } from "vue-router"
+import { ref } from "vue"
+import { createBoard } from "@/util/fetchUtils"
+import { useAlert } from "@/store/alert"
+import { useAccount } from "@/store/account"
 
-const router = useRouter();
+const router = useRouter()
 const prop = defineProps({
   name: {
-    type: String,
-  },
-});
+    type: String
+  }
+})
 
-const alertManagement = useAlert();
-const accountStore = useAccount();
-const boardName = ref(accountStore.getData().name);
+const alertManagement = useAlert()
+const accountStore = useAccount()
+const boardName = ref(accountStore.getData().name)
+const isDisable = ref(false)
 
 async function saveBoard(name) {
-  const newBoard = await createBoard(name);
+  const newBoard = await createBoard(name)
   if (newBoard === 401) {
     alertManagement.statusHandler(
       "error",
       `For security reasons, your session has expired. Please log back in.`
-    );
-    accountStore.unAuthorizeHandle();
+    )
+    accountStore.unAuthorizeHandle()
   } else {
-    closeModal();
+    accountStore.addBoard(newBoard)
+    console.log(accountStore.getBoardList())
+    closeModal()
   }
 } // ปิด modal}
 
-function handleCreateBoard() {
-  // if (boardName.value !== "") {
-  //   isDisable.value = false
-  // } else {
-  //   isDisable.value = true
-  // }
+function closeModal() {
+  router.push("/board")
+  // router.go(-1);
+  router.go(-1) // previous page
 }
 
-function closeModal() {
-  router.push("/board");
-  // router.go(-1);
-  router.go(-1); // previous page
+function handleCreateBoard() {
+  if (boardName.value.length === 0) {
+    isDisable.value = true
+  } else {
+    isDisable.value = false
+  }
 }
 </script>
 
 <template>
   <div
-    class="itbkk-modal-task backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto"
+    class="itbkk-modal-new backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto"
   >
     <div class="flex justify-center items-center w-[100%] h-[100%]">
       <div
@@ -69,19 +72,21 @@ function closeModal() {
             @input="handleCreateBoard"
             maxlength="120"
             placeholder="Your board name here"
-            class="itbkk-title itbkk-board-name mt-[10px] w-[100%] border-[2px] border-gray-200 rounded-[4px] bg-white placeholder-slate-200 h-[50px] pl-[10px]"
+            class="itbkk-board-name mt-[10px] w-[100%] border-[2px] border-gray-200 rounded-[4px] bg-white placeholder-slate-200 h-[50px] pl-[10px]"
           />
 
           <div class="flex flex-row-reverse mt-[10px]">
             <button
               @click="closeModal"
-              class="itbkk-button itbkk-button-cancel w-[80px] h-[40px] font-[600] text-gary-800 bg bg-red-600 text-white hover:bg-red-400 rounded-lg mr-5"
+              class="itbkk-button-cancel w-[80px] h-[40px] font-[600] text-gary-800 bg bg-red-600 text-white hover:bg-red-400 rounded-lg mr-5"
             >
               cancel
             </button>
             <button
               @click="saveBoard(boardName)"
-              class="itbkk-button itbkk-button-confirm disabled w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-400 rounded-lg mr-5"
+              :class="isDisable ? 'opacity-50' : ''"
+              :disabled="isDisable"
+              class="itbkk-button-ok disabled w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-400 rounded-lg mr-5"
             >
               save
             </button>

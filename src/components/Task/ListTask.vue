@@ -1,18 +1,18 @@
 <script setup>
-import {RouterLink} from "vue-router";
-import Listmodel from "@/components/Ui/ListModel.vue";
+import { RouterLink } from "vue-router"
+import Listmodel from "@/components/Ui/ListModel.vue"
 
-const emit = defineEmits(["delete"]);
+const emit = defineEmits(["delete"])
 const props = defineProps({
   listTasks: {
-    type: Array,
-  },
-});
+    type: Array
+  }
+})
 </script>
 
 <template>
   <router-link
-    :to="{name: 'taskAdd'}"
+    :to="{ name: 'taskAdd' }"
     class="invisible mobile-L:visible absolute left-0 bottom-0 mb-[20px] ml-[20px]"
   >
     <div
@@ -71,7 +71,7 @@ const props = defineProps({
         <p class="">Assignees</p>
       </div>
     </div>
-    <router-link :to="{name: 'taskAdd'}" class="mobile-L:hidden">
+    <router-link :to="{ name: 'taskAdd' }" class="mobile-L:hidden">
       <div
         class="transition itbkk-button-add flex items-center min-h-[55px] mb-[5px] px-[15px] border-dashed border-[3px] hover:bg-white border-[#FFCB45] rounded-[8px]"
       >
@@ -106,10 +106,10 @@ const props = defineProps({
     <Listmodel :jobs="listTasks" v-if="listTasks.length != 0">
       <template #default="slotprop">
         <div
-          class="transition itbkk-item flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
+          class="transition flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
         >
           <router-link
-            :to="{name: 'taskDetail', params: {taskId: slotprop.job.id}}"
+            :to="{ name: 'taskDetail', params: { taskId: slotprop.job.id } }"
             class="w-full h-full"
           >
             <div class="flex w-full min-h-[55px]">
@@ -127,7 +127,7 @@ const props = defineProps({
                 <div
                   class="min-w-[95px] max-w-[120px] w-[90%] rounded-[5px] py-[3px] flex items-center justify-center"
                   :style="{
-                    backgroundColor: slotprop.job.status.statusColor,
+                    backgroundColor: slotprop.job.status.statusColor
                   }"
                 >
                   <p class="itbkk-status text-white">
@@ -139,7 +139,7 @@ const props = defineProps({
                 <p
                   class="itbkk-assignees"
                   :class="{
-                    'italic text-gray-500': !slotprop.job.assignees,
+                    'italic text-gray-500': !slotprop.job.assignees
                   }"
                 >
                   {{
@@ -176,7 +176,7 @@ const props = defineProps({
               class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-[5] bg bg-gray-[#A9A9A9]"
             >
               <router-link
-                :to="{name: 'taskEdit', params: {taskId: slotprop.job.id}}"
+                :to="{ name: 'taskEdit', params: { taskId: slotprop.job.id } }"
               >
                 <li class="itbkk-button-edit flex flex-row">
                   <a class="px-5"

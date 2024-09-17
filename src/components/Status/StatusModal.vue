@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import {
 	getStatusById,
 	addStatus,
@@ -14,6 +14,7 @@ import { useAccount } from "@/store/account"
 
 
 const router = useRouter()
+const route = useRoute()
 const statusDetails = ref({ name: "", description: "", statusColor: "#6b7280" })
 const oldStatus = ref({})
 const dataLoaded = ref(false)
@@ -41,10 +42,11 @@ onMounted(async () => {
 })
 
 async function actionHandler(id, action) {
+	
 	if (action === "read") {
-		statusDetails.value = await getStatusById(
-			id
-		)
+		
+		statusDetails.value = await getStatusById(id,route.params.id)
+		
 
 		if (typeof statusDetails.value === "object") {
 			statusDetails.value.createdOn = convertUtils(
@@ -54,12 +56,12 @@ async function actionHandler(id, action) {
 				statusDetails.value.updatedOn
 			)
 			statusDetails.value.name = convertStatus(statusDetails.value.name)
-			console.log(statusDetails.value);
+			
 			
 			mode.value = "read"
 		} else if (statusDetails.value === 404) {
 			alertManagement.statusHandler("error", "An error has occurred, the request status does not exist")
-			router.push("/task")
+			router.push('/board')
 		}else {
       alertManagement.statusHandler(
         "error",
@@ -71,9 +73,9 @@ async function actionHandler(id, action) {
 	} else if (action === "add") {
 		mode.value = "add"
 	} else if (action === "edit") {
+		console.log(route.params.id);
 		statusDetails.value = await getStatusById(
-			
-			id
+			id,route.params.id
 		);
 		if (typeof statusDetails.value === "object") {
 			statusDetails.value.createdOn = convertUtils(
@@ -102,8 +104,7 @@ async function actionHandler(id, action) {
 			router.push("/status")
 		}
 		statusDetails.value = await getStatusById(
-			
-			id
+			id,route.params.id
 		)
 	}
 }
@@ -115,7 +116,7 @@ async function confirmHandeler() {
 		})
 		if (duplicateName.length === 0) {
 			const respone = await addStatus(
-				statusDetails.value
+				statusDetails.value,route.params.id
 			)
 			if (typeof respone === "object") {
 				alertManagement.statusHandler("success", "The status has been added successfully")
@@ -133,7 +134,7 @@ async function confirmHandeler() {
 		})
 		if (duplicateName.length === 0) {
 			const respone = await editStatus(
-				statusDetails.value
+				statusDetails.value,route.params.id
 			);
 			if (typeof respone === "object") {
 				statusManagement.editStatus(statusDetails.value);

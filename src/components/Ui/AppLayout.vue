@@ -9,12 +9,13 @@ import {
   getBoardIdByUserOIDs
 } from "@/util/fetchUtils"
 import { useAccount } from "@/store/account"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 const taskManagement = useTasks()
 const statusManagement = useStatus()
 const accountStore = useAccount()
 const isLoaded = ref(false)
 const route = useRoute()
+const router = useRouter()
 
 onMounted(async () => {
   const token = localStorage.getItem("token")
@@ -24,15 +25,19 @@ onMounted(async () => {
     accountStore.decodedToken(token)
     accountStore.setBoardId(boardId)
   }
-  if (boardId) {
-    const listStatuses = await getStatusList()
-    const listTasks = await getTaskList()
+  if (route.params.id) {
+    const listStatuses = await getStatusList(route.params.id)
+    const listTasks = await getTaskList(route.params.id)
 
     if (listStatuses.status !== 400) statusManagement.addStatuses(listStatuses)
     if (listTasks.status !== 400) taskManagement.addTasks(listTasks)
   }
 
   isLoaded.value = true
+  // const boards = await getBoardIdByUserOIDs(accountStore.getData()?.oid)
+  // if (boards === 401) {
+  //   accountStore.unAuthorizeHandle()
+  // }
 })
 </script>
 
