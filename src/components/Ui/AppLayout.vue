@@ -9,12 +9,13 @@ import {
   getBoardIdByUserOIDs
 } from "@/util/fetchUtils"
 import { useAccount } from "@/store/account"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 const taskManagement = useTasks()
 const statusManagement = useStatus()
 const accountStore = useAccount()
 const isLoaded = ref(false)
 const route = useRoute()
+const router = useRouter()
 
 onMounted(async () => {
   const token = localStorage.getItem("token")

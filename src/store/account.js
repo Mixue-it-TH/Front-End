@@ -22,6 +22,7 @@ export const useAccount = defineStore("account", () => {
         .join("")
     )
     data.value = JSON.parse(jsonPayload)
+    console.log(data.value)
   }
 
   function setToken(rawToken) {
@@ -69,8 +70,7 @@ export const useAccount = defineStore("account", () => {
   }
 
   function unAuthorizeHandle() {
-    // logOut()
-
+    logOut()
     router.push("/login")
   }
 
