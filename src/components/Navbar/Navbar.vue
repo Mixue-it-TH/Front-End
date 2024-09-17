@@ -166,9 +166,9 @@ async function handelLimit(enable, amountLimit) {
 }
 
 function backToPrevious() {
-  router.push("/board")
   taskManagement.clearAllTask()
   statusManagement.clearAllStatus()
+  router.push("/board")
 }
 </script>
 

@@ -18,25 +18,19 @@ const boardName = ref(accountStore.getData().name)
 
 async function saveBoard(name) {
   const newBoard = await createBoard(name)
+  console.log(newBoard)
   if (newBoard === 401) {
     alertManagement.statusHandler(
       "error",
       `For security reasons, your session has expired. Please log back in.`
     )
     accountStore.unAuthorizeHandle()
-    console.log("AHA")
+  } else {
+    accountStore.addBoard(newBoard)
+    console.log(accountStore.getBoardList())
+    closeModal()
   }
-  accountStore.addBoard(newBoard)
-  closeModal()
 } // ปิด modal}
-
-function handleCreateBoard() {
-  // if (boardName.value !== "") {
-  //   isDisable.value = false
-  // } else {
-  //   isDisable.value = true
-  // }
-}
 
 function closeModal() {
   router.push("/board")
@@ -47,7 +41,7 @@ function closeModal() {
 
 <template>
   <div
-    class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto"
+    class="itbkk-modal-task backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto"
   >
     <div class="flex justify-center items-center w-[100%] h-[100%]">
       <div
@@ -70,7 +64,7 @@ function closeModal() {
             @input="handleCreateBoard"
             maxlength="120"
             placeholder="Your board name here"
-            class="itbkk-board-name mt-[10px] w-[100%] border-[2px] border-gray-200 rounded-[4px] bg-white placeholder-slate-200 h-[50px] pl-[10px]"
+            class="itbkk-title mt-[10px] w-[100%] border-[2px] border-gray-200 rounded-[4px] bg-white placeholder-slate-200 h-[50px] pl-[10px]"
           />
 
           <div class="flex flex-row-reverse mt-[10px]">
@@ -82,7 +76,7 @@ function closeModal() {
             </button>
             <button
               @click="saveBoard(boardName)"
-              class="itbkk-button itbkk-button-confirm disabled w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-400 rounded-lg mr-5"
+              class="itbkk-button-add itbkk-button-confirm disabled w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-400 rounded-lg mr-5"
             >
               save
             </button>

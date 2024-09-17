@@ -184,6 +184,7 @@ async function getEnableLimit(paramId) {
 async function getBoardIdByUserOIDs(oid) {
   try {
     const token = getToken()
+
     const boardId = getBoardId()
 
     const data = await fetch(

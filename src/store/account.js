@@ -12,7 +12,7 @@ export const useAccount = defineStore("account", () => {
 
   function decodedToken(token) {
     const base64Url = token.split(".")[1]
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+    const base64 = base64Url?.replace(/-/g, "+")?.replace(/_/g, "/")
     const jsonPayload = decodeURIComponent(
       atob(base64)
         .split("")
@@ -22,7 +22,6 @@ export const useAccount = defineStore("account", () => {
         .join("")
     )
     data.value = JSON.parse(jsonPayload)
-    console.log(data.value)
   }
 
   function setToken(rawToken) {

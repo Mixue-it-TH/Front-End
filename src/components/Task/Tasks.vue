@@ -18,17 +18,22 @@ const route = useRoute()
 const statusManagement = useStatus()
 
 onMounted(async () => {
+  console.log("allTask", taskManagement.getAllTask())
   const listTasks = await getTaskList(route.params.id)
   const listStatuses = await getStatusList(route.params.id)
+  console.log(listTasks)
   if (listTasks.status === 404) {
     router.push("/board")
+  } else if (listTasks.status === 401) {
+    router.push("/login")
   }
-  if (taskManagement.getAllTask().length === 0 && listTasks.status !== 400) {
-    taskManagement.addTasks(listTasks)
-  }
+
   if (statusManagement.getAllStatus().length === 0) {
     statusManagement.addStatuses(listStatuses)
-    console.log(statusManagement.getAllStatus())
+  }
+  if (taskManagement.getAllTask().length === 0) {
+    console.log("555")
+    taskManagement.addTasks(listTasks)
   }
 })
 

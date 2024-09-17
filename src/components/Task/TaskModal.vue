@@ -98,6 +98,7 @@ async function confirmHandeler() {
   if (mode.value === "add") {
     if (!taskDetails.value?.status) taskDetails.value.status = 1
     const respone = await addTask(taskDetails.value, route.params.id)
+    console.log("response", respone)
     if (typeof respone === "object") {
       alertManagement.statusHandler(
         "success",

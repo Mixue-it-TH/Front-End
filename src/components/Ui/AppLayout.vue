@@ -34,6 +34,10 @@ onMounted(async () => {
   }
 
   isLoaded.value = true
+  // const boards = await getBoardIdByUserOIDs(accountStore.getData()?.oid)
+  // if (boards === 401) {
+  //   accountStore.unAuthorizeHandle()
+  // }
 })
 </script>
 
