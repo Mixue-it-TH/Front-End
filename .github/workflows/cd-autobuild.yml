@@ -1,0 +1,35 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Log in to Docker Hub
+      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+    - name: Build Docker image
+      run: docker build -t xsmity01/task-frontend:latest .
+
+    - name: Push Docker image tag:latest
+      run: docker push xsmity01/task-frontend:latest
+
+    - name: Tag Docker image with version
+      run: docker tag xsmity01/task-frontend:latest xsmity01/task-frontend:version${{ github.run_number }}
+
+    - name: Push Docker image tag:version
+      run: docker push xsmity01/task-frontend:version${{ github.run_number }}
+    
