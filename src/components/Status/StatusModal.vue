@@ -73,7 +73,6 @@ async function actionHandler(id, action) {
 	} else if (action === "add") {
 		mode.value = "add"
 	} else if (action === "edit") {
-		console.log(route.params.id);
 		statusDetails.value = await getStatusById(
 			id,route.params.id
 		);
@@ -122,8 +121,14 @@ async function confirmHandeler() {
 				alertManagement.statusHandler("success", "The status has been added successfully")
 				statusManagement.addStatus(respone)
 			} else if (respone === 400) alertManagement.statusHandler("error", "Internal server error")
+			else if (respone === 401) {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
+    }
 		} else {
-			
 			alertManagement.statusHandler("error", "Status name must be uniques, please choose another name.")
 			return
 		}
@@ -145,7 +150,13 @@ async function confirmHandeler() {
 			} else if (respone === 404) {
 				
 				alertManagement.statusHandler("error", "An error has occurred, the status does not exist")
-			}
+			}else if (respone	 === 401) {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
+    }
 		} else {
 			alertManagement.statusHandler("error", "An error has occurred, the status has duplicate status name")
 		}

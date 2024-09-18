@@ -4,19 +4,23 @@ import { getBoardIdByUserOIDs } from "@/util/fetchUtils"
 import { onMounted, ref } from "vue"
 import { RouterLink, RouterView, useRouter } from "vue-router"
 import ListModel from "../Ui/ListModel.vue"
+import { useAlert } from "@/store/alert"
 
 const emit = defineEmits(["isCreate"])
 
 const router = useRouter()
 const accountStore = useAccount()
+const alertManagement = useAlert()
 
 const boardList = ref([])
 
 onMounted(async () => {
   const boards = await getBoardIdByUserOIDs(accountStore.getData()?.oid)
-  console.log("board", boards)
   if (boards.status === 401) {
-    console.log(boards)
+    alertManagement.statusHandler(
+      "error",
+      `For security reasons, your session has expired. Please log back in.`
+    )
     router.push("/login")
   } else {
     accountStore.setBoardList(boards)

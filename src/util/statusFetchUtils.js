@@ -1,6 +1,6 @@
 function getToken() {
   const token = localStorage.getItem("token")
-  console.log("token", token)
+
   if (token) return token
 }
 // function getparamId() {
@@ -11,7 +11,7 @@ function getToken() {
 
 async function getStatusById(id, paramId) {
   const token = getToken()
-  console.log("token", token)
+
   try {
     const data = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${id}`,
@@ -132,7 +132,6 @@ async function deleteTaskAndTranfer(id, newId, paramId) {
 
 async function handelLimitMaximum(isLimit, amountMaximum, paramId) {
   const token = getToken()
-  console.log(paramId)
 
   try {
     const response = await fetch(
@@ -153,7 +152,8 @@ async function handelLimitMaximum(isLimit, amountMaximum, paramId) {
       const responseData = await response.json()
       return responseData
     } else {
-      throw new Error("Failed to add status")
+      return response.status
+      // throw new Error("Failed to add status")
     }
   } catch (e) {
     console.log(`error: ${e}`)

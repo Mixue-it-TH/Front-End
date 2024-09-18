@@ -18,10 +18,8 @@ const route = useRoute()
 const statusManagement = useStatus()
 
 onMounted(async () => {
-  console.log("allTask", taskManagement.getAllTask())
   const listTasks = await getTaskList(route.params.id)
   const listStatuses = await getStatusList(route.params.id)
-  console.log(listTasks)
   if (listTasks.status === 404) {
     router.push("/board")
   } else if (listTasks.status === 401) {
@@ -32,10 +30,6 @@ onMounted(async () => {
       taskManagement.clearAllTask()
       taskManagement.addTasks(listTasks)
     }
-    // else {
-    //   taskManagement.clearAllTask()
-    //   taskManagement.addTasks(listTasks)
-    // }
   } else {
     taskManagement.clearAllTask()
   }
@@ -74,6 +68,12 @@ async function confirmDelete(id) {
     taskManagement.deleteTask(id)
     showDeleteModal.value = false
     taskDetails.value = {}
+  } else if (response === 401) {
+    alertManagement.statusHandler(
+      "error",
+      `For security reasons, your session has expired. Please log back in.`
+    )
+    accountStore.unAuthorizeHandle()
   }
 }
 </script>
