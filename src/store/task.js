@@ -35,12 +35,9 @@ export const useTasks = defineStore("taskmanager", () => {
   }
 
   function addTasks(newTask) {
-    console.log(tasks.value)
-
     newTask.forEach((newTask) => {
       addTask(newTask)
     })
-    console.log(tasks.value)
 
     originalTasks.value = [...tasks.value]
     if (filteredArray.length !== 0) {
@@ -124,8 +121,6 @@ export const useTasks = defineStore("taskmanager", () => {
   function clearAllTask() {
     tasks.value = []
     originalTasks.value = []
-    console.log(tasks.value)
-    console.log(originalTasks.value)
   }
 
   function setLimitMaximumTask(isEnble, amount) {

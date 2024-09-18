@@ -32,11 +32,12 @@ const mode = ref("read")
 const dataLoaded = ref(false)
 
 onMounted(async () => {
-  const fullPath = router.currentRoute.value.fullPath
-  const data = fullPath.split("/")
   if (statusManagement.getAllStatus().length === 0) {
     statusManagement.addStatuses(listStatuses)
   }
+
+  const fullPath = router.currentRoute.value.fullPath
+  const data = fullPath.split("/")
 
   if (data.length === 5 && !data.includes("add")) {
     actionHandler(data[4], "read")
@@ -53,7 +54,6 @@ async function actionHandler(id, action) {
     const response = await getTaskById(id, route.params.id)
 
     if (typeof response === "object") {
-      console.log(response)
       taskDetails.value = response
 
       taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn)
@@ -88,7 +88,7 @@ async function actionHandler(id, action) {
         "The requested task does not exist"
       )
       router.push("/")
-    } else {
+    } else if (response === 401) {
       alertManagement.statusHandler(
         "error",
         `For security reasons, your session has expired. Please log back in.`
@@ -101,7 +101,6 @@ async function confirmHandeler() {
   if (mode.value === "add") {
     if (!taskDetails.value?.status) taskDetails.value.status = 1
     const respone = await addTask(taskDetails.value, route.params.id)
-    console.log("response", respone)
     if (typeof respone === "object") {
       alertManagement.statusHandler(
         "success",
@@ -114,7 +113,7 @@ async function confirmHandeler() {
         "error",
         "An error has occurred, the status limit is excreed"
       )
-    } else {
+    } else if (respone === 401) {
       alertManagement.statusHandler(
         "error",
         `For security reasons, your session has expired. Please log back in.`
@@ -144,6 +143,12 @@ async function confirmHandeler() {
         "error",
         "The requested task does not exist"
       )
+    } else if (respone === 401) {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
     }
 
     closeModal()

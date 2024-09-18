@@ -54,7 +54,6 @@ watch(
 onMounted(async () => {
   if (route.params.id) {
     const isEnbleLimit = await getEnableLimit(route.params.id)
-
     isLimit.value = isEnbleLimit.limitMaximumTask
     limitMaximux.value = isEnbleLimit.noOfTasks
 
@@ -63,7 +62,13 @@ onMounted(async () => {
       limitMaximux.value,
       route.params.id
     )
-
+    if (isEnbleLimit === 401 || responese === 401) {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
+    }
     if (isEnbleLimit.limitMaximumTask)
       limitManagement.addLimitReached(responese.statusList)
     taskManagement.setLimitMaximumTask(
@@ -141,26 +146,37 @@ function limitModalHandler(isClose) {
 }
 
 async function handelLimit(enable, amountLimit) {
-  const responese = await handelLimitMaximum(enable, amountLimit)
-  console.log(responese)
+  const responese = await handelLimitMaximum(
+    enable,
+    amountLimit,
+    route.params.id
+  )
 
-  if (responese.limitMaximumTask) {
-    limitManagement.addLimitReached(responese.statusList)
-    alertManagement.statusHandler(
-      "success",
-      `The Kanban board now limits ${responese.noOfTasks} tasks in each status`
+  if (responese !== 401) {
+    if (responese.limitMaximumTask) {
+      limitManagement.addLimitReached(responese.statusList)
+      alertManagement.statusHandler(
+        "success",
+        `The Kanban board now limits ${responese.noOfTasks} tasks in each status`
+      )
+    } else {
+      limitManagement.clearLimitReached()
+      alertManagement.statusHandler(
+        "success",
+        `The Kanban board has disabled the task limit in each status`
+      )
+    }
+    taskManagement.setLimitMaximumTask(
+      responese.limitMaximumTask,
+      responese.noOfTasks
     )
   } else {
-    limitManagement.clearLimitReached()
     alertManagement.statusHandler(
-      "success",
-      `The Kanban board has disabled the task limit in each status`
+      "error",
+      `For security reasons, your session has expired. Please log back in.`
     )
+    accountStore.unAuthorizeHandle()
   }
-  taskManagement.setLimitMaximumTask(
-    responese.limitMaximumTask,
-    responese.noOfTasks
-  )
 
   limitMaximux.value = amountLimit
   showLimitModal.value = false
@@ -363,14 +379,10 @@ function backToPrevious() {
       </div>
     </div>
   </div>
-  <div
-    v-show="isboardSelect"
-    @click="backToPrevious"
-    class="breadcrumbs text-sm"
-  >
+  <div v-show="isboardSelect" class="breadcrumbs text-sm">
     <ul>
       <li></li>
-      <li><a>Home</a></li>
+      <li @click="backToPrevious"><a>Home</a></li>
       <li>
         {{ boardName?.name }}
       </li>

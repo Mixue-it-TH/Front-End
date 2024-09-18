@@ -28,16 +28,15 @@ onMounted(async () => {
   if (route.params.id) {
     const listStatuses = await getStatusList(route.params.id)
     const listTasks = await getTaskList(route.params.id)
+    if (listTasks.status === 401) {
+      router.push("/login")
+    }
 
     if (listStatuses.status !== 400) statusManagement.addStatuses(listStatuses)
     if (listTasks.status !== 400) taskManagement.addTasks(listTasks)
   }
 
   isLoaded.value = true
-  // const boards = await getBoardIdByUserOIDs(accountStore.getData()?.oid)
-  // if (boards === 401) {
-  //   accountStore.unAuthorizeHandle()
-  // }
 })
 </script>
 

@@ -31,7 +31,6 @@ onMounted(async () => {
   if (statusManagement.getAllStatus().length === 0) {
     statusManagement.addStatuses(listStatuses)
   }
-  console.log(statusManagement.getAllStatus())
 })
 
 function delAction(status, id) {
@@ -66,6 +65,12 @@ async function delConfirm(id, tranferId) {
         "An error has occurred, the status does not exist"
       )
       closeDelModal(false)
+    } else if (delRespond.status === 401) {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
     }
     statusManagement.deleteStatus(id)
   } else if (stage.value === "tranfer") {
@@ -87,6 +92,12 @@ async function delConfirm(id, tranferId) {
         "error",
         `Cannot transfer to ${status.name} status since it will exceed the limit. Please choose another status to transfer to.`
       )
+    } else if (delRespond.status === 401) {
+      alertManagement.statusHandler(
+        "error",
+        `For security reasons, your session has expired. Please log back in.`
+      )
+      accountStore.unAuthorizeHandle()
     }
   }
 }
