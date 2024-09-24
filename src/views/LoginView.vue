@@ -1,60 +1,48 @@
 <script setup>
-import { onMounted, ref } from "vue"
-import router from "@/router"
-import { login } from "@/util/accountFetchUtil"
-import { useAlert } from "@/store/alert"
-import { useAccount } from "@/store/account"
-import toggleIconShowHidePassword from "@/compasable/toggleIconShowHidePassword"
-import { getBoardIdByUserOIDs } from "@/util/fetchUtils"
-import { useTasks } from "@/store/task"
-import { useStatus } from "@/store/status"
+import {onMounted, ref} from "vue";
+import router from "@/router";
+import {login} from "@/util/accountFetchUtil";
+import {useAlert} from "@/store/alert";
+import {useAccount} from "@/store/account";
+import toggleIconShowHidePassword from "@/compasable/toggleIconShowHidePassword";
+import {getBoardIdByUserOIDs} from "@/util/fetchUtils";
+import {useTasks} from "@/store/task";
+import {useStatus} from "@/store/status";
 
-const userName = ref("")
-const password = ref("")
-const passwordField = ref(null)
-const accountStore = useAccount()
-const alertManagement = useAlert()
-const isValid = ref(false)
-const taskManagement = useTasks()
-const statusManagement = useStatus()
+const userName = ref("");
+const password = ref("");
+const passwordField = ref(null);
+const accountStore = useAccount();
+const alertManagement = useAlert();
+const isValid = ref(false);
+const taskManagement = useTasks();
+const statusManagement = useStatus();
 
 onMounted(() => {
-  localStorage.removeItem("token")
-  taskManagement.clearAllTask()
-  statusManagement.clearAllStatus()
-  console.log("AHA")
-})
+  localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
+  taskManagement.clearAllTask();
+  statusManagement.clearAllStatus();
+});
 
 async function register(e) {
-  e.preventDefault()
+  e.preventDefault();
   // fetch api
-  const response = await login(
-    import.meta.env.VITE_LOGIN_URL,
-    userName.value,
-    password.value
-  )
+  const response = await login(userName.value, password.value);
 
-  if (response.access_token) {
-    console.log("true")
+  if (response.access_token && response.refresh_token) {
+    accountStore.decodedToken(response.access_token);
+    accountStore.setToken(response.access_token, response.refresh_token);
+    accountStore.setisLogin(true);
 
-    accountStore.decodedToken(response.access_token)
-    accountStore.setToken(response.access_token)
-    accountStore.setisLogin(true)
-    const oid = accountStore.getData().oid
-    // const board = await getBoardIdByUserOIDs(oid)
-    // const boardId = board[0]?.id
-    localStorage.setItem("token", accountStore.getToken())
-    // localStorage.setItem("boardId", boardId)
-    accountStore.getBoardList()
-    router.push("/board")
+    router.push("/board");
   } else {
-    console.log("false")
     alertManagement.statusHandler(
       "error",
       "An error has occurred, Username or Password is incorrect"
-    )
-    password.value = ""
-    isValid.value = true
+    );
+    password.value = "";
+    isValid.value = true;
   }
 }
 </script>

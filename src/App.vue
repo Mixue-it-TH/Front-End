@@ -5,8 +5,6 @@ import {useAlert} from "./store/alert";
 
 const alertManagement = useAlert();
 
-console.log("test CD operation2222!!");
-
 const {showAlertModal, message, statusType} = alertManagement.getAlertData();
 </script>
 

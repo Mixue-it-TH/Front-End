@@ -1,192 +1,192 @@
 <script setup>
-import router from "@/router"
-import { handelLimitMaximum } from "@/util/statusFetchUtils"
-import { useStatus } from "@/store/status"
-import { useTasks } from "@/store/task"
-import { onMounted, ref, watch } from "vue"
-import { getEnableLimit, getBoardIdByUserOIDs } from "@/util/fetchUtils"
-import { useAlert } from "@/store/alert"
-import { useAccount } from "@/store/account"
-import { useLimit } from "@/store/limitReached"
-import LimitTaskModal from "./LimitTaskModal.vue"
-import { useRoute } from "vue-router"
-const alertManagement = useAlert()
-const statusManagement = useStatus()
-const accountStore = useAccount()
-const taskManagement = useTasks()
-const limitManagement = useLimit()
-const sortState = ref(0)
-const showLimitModal = ref(false)
-const statusFilter = ref([])
-const limitMaximux = ref(10)
-const isLimit = ref(false)
-const toggleManage = ref(" Manage Status")
-const route = useRoute()
-const isboardSelect = ref(true)
-const boardName = ref("")
+import router from "@/router";
+import {handelLimitMaximum} from "@/util/statusFetchUtils";
+import {useStatus} from "@/store/status";
+import {useTasks} from "@/store/task";
+import {onMounted, ref, watch} from "vue";
+import {getEnableLimit, getBoardIdByUserOIDs} from "@/util/fetchUtils";
+import {useAlert} from "@/store/alert";
+import {useAccount} from "@/store/account";
+import {useLimit} from "@/store/limitReached";
+import LimitTaskModal from "./LimitTaskModal.vue";
+import {useRoute} from "vue-router";
+import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+const alertManagement = useAlert();
+const statusManagement = useStatus();
+const accountStore = useAccount();
+const taskManagement = useTasks();
+const limitManagement = useLimit();
+const sortState = ref(0);
+const showLimitModal = ref(false);
+const statusFilter = ref([]);
+const limitMaximux = ref(10);
+const isLimit = ref(false);
+const toggleManage = ref(" Manage Status");
+const route = useRoute();
+const isboardSelect = ref(true);
+const boardName = ref("");
 
 watch(
   () => route.fullPath,
   async (newPath) => {
     if (newPath === "/board") {
-      isboardSelect.value = false
-      toggleManage.value = " Manage Status"
-      // statusManagement.clearAllStatus() //เดี๋ยวกลับมา
+      isboardSelect.value = false;
+      toggleManage.value = " Manage Status";
     } else {
-      isboardSelect.value = true
+      isboardSelect.value = true;
     }
     if (newPath.includes("status")) {
-      toggleManage.value = "Home"
+      toggleManage.value = "Home";
     }
     if (route.params.id) {
       if (accountStore.getBoardList().length === 0) {
-        const boards = await getBoardIdByUserOIDs(accountStore.getData()?.oid)
-        accountStore.setBoardList(boards)
+        const boards = await handleRequestWithTokenRefresh(
+          getBoardIdByUserOIDs,
+          accountStore.getData()?.oid
+        );
+        accountStore.setBoardList(boards);
       }
       boardName.value = accountStore
         .getBoardList()
-        .find((board) => board.id === route.params.id)
+        .find((board) => board.id === route.params.id);
     }
   },
-  { immediate: true }
-)
+  {immediate: true}
+);
 
 onMounted(async () => {
   if (route.params.id) {
-    const isEnbleLimit = await getEnableLimit(route.params.id)
-    isLimit.value = isEnbleLimit.limitMaximumTask
-    limitMaximux.value = isEnbleLimit.noOfTasks
+    const isEnbleLimit = await handleRequestWithTokenRefresh(
+      getEnableLimit,
+      route.params.id
+    );
 
-    const responese = await handelLimitMaximum(
+    isLimit.value = isEnbleLimit.limitMaximumTask;
+    limitMaximux.value = isEnbleLimit.noOfTasks;
+    const responese = await handleRequestWithTokenRefresh(
+      handelLimitMaximum,
       isLimit.value,
       limitMaximux.value,
       route.params.id
-    )
-    if (isEnbleLimit === 401 || responese === 401) {
-      alertManagement.statusHandler(
-        "error",
-        `For security reasons, your session has expired. Please log back in.`
-      )
-      accountStore.unAuthorizeHandle()
-    }
+    );
+
     if (isEnbleLimit.limitMaximumTask)
-      limitManagement.addLimitReached(responese.statusList)
+      limitManagement.addLimitReached(responese.statusList);
     taskManagement.setLimitMaximumTask(
       isEnbleLimit.limitMaximumTask,
       isEnbleLimit.noOfTasks
-    )
+    );
   }
-})
+});
 
 async function filterSelection(statusName) {
   const isDuplicate = statusFilter.value.filter((status) => {
-    return status === statusName
-  })
+    return status === statusName;
+  });
   if (isDuplicate.length === 0) {
-    statusFilter.value.push(statusName)
+    statusFilter.value.push(statusName);
   } else {
     statusFilter.value = statusFilter.value.filter((status) => {
-      return status !== statusName
-    })
+      return status !== statusName;
+    });
   }
-  taskManagement.addFilter(statusFilter.value)
+  taskManagement.addFilter(statusFilter.value);
   if (sortState.value === 0) {
-    taskManagement.sortTaskByStatusName(2)
+    taskManagement.sortTaskByStatusName(2);
   } else {
-    taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
+    taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
   }
 }
 function filterDeleteSelection(statusName) {
   statusFilter.value = statusFilter.value.filter((status) => {
-    return status !== statusName
-  })
-  taskManagement.addFilter(statusFilter.value)
+    return status !== statusName;
+  });
+  taskManagement.addFilter(statusFilter.value);
   if (sortState.value === 0) {
-    taskManagement.sortTaskByStatusName(2)
-  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
+    taskManagement.sortTaskByStatusName(2);
+  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
 }
 
 function filterClearSelection() {
-  statusFilter.value = []
-  taskManagement.addFilter(statusFilter.value)
+  statusFilter.value = [];
+  taskManagement.addFilter(statusFilter.value);
   if (sortState.value === 0) {
-    taskManagement.sortTaskByStatusName(2)
-  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState())
+    taskManagement.sortTaskByStatusName(2);
+  } else taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
 }
 
 function sortTask() {
-  sortState.value = taskManagement.sortTaskByStatusName(sortState.value)
+  sortState.value = taskManagement.sortTaskByStatusName(sortState.value);
 }
 
-function loginHandle(login) {
+function logOutHandle(login) {
   if (!login) {
-    accountStore.setisLogin(login)
-    localStorage.removeItem("token")
-    localStorage.removeItem("boardId")
-    localStorage.removeItem("boardName")
-    taskManagement.clearAllTask()
-    statusManagement.clearAllStatus()
-    router.push("/login")
+    accountStore.setisLogin(login);
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("boardId");
+    localStorage.removeItem("boardName");
+    taskManagement.clearAllTask();
+    statusManagement.clearAllStatus();
+    router.push("/login");
   }
 }
 
 function toggleMode() {
-  const boardId = route.params.id
+  const boardId = route.params.id;
   if (toggleManage.value === " Manage Status") {
-    router.push(`/board/${boardId}/status`)
-    toggleManage.value = "Home"
+    router.push(`/board/${boardId}/status`);
+    toggleManage.value = "Home";
   } else if (toggleManage.value === "Home") {
-    router.push(`/board/${boardId}`)
-    toggleManage.value = " Manage Status"
+    router.push(`/board/${boardId}`);
+    toggleManage.value = " Manage Status";
   }
 }
 
 function limitModalHandler(isClose) {
-  showLimitModal.value = isClose
+  showLimitModal.value = isClose;
 }
 
 async function handelLimit(enable, amountLimit) {
-  const responese = await handelLimitMaximum(
+  const responese = await handleRequestWithTokenRefresh(
+    handelLimitMaximum,
     enable,
     amountLimit,
     route.params.id
-  )
+  );
 
-  if (responese !== 401) {
-    if (responese.limitMaximumTask) {
-      limitManagement.addLimitReached(responese.statusList)
-      alertManagement.statusHandler(
-        "success",
-        `The Kanban board now limits ${responese.noOfTasks} tasks in each status`
-      )
-    } else {
-      limitManagement.clearLimitReached()
-      alertManagement.statusHandler(
-        "success",
-        `The Kanban board has disabled the task limit in each status`
-      )
-    }
-    taskManagement.setLimitMaximumTask(
-      responese.limitMaximumTask,
-      responese.noOfTasks
-    )
-  } else {
+  handleLimitResponse(responese);
+
+  limitMaximux.value = amountLimit;
+  showLimitModal.value = false;
+  isLimit.value = enable;
+}
+
+function handleLimitResponse(responese) {
+  if (responese.limitMaximumTask) {
+    limitManagement.addLimitReached(responese.statusList);
     alertManagement.statusHandler(
-      "error",
-      `For security reasons, your session has expired. Please log back in.`
-    )
-    accountStore.unAuthorizeHandle()
+      "success",
+      `The Kanban board now limits ${responese.noOfTasks} tasks in each status`
+    );
+  } else {
+    limitManagement.clearLimitReached();
+    alertManagement.statusHandler(
+      "success",
+      `The Kanban board has disabled the task limit in each status`
+    );
   }
 
-  limitMaximux.value = amountLimit
-  showLimitModal.value = false
-  isLimit.value = enable
+  taskManagement.setLimitMaximumTask(
+    responese.limitMaximumTask,
+    responese.noOfTasks
+  );
 }
 
 function backToPrevious() {
-  taskManagement.clearAllTask()
-  statusManagement.clearAllStatus()
-  router.push("/board")
+  taskManagement.clearAllTask();
+  statusManagement.clearAllStatus();
+  router.push("/board");
 }
 </script>
 
@@ -203,13 +203,13 @@ function backToPrevious() {
     class="flex flex-row justify-between tablet:h-[auto] tablet:flex-col w-[100%] h-[75px] mb-[15px]0"
   >
     <div class="flex h-[85%]">
+      <img
+        class="mr-[10px] tablet:w-[15%] laptop:w-[100px] mobile:w-[5%] mobile-M:hidden"
+        src="/image/SIT-logo.png"
+      />
       <h1 class="text-[22px] text-gray-700 font-[800] mt-[10px]">
         IT-Bangmod Kradan Kanban
       </h1>
-      <img
-        class="ml-[10px] tablet:w-[15%] laptop:w-[100px] mobile:w-[5%] mobile-M:hidden"
-        src="/image/SIT-logo.png"
-      />
     </div>
     <div class="flex mobile:flex-col tablet:justify-between gap-[15px] h-[75%]">
       <div class="flex mobile:items-center mobile-L:flex-col">
@@ -340,7 +340,7 @@ function backToPrevious() {
           </div>
         </div>
       </div>
-      <RouterLink v-if="!accountStore.getisLogin()" :to="{ name: 'login' }">
+      <RouterLink v-if="!accountStore.getisLogin()" :to="{name: 'login'}">
         <div class="flex btn btn-outline mt-[5px]">Login</div>
       </RouterLink>
       <div v-else class="dropdown dropdown-end flex items-center">
@@ -359,7 +359,9 @@ function backToPrevious() {
               class="w-full h-full object-cover"
             />
           </div>
-          <div class="ml-2 font-inter flex-1 flex flex-col justify-center">
+          <div
+            class="ml-2 font-inter flex-1 flex flex-col justify-center h-[50px] w-[125px]"
+          >
             <div class="itbkk-fullname mt-2">
               {{ accountStore.getData()?.name }}
             </div>
@@ -373,19 +375,33 @@ function backToPrevious() {
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-[100px] w-52 p-2 shadow cursor-none"
         >
           <li>
-            <a @click="loginHandle(false)">Logout</a>
+            <a @click="logOutHandle(false)">Logout</a>
           </li>
         </ul>
       </div>
     </div>
   </div>
-  <div v-show="isboardSelect" class="breadcrumbs text-sm">
-    <ul>
-      <li></li>
+  <div
+    v-show="isboardSelect"
+    class="breadcrumbs flex justify-between text-sm overflow-visible"
+  >
+    <ul class="w-[50%]">
       <li @click="backToPrevious"><a>Home</a></li>
       <li>
         {{ boardName?.name }}
       </li>
+    </ul>
+    <ul>
+      <li class="border">
+        <div class="form-control w-[120px]">
+          <label class="label cursor-pointer">
+            <span>Private</span>
+            <input
+              type="checkbox"
+              class="toggle bg bg-gray-200 checked:bg-blue-500"
+            />
+          </label> </div
+      ></li>
     </ul>
   </div>
 </template>
