@@ -115,9 +115,9 @@ async function confirmHandeler() {
         "error",
         "An error has occurred, the status limit is excreed"
       );
-      closeModal();
-      return;
     }
+    closeModal();
+    return;
   }
   if (mode.value === "edit") {
     const response = await handleRequestWithTokenRefresh(

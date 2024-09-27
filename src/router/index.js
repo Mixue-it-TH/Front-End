@@ -84,21 +84,19 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
   const accountStore = useAccount();
+  const boardsPathPattern = /^\/board\/[a-zA-Z0-9]+(?:\/status)?$/;
 
   if (to.path !== "/login") {
     if (!token) {
-      next({
-        path: "/login",
-      });
+      if (boardsPathPattern.test(to.path)) {
+        next();
+      } else {
+        next({
+          path: "/login",
+        });
+      }
     } else {
       accountStore.decodedToken(token);
-
-      // if (accountStore.getData()?.exp < Date.now() / 1000) {
-      //   next({
-      //     path: "/login",
-      //   });
-      // }
-
       next();
     }
   } else {

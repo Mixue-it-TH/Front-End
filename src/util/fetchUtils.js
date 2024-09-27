@@ -11,14 +11,13 @@ async function getTaskList(paramId) {
   try {
     const token = getToken();
     const boardId = paramId;
+    const headers = token ? {Authorization: `Bearer ${token}`} : {};
 
     const response = await fetch(
       `
       ${import.meta.env.VITE_BASE_URL}/${boardId}/tasks`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       }
     );
     if (response.ok) {
@@ -150,12 +149,11 @@ async function getStatusList(paramId) {
   const boardId = paramId;
 
   try {
+    const headers = token ? {Authorization: `Bearer ${token}`} : {};
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       }
     );
     if (response.ok) {

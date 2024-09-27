@@ -39,7 +39,10 @@ watch(
       toggleManage.value = "Home";
     }
     if (route.params.id) {
-      if (accountStore.getBoardList().length === 0) {
+      if (
+        accountStore.getBoardList().length === 0 &&
+        localStorage.getItem("Token")
+      ) {
         const boards = await handleRequestWithTokenRefresh(
           getBoardIdByUserOIDs,
           accountStore.getData()?.oid
@@ -55,27 +58,29 @@ watch(
 );
 
 onMounted(async () => {
-  if (route.params.id) {
-    const isEnbleLimit = await handleRequestWithTokenRefresh(
-      getEnableLimit,
-      route.params.id
-    );
+  if (localStorage.getItem("Token")) {
+    if (route.params.id) {
+      const isEnbleLimit = await handleRequestWithTokenRefresh(
+        getEnableLimit,
+        route.params.id
+      );
 
-    isLimit.value = isEnbleLimit.limitMaximumTask;
-    limitMaximux.value = isEnbleLimit.noOfTasks;
-    const responese = await handleRequestWithTokenRefresh(
-      handelLimitMaximum,
-      isLimit.value,
-      limitMaximux.value,
-      route.params.id
-    );
+      isLimit.value = isEnbleLimit.limitMaximumTask;
+      limitMaximux.value = isEnbleLimit.noOfTasks;
+      const responese = await handleRequestWithTokenRefresh(
+        handelLimitMaximum,
+        isLimit.value,
+        limitMaximux.value,
+        route.params.id
+      );
 
-    if (isEnbleLimit.limitMaximumTask)
-      limitManagement.addLimitReached(responese.statusList);
-    taskManagement.setLimitMaximumTask(
-      isEnbleLimit.limitMaximumTask,
-      isEnbleLimit.noOfTasks
-    );
+      if (isEnbleLimit.limitMaximumTask)
+        limitManagement.addLimitReached(responese.statusList);
+      taskManagement.setLimitMaximumTask(
+        isEnbleLimit.limitMaximumTask,
+        isEnbleLimit.noOfTasks
+      );
+    }
   }
 });
 
@@ -392,7 +397,7 @@ function backToPrevious() {
       </li>
     </ul>
     <ul>
-      <li class="border">
+      <li class="itbkk-board-visibility border">
         <div class="form-control w-[120px]">
           <label class="label cursor-pointer">
             <span>Private</span>

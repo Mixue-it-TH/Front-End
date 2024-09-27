@@ -23,6 +23,7 @@ onMounted(async () => {
     getTaskList,
     route.params.id
   );
+
   const listStatuses = await handleRequestWithTokenRefresh(
     getStatusList,
     route.params.id
