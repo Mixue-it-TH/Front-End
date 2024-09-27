@@ -1,13 +1,13 @@
 <script setup>
-import {onMounted, ref} from "vue";
-import {useRoute, useRouter} from "vue-router";
-import {useTasks} from "@/store/task.js";
-import {useStatus} from "@/store/status.js";
-import {getTaskById, addTask, editTask} from "@/util/fetchUtils";
-import {convertUtils, convertStatus} from "@/util/formatUtils";
-import {useAlert} from "@/store/alert";
-import {useAccount} from "@/store/account";
-import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useTasks } from "@/store/task.js";
+import { useStatus } from "@/store/status.js";
+import { getTaskById, addTask, editTask } from "@/util/fetchUtils";
+import { convertUtils, convertStatus } from "@/util/formatUtils";
+import { useAlert } from "@/store/alert";
+import { useAccount } from "@/store/account";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 
 const alertManagement = useAlert();
 const taskManagement = useTasks();
@@ -20,13 +20,13 @@ const taskDetails = ref({
   title: "",
   assignees: "",
   description: "",
-  status: {id: statusManagement.getAllStatus()[0].id},
+  status: { id: statusManagement.getAllStatus()[0].id },
 });
 const oldTask = ref({
   title: "",
   assignees: "",
   description: "",
-  status: {id: statusManagement.getAllStatus()[0].id},
+  status: { id: statusManagement.getAllStatus()[0].id },
 });
 const isDisable = ref(true);
 const mode = ref("read");
@@ -83,7 +83,7 @@ async function actionHandler(id, action) {
       taskDetails.value = response;
       taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn);
       taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn);
-      oldTask.value = {...taskDetails.value};
+      oldTask.value = { ...taskDetails.value };
       mode.value = "edit";
     } else if (response === 404) {
       alertManagement.statusHandler(
@@ -165,8 +165,8 @@ function saveBthHandler(isTrue = false) {
     return;
   }
   if (
-    JSON.stringify({...oldTask.value}) !==
-      JSON.stringify({...taskDetails.value}) &&
+    JSON.stringify({ ...oldTask.value }) !==
+      JSON.stringify({ ...taskDetails.value }) &&
     oldTask.value.title &&
     mode.value !== "add"
   ) {
@@ -198,7 +198,10 @@ function closeModal() {
         <header
           class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-[#F8F8F8] border-b-2 rounded-t-[2px]"
         >
-          <div class="flex gap-[10px]" v-show="mode !== 'read'">
+          <div
+            class="flex gap-[10px]"
+            v-show="mode !== 'read'"
+          >
             <div>
               {{ mode === "add" ? "New Task" : "Edit Task" }}
             </div>
@@ -252,7 +255,7 @@ function closeModal() {
             <div
               v-if="mode === 'read'"
               class="itbkk-description w-[95%] h-[90%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
-              :class="{'italic text-gray-500': !taskDetails.description}"
+              :class="{ 'italic text-gray-500': !taskDetails.description }"
             >
               {{
                 taskDetails.description
@@ -286,7 +289,7 @@ function closeModal() {
               <div
                 v-if="mode === 'read'"
                 class="itbkk-assignees min-h-[180px] px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
-                :class="{'italic text-gray-500': !taskDetails.assignees}"
+                :class="{ 'italic text-gray-500': !taskDetails.assignees }"
               >
                 {{
                   taskDetails.assignees ? taskDetails.assignees : "Unassigned"
@@ -324,7 +327,10 @@ function closeModal() {
                   </select>
                 </div>
               </div>
-              <div class="flex flex-col gap-[15px]" v-if="mode !== 'add'">
+              <div
+                class="flex flex-col gap-[15px]"
+                v-if="mode !== 'add'"
+              >
                 <div class="itbkk-timezone flex">
                   <p class="font-[600] mr-[10px]">TimeZone:</p>
                   <p class="ml-[auto]">

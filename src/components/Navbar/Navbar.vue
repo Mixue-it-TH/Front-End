@@ -4,13 +4,20 @@ import {handelLimitMaximum} from "@/util/statusFetchUtils";
 import {useStatus} from "@/store/status";
 import {useTasks} from "@/store/task";
 import {onMounted, ref, watch} from "vue";
-import {getEnableLimit, getBoardIdByUserOIDs} from "@/util/fetchUtils";
+import {
+  getEnableLimit,
+  getBoardIdByUserOIDs,
+  getVisibility,
+} from "@/util/fetchUtils";
 import {useAlert} from "@/store/alert";
 import {useAccount} from "@/store/account";
 import {useLimit} from "@/store/limitReached";
 import LimitTaskModal from "./LimitTaskModal.vue";
+import VisibleModal from "./VisibleModal.vue";
 import {useRoute} from "vue-router";
 import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+import {handleVisibleMode} from "@/util/accountFetchUtil";
+
 const alertManagement = useAlert();
 const statusManagement = useStatus();
 const accountStore = useAccount();
@@ -26,11 +33,44 @@ const route = useRoute();
 const isboardSelect = ref(true);
 const boardName = ref("");
 
+const visibilityToggle = ref(false);
+const showVisibilityModal = ref(false);
+const isPublicMode = ref(false);
+
+async function handleVisible() {
+  const mode = visibilityToggle.value ? "private" : "public";
+  const response = await handleVisibleMode(mode, route.params.id);
+  if (response.status === 401) {
+    logOutHandle();
+  }
+  if (response.status === 403) {
+    alertManagement.statusHandler(
+      "You do not have permission to change board visibility mode"
+    );
+  } else {
+    alertManagement.statusHandler("There is a problem. Please try again later");
+  }
+  alertManagement.statusHandler(
+    "success",
+    `Change Visibility to ${response.visibility}`
+  );
+  console.log(`Visibility mode is: ${mode}`);
+  visibilityToggle.value = !visibilityToggle.value; // สลับค่า visibilityToggle
+  closeVisibleModal();
+  console.log(mode);
+  console.log(response);
+}
+
+function openVisibilityModal() {
+  showVisibilityModal.value = !showLimitModal.value;
+}
+
 watch(
   () => route.fullPath,
   async (newPath) => {
     if (newPath === "/board") {
       isboardSelect.value = false;
+
       toggleManage.value = " Manage Status";
     } else {
       isboardSelect.value = true;
@@ -58,29 +98,27 @@ watch(
 );
 
 onMounted(async () => {
-  if (localStorage.getItem("Token")) {
-    if (route.params.id) {
-      const isEnbleLimit = await handleRequestWithTokenRefresh(
-        getEnableLimit,
-        route.params.id
-      );
+  if (route.params.id) {
+    const isEnbleLimit = await handleRequestWithTokenRefresh(
+      getEnableLimit,
+      route.params.id
+    );
 
-      isLimit.value = isEnbleLimit.limitMaximumTask;
-      limitMaximux.value = isEnbleLimit.noOfTasks;
-      const responese = await handleRequestWithTokenRefresh(
-        handelLimitMaximum,
-        isLimit.value,
-        limitMaximux.value,
-        route.params.id
-      );
+    isLimit.value = isEnbleLimit.limitMaximumTask;
+    limitMaximux.value = isEnbleLimit.noOfTasks;
+    const responese = await handleRequestWithTokenRefresh(
+      handelLimitMaximum,
+      isLimit.value,
+      limitMaximux.value,
+      route.params.id
+    );
 
-      if (isEnbleLimit.limitMaximumTask)
-        limitManagement.addLimitReached(responese.statusList);
-      taskManagement.setLimitMaximumTask(
-        isEnbleLimit.limitMaximumTask,
-        isEnbleLimit.noOfTasks
-      );
-    }
+    if (isEnbleLimit.limitMaximumTask)
+      limitManagement.addLimitReached(responese.statusList);
+    taskManagement.setLimitMaximumTask(
+      isEnbleLimit.limitMaximumTask,
+      isEnbleLimit.noOfTasks
+    );
   }
 });
 
@@ -193,6 +231,9 @@ function backToPrevious() {
   statusManagement.clearAllStatus();
   router.push("/board");
 }
+function closeVisibleModal(isClose) {
+  showVisibilityModal.value = isClose;
+}
 </script>
 
 <template>
@@ -204,6 +245,9 @@ function backToPrevious() {
       :limitMaximum="limitMaximux"
     />
   </Teleport>
+  <Teleport to="body" v-if="showVisibilityModal">
+    <VisibleModal @cancel="closeVisibleModal" @save="handleVisible" />
+  </Teleport>
   <div
     class="flex flex-row justify-between tablet:h-[auto] tablet:flex-col w-[100%] h-[75px] mb-[15px]0"
   >
@@ -212,6 +256,7 @@ function backToPrevious() {
         class="mr-[10px] tablet:w-[15%] laptop:w-[100px] mobile:w-[5%] mobile-M:hidden"
         src="/image/SIT-logo.png"
       />
+
       <h1 class="text-[22px] text-gray-700 font-[800] mt-[10px]">
         IT-Bangmod Kradan Kanban
       </h1>
@@ -397,7 +442,7 @@ function backToPrevious() {
       </li>
     </ul>
     <ul>
-      <li class="itbkk-board-visibility border">
+      <li class="border">
         <div class="form-control w-[120px]">
           <label class="label cursor-pointer">
             <span>Private</span>

@@ -1,14 +1,17 @@
 <script setup>
-import {onMounted, ref} from "vue";
-import {useTasks} from "@/store/task";
-import {deleteTaskById, getTaskList, getStatusList} from "@/util/fetchUtils";
-import {useAlert} from "@/store/alert";
+import { onMounted, ref } from "vue";
+import { useTasks } from "@/store/task";
+import { deleteTaskById, getTaskList, getStatusList } from "@/util/fetchUtils";
+import { useAlert } from "@/store/alert";
 import DeleteTaskModal from "./DeleteTaskModal.vue";
 import ListTask from "./ListTask.vue";
-import {useRoute, useRouter} from "vue-router";
-import {useStatus} from "@/store/status";
-import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+import { useRoute, useRouter } from "vue-router";
+import { useStatus } from "@/store/status";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import { useAccount } from "@/store/account";
+import { getVisibility } from "@/util/fetchUtils";
 
+const accountStore = useAccount();
 const alertManagement = useAlert();
 const taskManagement = useTasks();
 const showDeleteModal = ref(false);
@@ -19,6 +22,9 @@ const route = useRoute();
 const statusManagement = useStatus();
 
 onMounted(async () => {
+  const test = accountStore.getVisibility();
+  console.log("isPrivate = " + test);
+
   const listTasks = await handleRequestWithTokenRefresh(
     getTaskList,
     route.params.id
@@ -85,7 +91,10 @@ async function confirmDelete(id) {
 </script>
 
 <template>
-  <Teleport to="body" v-if="showDeleteModal">
+  <Teleport
+    to="body"
+    v-if="showDeleteModal"
+  >
     <DeleteTaskModal
       @cancel="closeDeleteModal"
       @confirm="confirmDelete"
@@ -98,7 +107,9 @@ async function confirmDelete(id) {
     <ListTask
       @delete="deleteModalHandler"
       :listTasks="taskManagement.getAllTask()"
+      :visibility="accountStore.getVisibility()"
     />
+
     <RouterView />
   </div>
 </template>

@@ -1,13 +1,20 @@
 <script setup>
-import { RouterLink } from "vue-router"
-import Listmodel from "@/components/Ui/ListModel.vue"
-
-const emit = defineEmits(["delete"])
+import { RouterLink } from "vue-router";
+import Listmodel from "@/components/Ui/ListModel.vue";
+const emit = defineEmits(["delete"]);
 const props = defineProps({
   listTasks: {
-    type: Array
-  }
-})
+    type: Array,
+  },
+  visibility: {
+    type: Boolean,
+  },
+});
+
+const isPublicMode = props.visibility;
+console.log(isPublicMode);
+console.log(isPublicMode);
+console.log(isPublicMode);
 </script>
 
 <template>
@@ -18,7 +25,6 @@ const props = defineProps({
     <div
       class="flex justify-center items-center w-[60px] h-[60px] rounded-[50%] bg-[#0058DD] border-2 shadow-xl"
     >
-      <!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>
       <svg
         enable-background="new 0 0 50 50"
         height="50px"
@@ -30,7 +36,11 @@ const props = defineProps({
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
       >
-        <rect fill="none" height="50" width="50" />
+        <rect
+          fill="none"
+          height="50"
+          width="50"
+        />
         <line
           fill="none"
           stroke="#F3F3F3"
@@ -54,6 +64,7 @@ const props = defineProps({
       </svg>
     </div>
   </router-link>
+
   <div class="mt-[20px] text-gray-700 min-w-[740px]">
     <div
       class="flex justify-between items-center w-[100%] px-[20px] min-h-[45px] font-[550]"
@@ -71,7 +82,12 @@ const props = defineProps({
         <p class="">Assignees</p>
       </div>
     </div>
-    <router-link :to="{ name: 'taskAdd' }" class="mobile-L:hidden">
+
+    <router-link
+      :to="{ name: 'taskAdd' }"
+      :class="{ 'pointer-events-none opacity-50': isPublicMode }"
+      class="mobile-L:hidden"
+    >
       <div
         class="transition itbkk-button-add flex items-center min-h-[55px] mb-[5px] px-[15px] border-dashed border-[3px] hover:bg-white border-[#FFCB45] rounded-[8px]"
       >
@@ -103,7 +119,10 @@ const props = defineProps({
       </div>
     </router-link>
 
-    <Listmodel :jobs="listTasks" v-if="listTasks.length != 0">
+    <Listmodel
+      :jobs="listTasks"
+      v-if="listTasks.length != 0"
+    >
       <template #default="slotprop">
         <div
           class="transition flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
@@ -127,7 +146,7 @@ const props = defineProps({
                 <div
                   class="min-w-[95px] max-w-[120px] w-[90%] rounded-[5px] py-[3px] flex items-center justify-center"
                   :style="{
-                    backgroundColor: slotprop.job.status.statusColor
+                    backgroundColor: slotprop.job.status.statusColor,
                   }"
                 >
                   <p class="itbkk-status text-white">
@@ -139,7 +158,7 @@ const props = defineProps({
                 <p
                   class="itbkk-assignees"
                   :class="{
-                    'italic text-gray-500': !slotprop.job.assignees
+                    'italic text-gray-500': !slotprop.job.assignees,
                   }"
                 >
                   {{
@@ -166,9 +185,24 @@ const props = defineProps({
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <circle cx="3.5" cy="3.5" r="3.5" fill="#969696" />
-                <circle cx="3.5" cy="26.5" r="3.5" fill="#969696" />
-                <circle cx="3.5" cy="14.8335" r="3.5" fill="#969696" />
+                <circle
+                  cx="3.5"
+                  cy="3.5"
+                  r="3.5"
+                  fill="#969696"
+                />
+                <circle
+                  cx="3.5"
+                  cy="26.5"
+                  r="3.5"
+                  fill="#969696"
+                />
+                <circle
+                  cx="3.5"
+                  cy="14.8335"
+                  r="3.5"
+                  fill="#969696"
+                />
               </svg>
             </div>
             <ul
@@ -181,7 +215,10 @@ const props = defineProps({
                 <li class="itbkk-button-edit flex flex-row">
                   <a class="px-5"
                     >Edit
-                    <img class="px-0" src="/image/edit-icon.png" width="25px"
+                    <img
+                      class="px-0"
+                      src="/image/edit-icon.png"
+                      width="25px"
                   /></a>
                 </li>
               </router-link>
