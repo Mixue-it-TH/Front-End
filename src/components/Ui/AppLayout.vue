@@ -1,13 +1,13 @@
 <script setup>
-import {useTasks} from "@/store/task";
+import { useTasks } from "@/store/task";
 import Navbar from "../Navbar/Navbar.vue";
-import {useStatus} from "@/store/status";
-import {onMounted, ref} from "vue";
-import {getStatusList, getTaskList} from "@/util/fetchUtils";
-import {useAccount} from "@/store/account";
-import {useRoute, useRouter} from "vue-router";
-import {useAlert} from "@/store/alert";
-import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+import { useStatus } from "@/store/status";
+import { onMounted, ref } from "vue";
+import { getStatusList, getTaskList } from "@/util/fetchUtils";
+import { useAccount } from "@/store/account";
+import { useRoute, useRouter } from "vue-router";
+import { useAlert } from "@/store/alert";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 const taskManagement = useTasks();
 const statusManagement = useStatus();
 const alertManagement = useAlert();
@@ -36,7 +36,7 @@ onMounted(async () => {
     );
     if (listTasks.status === 401) {
       router.push("/login");
-    } else if (listStatuses.status === 403 || listStatuses.status === 403) {
+    } else if (listStatuses.status === 403) {
       localStorage.setItem("isPrivate", true);
       router.go(-1);
     }
@@ -44,7 +44,7 @@ onMounted(async () => {
     if (localStorage.getItem("isPrivate")) {
       alertManagement.statusHandler(
         "error",
-        "Access denied, you do not have permission to view this page."
+        "Access denied, you do not have permission to edit this page."
       );
     }
     if (listStatuses.status !== 400) statusManagement.addStatuses(listStatuses);

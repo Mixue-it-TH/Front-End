@@ -1,3 +1,8 @@
+function getToken() {
+  const token = localStorage.getItem("token");
+
+  return token;
+}
 export async function login(userName, password) {
   try {
     const response = await fetch(import.meta.env.VITE_LOGIN_URL + "/login", {
@@ -48,5 +53,30 @@ export async function getTokenByRefreshToken() {
     }
   } catch (error) {
     console.log("error", error);
+  }
+}
+export async function handleVisibleMode(visibility, paramId) {
+  const token = getToken();
+
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/${paramId}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          visibility: visibility,
+        }),
+      }
+    );
+    if (response.ok) {
+      const responseData = await response.json();
+      return responseData;
+    }
+  } catch (e) {
+    console.log(`error: ${e}`);
   }
 }

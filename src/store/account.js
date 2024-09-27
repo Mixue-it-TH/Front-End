@@ -1,8 +1,8 @@
-import {defineStore} from "pinia";
-import {ref} from "vue";
-import {useRouter} from "vue-router";
-import {useAlert} from "./alert";
-import {getTokenByRefreshToken} from "@/util/accountFetchUtil";
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAlert } from "./alert";
+import { getTokenByRefreshToken } from "@/util/accountFetchUtil";
 
 export const useAccount = defineStore("account", () => {
   const router = useRouter();
@@ -13,7 +13,14 @@ export const useAccount = defineStore("account", () => {
   const data = ref();
   const isLogin = ref(false);
   const boardList = ref([]);
+  const isPrivate = ref(false);
 
+  function setVisibility(vis) {
+    isPrivate.value = vis;
+  }
+  function getVisibility() {
+    return isPrivate.value;
+  }
   function decodedToken(token) {
     if (isValidTokenToken(token)) {
       try {
@@ -116,7 +123,6 @@ export const useAccount = defineStore("account", () => {
       return true;
     }
   }
-
   return {
     decodedToken,
     setToken,
@@ -132,5 +138,7 @@ export const useAccount = defineStore("account", () => {
     addBoard,
     reFetch,
     handleUnauthorized,
+    setVisibility,
+    getVisibility,
   };
 });

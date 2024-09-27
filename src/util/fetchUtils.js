@@ -167,6 +167,30 @@ async function getStatusList(paramId) {
   }
 }
 
+async function getVisibility(paramId) {
+  try {
+    const token = getToken();
+    const boardId = paramId;
+
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/${boardId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      return response;
+    }
+  } catch (error) {
+    console.log(`error: ${error}`);
+  }
+}
+
 async function getEnableLimit(id) {
   try {
     const token = getToken();
@@ -247,4 +271,5 @@ export {
   getEnableLimit,
   getBoardIdByUserOIDs,
   createBoard,
+  getVisibility,
 };

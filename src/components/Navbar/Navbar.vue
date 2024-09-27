@@ -1,16 +1,24 @@
 <script setup>
 import router from "@/router";
-import {handelLimitMaximum} from "@/util/statusFetchUtils";
-import {useStatus} from "@/store/status";
-import {useTasks} from "@/store/task";
-import {onMounted, ref, watch} from "vue";
-import {getEnableLimit, getBoardIdByUserOIDs} from "@/util/fetchUtils";
-import {useAlert} from "@/store/alert";
-import {useAccount} from "@/store/account";
-import {useLimit} from "@/store/limitReached";
+import { handelLimitMaximum } from "@/util/statusFetchUtils";
+import { useStatus } from "@/store/status";
+import { useTasks } from "@/store/task";
+import { onMounted, ref, watch } from "vue";
+import {
+  getEnableLimit,
+  getBoardIdByUserOIDs,
+  getVisibility,
+} from "@/util/fetchUtils";
+import { useAlert } from "@/store/alert";
+import { useAccount } from "@/store/account";
+import { useLimit } from "@/store/limitReached";
 import LimitTaskModal from "./LimitTaskModal.vue";
-import {useRoute} from "vue-router";
-import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+import VisibleModal from "./VisibleModal.vue";
+import { useRoute } from "vue-router";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import { handleVisibleMode } from "@/util/accountFetchUtil";
+import Board from "../Board/Board.vue";
+
 const alertManagement = useAlert();
 const statusManagement = useStatus();
 const accountStore = useAccount();
@@ -26,11 +34,44 @@ const route = useRoute();
 const isboardSelect = ref(true);
 const boardName = ref("");
 
+const visibilityToggle = ref(false);
+const showVisibilityModal = ref(false);
+const isPublicMode = ref(false);
+
+async function handleVisible() {
+  const mode = visibilityToggle.value ? "private" : "public";
+  const response = await handleVisibleMode(mode, route.params.id);
+  if (response.status === 401) {
+    logOutHandle();
+  }
+  if (response.status === 403) {
+    alertManagement.statusHandler(
+      "You do not have permission to change board visibility mode"
+    );
+  } else {
+    alertManagement.statusHandler("There is a problem. Please try again later");
+  }
+  alertManagement.statusHandler(
+    "success",
+    `Change Visibility to ${response.visibility}`
+  );
+  console.log(`Visibility mode is: ${mode}`);
+  visibilityToggle.value = !visibilityToggle.value; // สลับค่า visibilityToggle
+  closeVisibleModal();
+  console.log(mode);
+  console.log(response);
+}
+
+function openVisibilityModal() {
+  showVisibilityModal.value = !showLimitModal.value;
+}
+
 watch(
   () => route.fullPath,
   async (newPath) => {
     if (newPath === "/board") {
       isboardSelect.value = false;
+
       toggleManage.value = " Manage Status";
     } else {
       isboardSelect.value = true;
@@ -51,32 +92,62 @@ watch(
         .find((board) => board.id === route.params.id);
     }
   },
-  {immediate: true}
+  { immediate: true }
 );
 
 onMounted(async () => {
-  if (route.params.id) {
-    const isEnbleLimit = await handleRequestWithTokenRefresh(
-      getEnableLimit,
-      route.params.id
-    );
+  const userOID = accountStore.getData().oid;
+  const board = await getVisibility(route.params.id);
+  const boardOID = board[0].owner.oid;
 
-    isLimit.value = isEnbleLimit.limitMaximumTask;
-    limitMaximux.value = isEnbleLimit.noOfTasks;
-    const responese = await handleRequestWithTokenRefresh(
-      handelLimitMaximum,
-      isLimit.value,
-      limitMaximux.value,
-      route.params.id
-    );
+  console.log("user oid = " + userOID);
+  console.log("board oid = " + boardOID);
 
-    if (isEnbleLimit.limitMaximumTask)
-      limitManagement.addLimitReached(responese.statusList);
-    taskManagement.setLimitMaximumTask(
-      isEnbleLimit.limitMaximumTask,
-      isEnbleLimit.noOfTasks
-    );
+  if (board[0].visibility === "PRIVATE" && userOID === boardOID) {
+    visibilityToggle.value = false;
+    if (userOID !== boardOID) {
+      visibilityToggle.value = false;
+      console.log("private not owner");
+    }
+    // localStorage.setItem("isPrivate", true);
+    accountStore.setVisibility(true);
+    console.log(accountStore.getVisibility());
   }
+
+  if (board[0].visibility === "PUBLIC") {
+    visibilityToggle.value = true;
+
+    if (userOID !== boardOID) {
+      console.log("public gu not owner");
+      isPublicMode.value = true;
+    }
+    // localStorage.setItem("isPrivate", false);
+    accountStore.setVisibility(false);
+    console.log(accountStore.getVisibility());
+  }
+
+  const isEnableLimit = await handleRequestWithTokenRefresh(
+    getEnableLimit,
+    route.params.id
+  );
+  isLimit.value = isEnableLimit.limitMaximumTask;
+  limitMaximux.value = isEnableLimit.noOfTasks;
+
+  const limitResponse = await handleRequestWithTokenRefresh(
+    handelLimitMaximum,
+    isLimit.value,
+    limitMaximux.value,
+    route.params.id
+  );
+
+  if (isEnableLimit.limitMaximumTask) {
+    limitManagement.addLimitReached(limitResponse.statusList);
+  }
+
+  taskManagement.setLimitMaximumTask(
+    isEnableLimit.limitMaximumTask,
+    isEnableLimit.noOfTasks
+  );
 });
 
 async function filterSelection(statusName) {
@@ -188,15 +259,30 @@ function backToPrevious() {
   statusManagement.clearAllStatus();
   router.push("/board");
 }
+function closeVisibleModal(isClose) {
+  showVisibilityModal.value = isClose;
+}
 </script>
 
 <template>
-  <Teleport to="body" v-if="showLimitModal">
+  <Teleport
+    to="body"
+    v-if="showLimitModal"
+  >
     <LimitTaskModal
       @cancel="limitModalHandler"
       @save="handelLimit"
       :isLimit="isLimit"
       :limitMaximum="limitMaximux"
+    />
+  </Teleport>
+  <Teleport
+    to="body"
+    v-if="showVisibilityModal"
+  >
+    <VisibleModal
+      @cancel="closeVisibleModal"
+      @save="handleVisible"
     />
   </Teleport>
   <div
@@ -207,6 +293,7 @@ function backToPrevious() {
         class="mr-[10px] tablet:w-[15%] laptop:w-[100px] mobile:w-[5%] mobile-M:hidden"
         src="/image/SIT-logo.png"
       />
+
       <h1 class="text-[22px] text-gray-700 font-[800] mt-[10px]">
         IT-Bangmod Kradan Kanban
       </h1>
@@ -225,7 +312,10 @@ function backToPrevious() {
             <h1>
               {{ toggleManage }}
             </h1>
-            <img src="/image/home-icon.png" width="30px" />
+            <img
+              src="/image/home-icon.png"
+              width="30px"
+            />
           </div>
           <div v-else>
             <h1>
@@ -317,17 +407,32 @@ function backToPrevious() {
           :class="isboardSelect ? '' : 'pointer-events-none'"
           class="itbkk-status-sort bg-[#F9F9F9] hover:bg-gray-200 w-[45px] min-w-[px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px] duration-100"
         >
-          <div v-if="sortState === 0" class="flex justify-center mt-[5px]">
-            <img src="/image/up-and-down-icon.png" class="w-[30px] h-[30px]" />
+          <div
+            v-if="sortState === 0"
+            class="flex justify-center mt-[5px]"
+          >
+            <img
+              src="/image/up-and-down-icon.png"
+              class="w-[30px] h-[30px]"
+            />
           </div>
           <div
             v-if="sortState === 1"
             class="flex justify-center mt-[5.5px] mr-1"
           >
-            <img src="/image/a-z-blue.png" class="w-[30px] h-[30px]" />
+            <img
+              src="/image/a-z-blue.png"
+              class="w-[30px] h-[30px]"
+            />
           </div>
-          <div v-if="sortState === 2" class="flex justify-center mt-[6px]">
-            <img src="/image/z-a-blue.png" class="w-[30px] h-[30px]" />
+          <div
+            v-if="sortState === 2"
+            class="flex justify-center mt-[6px]"
+          >
+            <img
+              src="/image/z-a-blue.png"
+              class="w-[30px] h-[30px]"
+            />
           </div>
         </div>
         <div
@@ -336,14 +441,23 @@ function backToPrevious() {
           class="itbkk-status-setting flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-200 duration-100 w-[45px] min-w-[40px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
         >
           <div class="flex justify-center">
-            <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
+            <img
+              src="/image/setting-icon.png"
+              class="w-[25px] h-[25px]"
+            />
           </div>
         </div>
       </div>
-      <RouterLink v-if="!accountStore.getisLogin()" :to="{name: 'login'}">
+      <RouterLink
+        v-if="!accountStore.getisLogin()"
+        :to="{ name: 'login' }"
+      >
         <div class="flex btn btn-outline mt-[5px]">Login</div>
       </RouterLink>
-      <div v-else class="dropdown dropdown-end flex items-center">
+      <div
+        v-else
+        class="dropdown dropdown-end flex items-center"
+      >
         <div
           tabindex="0"
           role="button"
@@ -391,18 +505,36 @@ function backToPrevious() {
         {{ boardName?.name }}
       </li>
     </ul>
-    <ul>
-      <li class="border">
-        <div class="form-control w-[120px]">
-          <label class="label cursor-pointer">
-            <span>Private</span>
-            <input
-              type="checkbox"
-              class="toggle bg bg-gray-200 checked:bg-blue-500"
-            />
-          </label> </div
-      ></li>
-    </ul>
+
+    <div class="relative group inline-block">
+      <ul>
+        <li class="border">
+          <div class="form-control w-[120px] itbkk-board-visibility">
+            <label class="label cursor-pointer">
+              <span>{{
+                visibilityToggle === false ? "private" : "public"
+              }}</span>
+
+              <input
+                :disabled="isPublicMode"
+                v-model="visibilityToggle"
+                type="checkbox"
+                @click.prevent="openVisibilityModal"
+                class="toggle bg bg-gray-200 checked:bg-blue-500"
+              />
+            </label>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Tooltip -->
+      <div
+        v-show="isPublicMode"
+        class="absolute transform w-[180px] -translate-x-1/2 mt-2 group-hover:block hidden px-4 py-2 bg-gray-700 text-white text-sm rounded shadow-lg"
+      >
+        You need to be board owner to perform this action.
+      </div>
+    </div>
   </div>
 </template>
 
