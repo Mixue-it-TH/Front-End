@@ -36,13 +36,17 @@ async function getTaskById(id, paramId) {
     const token = getToken();
     const boardId = paramId;
 
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      headers
     );
     if (response.ok) {
       const data = await response.json();
@@ -259,6 +263,30 @@ async function createBoard(boardName) {
   }
 }
 
+async function getBoardByBoardid(boardId) {
+  try {
+    const token = getToken();
+
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/${boardId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      return response;
+    }
+  } catch (e) {
+    console.log(`error: ${e}`);
+  }
+}
+
 export {
   getTaskList,
   getTaskById,
@@ -270,4 +298,5 @@ export {
   getBoardIdByUserOIDs,
   createBoard,
   getVisibility,
+  getBoardByBoardid,
 };

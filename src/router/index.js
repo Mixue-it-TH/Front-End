@@ -84,7 +84,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
   const accountStore = useAccount();
-  const boardsPathPattern = /^\/board\/[a-zA-Z0-9]+(?:\/status)?$/;
+  const boardsPathPattern =
+    /^\/board\/[a-zA-Z0-9]+(\/(task\/\d+|status(\/\d+)?))?$/;
 
   if (to.path !== "/login") {
     if (!token) {

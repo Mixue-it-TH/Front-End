@@ -7,14 +7,18 @@ function getToken() {
 async function getStatusById(id, paramId) {
   const token = getToken();
 
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      headers
     );
     if (response.ok) {
       const data = await response.json();

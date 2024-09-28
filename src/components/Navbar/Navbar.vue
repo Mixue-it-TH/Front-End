@@ -3,11 +3,12 @@ import router from "@/router";
 import {handelLimitMaximum} from "@/util/statusFetchUtils";
 import {useStatus} from "@/store/status";
 import {useTasks} from "@/store/task";
-import {onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {
   getEnableLimit,
   getBoardIdByUserOIDs,
   getVisibility,
+  getBoardByBoardid,
 } from "@/util/fetchUtils";
 import {useAlert} from "@/store/alert";
 import {useAccount} from "@/store/account";
@@ -17,6 +18,8 @@ import VisibleModal from "./VisibleModal.vue";
 import {useRoute} from "vue-router";
 import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
 import {handleVisibleMode} from "@/util/accountFetchUtil";
+import getAccessToken from "@/util/tokenUtil";
+import TooltipBtn from "../Ui/TooltipBtn.vue";
 
 const alertManagement = useAlert();
 const statusManagement = useStatus();
@@ -36,34 +39,34 @@ const boardName = ref("");
 const visibilityToggle = ref(false);
 const showVisibilityModal = ref(false);
 const isPublicMode = ref(false);
+const permission = computed(() => accountStore.permission);
 
-async function handleVisible() {
-  const mode = visibilityToggle.value ? "private" : "public";
-  const response = await handleVisibleMode(mode, route.params.id);
-  if (response.status === 401) {
-    logOutHandle();
-  }
-  if (response.status === 403) {
-    alertManagement.statusHandler(
-      "You do not have permission to change board visibility mode"
-    );
-  } else {
-    alertManagement.statusHandler("There is a problem. Please try again later");
-  }
-  alertManagement.statusHandler(
-    "success",
-    `Change Visibility to ${response.visibility}`
-  );
-  console.log(`Visibility mode is: ${mode}`);
-  visibilityToggle.value = !visibilityToggle.value; // สลับค่า visibilityToggle
-  closeVisibleModal();
-  console.log(mode);
-  console.log(response);
-}
+onMounted(async () => {
+  if (getAccessToken()) {
+    if (route.params.id) {
+      const isEnbleLimit = await handleRequestWithTokenRefresh(
+        getEnableLimit,
+        route.params.id
+      );
 
-function openVisibilityModal() {
-  showVisibilityModal.value = !showLimitModal.value;
-}
+      isLimit.value = isEnbleLimit.limitMaximumTask;
+      limitMaximux.value = isEnbleLimit.noOfTasks;
+      const responese = await handleRequestWithTokenRefresh(
+        handelLimitMaximum,
+        isLimit.value,
+        limitMaximux.value,
+        route.params.id
+      );
+
+      if (isEnbleLimit.limitMaximumTask)
+        limitManagement.addLimitReached(responese.statusList);
+      taskManagement.setLimitMaximumTask(
+        isEnbleLimit.limitMaximumTask,
+        isEnbleLimit.noOfTasks
+      );
+    }
+  }
+});
 
 watch(
   () => route.fullPath,
@@ -89,6 +92,25 @@ watch(
         );
         accountStore.setBoardList(boards);
       }
+      ////// REFACTOR SOON ///////
+      if (!getAccessToken()) {
+        accountStore.setVisibility(true, null);
+      } else {
+        const board = await getBoardByBoardid(route.params.id);
+
+        if (board.status === 403) {
+          accountStore.setVisibility("PRIVATE");
+        } else {
+          accountStore.setVisibility(
+            board[0]?.visibility === "PUBLIC" ? true : false,
+            board[0]?.owner.oid
+          );
+        }
+      }
+      ///// REFACTOR SOON ///////
+
+      visibilityToggle.value = accountStore.getVisibility();
+
       boardName.value = accountStore
         .getBoardList()
         .find((board) => board.id === route.params.id);
@@ -97,30 +119,33 @@ watch(
   {immediate: true}
 );
 
-onMounted(async () => {
-  if (route.params.id) {
-    const isEnbleLimit = await handleRequestWithTokenRefresh(
-      getEnableLimit,
-      route.params.id
-    );
-
-    isLimit.value = isEnbleLimit.limitMaximumTask;
-    limitMaximux.value = isEnbleLimit.noOfTasks;
-    const responese = await handleRequestWithTokenRefresh(
-      handelLimitMaximum,
-      isLimit.value,
-      limitMaximux.value,
-      route.params.id
-    );
-
-    if (isEnbleLimit.limitMaximumTask)
-      limitManagement.addLimitReached(responese.statusList);
-    taskManagement.setLimitMaximumTask(
-      isEnbleLimit.limitMaximumTask,
-      isEnbleLimit.noOfTasks
-    );
+async function handleVisible() {
+  const mode = visibilityToggle.value ? "private" : "public";
+  const response = await handleVisibleMode(mode, route.params.id);
+  if (response.status === 401) {
+    handleLogout();
   }
-});
+  if (response.status === 403) {
+    alertManagement.statusHandler(
+      "You do not have permission to change board visibility mode"
+    );
+  } else {
+    alertManagement.statusHandler("There is a problem. Please try again later");
+  }
+  alertManagement.statusHandler(
+    "success",
+    `Change Visibility to ${response.visibility}`
+  );
+  console.log(`Visibility mode is: ${mode}`);
+  visibilityToggle.value = !visibilityToggle.value; // สลับค่า visibilityToggle
+  closeVisibleModal();
+  console.log(mode);
+  console.log(response);
+}
+
+function openVisibilityModal() {
+  showVisibilityModal.value = !showLimitModal.value;
+}
 
 async function filterSelection(statusName) {
   const isDuplicate = statusFilter.value.filter((status) => {
@@ -162,7 +187,7 @@ function sortTask() {
   sortState.value = taskManagement.sortTaskByStatusName(sortState.value);
 }
 
-function logOutHandle(login) {
+function handleLogout(login) {
   if (!login) {
     accountStore.setisLogin(login);
     localStorage.removeItem("token");
@@ -361,7 +386,7 @@ function closeVisibleModal(isClose) {
           </div>
         </div>
       </div>
-      <div class="flex mobile:flex-row l gap-[10px]">
+      <div class="flex items-center mobile:flex-row l gap-[10px]">
         <div
           @click="sortTask"
           :class="isboardSelect ? '' : 'pointer-events-none'"
@@ -380,15 +405,17 @@ function closeVisibleModal(isClose) {
             <img src="/image/z-a-blue.png" class="w-[30px] h-[30px]" />
           </div>
         </div>
-        <div
-          @click="limitModalHandler(true)"
-          :class="isboardSelect ? '' : 'pointer-events-none'"
-          class="itbkk-status-setting flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-200 duration-100 w-[45px] min-w-[40px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
-        >
-          <div class="flex justify-center">
-            <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
+        <TooltipBtn>
+          <div
+            @click="limitModalHandler(true)"
+            :class="!permission ? 'pointer-events-none opacity-50' : ''"
+            class="itbkk-status-setting flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-200 duration-100 w-[45px] min-w-[40px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
+          >
+            <div class="flex justify-center">
+              <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
+            </div>
           </div>
-        </div>
+        </TooltipBtn>
       </div>
       <RouterLink v-if="!accountStore.getisLogin()" :to="{name: 'login'}">
         <div class="flex btn btn-outline mt-[5px]">Login</div>
@@ -425,7 +452,7 @@ function closeVisibleModal(isClose) {
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-[100px] w-52 p-2 shadow cursor-none"
         >
           <li>
-            <a @click="logOutHandle(false)">Logout</a>
+            <a @click="handleLogout(false)">Logout</a>
           </li>
         </ul>
       </div>
@@ -441,18 +468,27 @@ function closeVisibleModal(isClose) {
         {{ boardName?.name }}
       </li>
     </ul>
-    <ul>
-      <li class="border">
-        <div class="form-control w-[120px]">
-          <label class="label cursor-pointer">
-            <span>Private</span>
-            <input
-              type="checkbox"
-              class="toggle bg bg-gray-200 checked:bg-blue-500"
-            />
-          </label> </div
-      ></li>
-    </ul>
+    <TooltipBtn>
+      <ul>
+        <li class="border">
+          <div class="form-control w-[120px] itbkk-board-visibility">
+            <label class="label cursor-pointer">
+              <span>{{
+                visibilityToggle === false ? "private" : "public"
+              }}</span>
+
+              <input
+                v-model="visibilityToggle"
+                :disabled="!permission"
+                type="checkbox"
+                @click.prevent="openVisibilityModal"
+                class="toggle bg bg-gray-200 checked:bg-blue-500"
+              />
+            </label>
+          </div>
+        </li>
+      </ul>
+    </TooltipBtn>
   </div>
 </template>
 

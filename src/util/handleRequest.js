@@ -1,4 +1,5 @@
 import {useAccount} from "@/store/account";
+import getAccessToken from "./tokenUtil";
 
 export async function handleRequestWithTokenRefresh(action, ...params) {
   const accountStore = useAccount();
@@ -11,7 +12,6 @@ export async function handleRequestWithTokenRefresh(action, ...params) {
 
       response = await accountStore.handleUnauthorized(action, ...params);
     }
-
     return response;
   } catch (error) {
     console.error("An error occurred during the request:", error);

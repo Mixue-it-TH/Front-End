@@ -1,26 +1,41 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useAlert } from "./alert";
-import { getTokenByRefreshToken } from "@/util/accountFetchUtil";
+import {defineStore} from "pinia";
+import {ref} from "vue";
+import {useRouter} from "vue-router";
+import {useAlert} from "./alert";
+import {getTokenByRefreshToken} from "@/util/accountFetchUtil";
 
 export const useAccount = defineStore("account", () => {
   const router = useRouter();
   const alertManagement = useAlert();
-
   const token = ref("");
   const boardId = ref("");
   const data = ref();
   const isLogin = ref(false);
   const boardList = ref([]);
-  const isPrivate = ref(false);
+  const isPublic = ref(false);
+  const ownerOID = ref(null);
+  const permission = ref(false);
 
-  function setVisibility(vis) {
-    isPrivate.value = vis;
+  function setVisibility(visibility, oid) {
+    isPublic.value = visibility;
+    ownerOID.value = oid;
+
+    if (data.value?.oid === undefined) {
+      permission.value = false;
+      return;
+    }
+    if (data.value?.oid !== ownerOID.value) {
+      permission.value = false;
+      return;
+    }
+    if (data.value?.oid === ownerOID.value) {
+      permission.value = true;
+    }
   }
   function getVisibility() {
-    return isPrivate.value;
+    return isPublic.value;
   }
+
   function decodedToken(token) {
     if (isValidTokenToken(token)) {
       try {
@@ -140,5 +155,6 @@ export const useAccount = defineStore("account", () => {
     handleUnauthorized,
     setVisibility,
     getVisibility,
+    permission,
   };
 });

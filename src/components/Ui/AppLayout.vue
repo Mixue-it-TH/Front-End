@@ -1,13 +1,13 @@
 <script setup>
-import { useTasks } from "@/store/task";
+import {useTasks} from "@/store/task";
 import Navbar from "../Navbar/Navbar.vue";
-import { useStatus } from "@/store/status";
-import { onMounted, ref } from "vue";
-import { getStatusList, getTaskList } from "@/util/fetchUtils";
-import { useAccount } from "@/store/account";
-import { useRoute, useRouter } from "vue-router";
-import { useAlert } from "@/store/alert";
-import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import {useStatus} from "@/store/status";
+import {onMounted, ref} from "vue";
+import {getBoardByBoardid, getStatusList, getTaskList} from "@/util/fetchUtils";
+import {useAccount} from "@/store/account";
+import {useRoute, useRouter} from "vue-router";
+import {useAlert} from "@/store/alert";
+import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
 const taskManagement = useTasks();
 const statusManagement = useStatus();
 const alertManagement = useAlert();
@@ -19,6 +19,14 @@ const router = useRouter();
 onMounted(async () => {
   const token = localStorage.getItem("token");
   const boardId = localStorage.getItem("boardId");
+
+  // const board = await getBoardByBoardid(route.params.id);
+  // console.log(board[0].visibility);
+
+  // accountStore.setVisibility(board[0].visibility === "PUBLIC" ? true : false);
+
+  // console.log(accountStore.getVisibility());
+
   if (token) {
     accountStore.setisLogin(true);
     accountStore.decodedToken(token);
@@ -44,7 +52,7 @@ onMounted(async () => {
     if (localStorage.getItem("isPrivate")) {
       alertManagement.statusHandler(
         "error",
-        "Access denied, you do not have permission to edit this page."
+        "Access denied, you do not have permission to view this page."
       );
     }
     if (listStatuses.status !== 400) statusManagement.addStatuses(listStatuses);

@@ -126,8 +126,9 @@ async function confirmHandeler() {
 			alertManagement.statusHandler("error", "An error has occurred, the status has duplicate status name")
 		}
 	}
+	log
 	closeModal()
-	}
+}
 
 function saveBthHandler() {
 	if (statusDetails.value.name?.length > 50 || statusDetails.value.description?.length > 200) {
