@@ -1,6 +1,5 @@
 <script setup>
 import {ref} from "vue";
-const currentMode = ref("");
 </script>
 
 <template>
@@ -26,7 +25,7 @@ const currentMode = ref("");
       <div class="flex justify-end gap-2 p-5">
         <button
           class="itbkk-button itbkk-button-confirm w-[80px] h-[40px] font-bold text-white bg-green-500 hover:bg-green-400 rounded-lg transition duration-200"
-          @click="[$emit('save', currentMode)]"
+          @click="[$emit('save')]"
         >
           Confirm
         </button>

@@ -136,11 +136,8 @@ async function handleVisible() {
     "success",
     `Change Visibility to ${response.visibility}`
   );
-  console.log(`Visibility mode is: ${mode}`);
-  visibilityToggle.value = !visibilityToggle.value; // สลับค่า visibilityToggle
+  visibilityToggle.value = !visibilityToggle.value;
   closeVisibleModal();
-  console.log(mode);
-  console.log(response);
 }
 
 function openVisibilityModal() {
