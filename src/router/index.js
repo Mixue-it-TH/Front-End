@@ -83,9 +83,11 @@ const router = createRouter({
 // Global Navigation Guard
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
+  console.log(token);
+
   const accountStore = useAccount();
   const boardsPathPattern =
-    /^\/(sy2\/)?board\/[a-zA-Z0-9]+(\/(task\/\d+|status(\/\d+)?))?$/;
+    /^\/(sy2\/)?board\/[a-zA-Z0-9\-_]+(\/(task\/\d+|status(\/\d+)?))?$/;
 
   if (to.path !== "/login") {
     if (!token) {
