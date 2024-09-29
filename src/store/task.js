@@ -1,6 +1,5 @@
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { ref } from "vue"
-import { getTaskList } from "@/util/fetchUtils"
 
 export const useTasks = defineStore("taskmanager", () => {
   const tasks = ref([])

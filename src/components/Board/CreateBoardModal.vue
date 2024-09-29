@@ -1,48 +1,37 @@
 <script setup>
-import { useRouter } from "vue-router"
-import { ref } from "vue"
-import { createBoard } from "@/util/fetchUtils"
-import { useAlert } from "@/store/alert"
-import { useAccount } from "@/store/account"
+import {useRouter} from "vue-router";
+import {ref} from "vue";
+import {createBoard} from "@/util/fetchUtils";
+import {useAccount} from "@/store/account";
+import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
 
-const router = useRouter()
+const router = useRouter();
 const prop = defineProps({
   name: {
-    type: String
-  }
-})
+    type: String,
+  },
+});
 
-const alertManagement = useAlert()
-const accountStore = useAccount()
-const boardName = ref(accountStore.getData().name)
-const isDisable = ref(false)
+const accountStore = useAccount();
+const boardName = ref(accountStore.getData().name);
+const isDisable = ref(false);
 
 async function saveBoard(name) {
-  const newBoard = await createBoard(name)
-  if (newBoard === 401) {
-    alertManagement.statusHandler(
-      "error",
-      `For security reasons, your session has expired. Please log back in.`
-    )
-    accountStore.unAuthorizeHandle()
-  } else {
-    accountStore.addBoard(newBoard)
-    console.log(accountStore.getBoardList())
-    closeModal()
-  }
-} // ปิด modal}
+  const newBoard = await handleRequestWithTokenRefresh(createBoard, name);
+  accountStore.addBoard(newBoard);
+  closeModal();
+}
 
 function closeModal() {
-  router.push("/board")
-  // router.go(-1);
-  router.go(-1) // previous page
+  router.push("/board");
+  router.go(-1);
 }
 
 function handleCreateBoard() {
   if (boardName.value.length === 0) {
-    isDisable.value = true
+    isDisable.value = true;
   } else {
-    isDisable.value = false
+    isDisable.value = false;
   }
 }
 </script>

@@ -1,110 +1,116 @@
 <script setup>
-import { onMounted, ref } from "vue"
-import { useTasks } from "@/store/task"
-import { useStatus } from "@/store/status"
-import ListStatus from "./ListStatus.vue"
-import DeleteStatusModal from "./DeleteStatusModal.vue"
-import { deleteStatusById, deleteTaskAndTranfer } from "@/util/statusFetchUtils"
-import { getStatusList } from "@/util/fetchUtils"
-import { useLimit } from "@/store/limitReached"
-import { useAlert } from "@/store/alert"
-import { useRoute, useRouter } from "vue-router"
+import {onMounted, ref} from "vue";
+import {useTasks} from "@/store/task";
+import {useStatus} from "@/store/status";
+import ListStatus from "./ListStatus.vue";
+import DeleteStatusModal from "./DeleteStatusModal.vue";
+import {deleteStatusById, deleteTaskAndTranfer} from "@/util/statusFetchUtils";
+import {getStatusList} from "@/util/fetchUtils";
+import {useLimit} from "@/store/limitReached";
 
-const alertManagement = useAlert()
-const taskManagement = useTasks()
-const statusManagement = useStatus()
-const limitManagement = useLimit()
-const statusDetail = ref()
-const statusId = ref()
-const delState = ref(false)
-const stage = ref("delete")
-const arrTranfer = ref([])
-const amoutTasks = ref(0)
-const router = useRouter()
-const route = useRoute()
+import {useAlert} from "@/store/alert";
+import {useRoute, useRouter} from "vue-router";
+import {useAccount} from "@/store/account";
+import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+
+const accountStore = useAccount();
+const alertManagement = useAlert();
+const taskManagement = useTasks();
+const statusManagement = useStatus();
+const limitManagement = useLimit();
+const statusDetail = ref();
+const statusId = ref();
+const delState = ref(false);
+const stage = ref("delete");
+const arrTranfer = ref([]);
+const amoutTasks = ref(0);
+const router = useRouter();
+const route = useRoute();
 
 onMounted(async () => {
-  const listStatuses = await getStatusList(route.params.id)
+  const listStatuses = await handleRequestWithTokenRefresh(
+    getStatusList,
+    route.params.id
+  );
+
   if (listStatuses === 404) {
-    router.push("/login")
+    router.push("/login");
   }
   if (statusManagement.getAllStatus().length === 0) {
-    statusManagement.addStatuses(listStatuses)
+    statusManagement.addStatuses(listStatuses);
   }
-})
+});
 
 function delAction(status, id) {
-  statusDetail.value = status
+  statusDetail.value = status;
   const taskRelation = taskManagement.getAllTask().filter((task) => {
-    return task.status.id === statusDetail.value.id
-  })
+    return task.status.id === statusDetail.value.id;
+  });
   if (taskRelation.length >= 1) {
-    stage.value = "tranfer"
-    amoutTasks.value = taskRelation.length
+    stage.value = "tranfer";
+    amoutTasks.value = taskRelation.length;
     arrTranfer.value = statusManagement.getAllStatus().filter((st) => {
-      return st.id !== id
-    })
+      return st.id !== id;
+    });
   }
-  statusId.value = id
-  delState.value = true
+  statusId.value = id;
+  delState.value = true;
 }
 
 async function delConfirm(id, tranferId) {
-  let delRespond
+  let delRespond;
   if (stage.value === "delete") {
-    delRespond = await deleteStatusById(id, route.params.id)
+    delRespond = await handleRequestWithTokenRefresh(
+      deleteStatusById,
+      id,
+      route.params.id
+    );
     if (delRespond.ok) {
       alertManagement.statusHandler(
         "success",
         "The status has been deleted successfully"
-      )
-      closeDelModal(false)
+      );
+      closeDelModal(false);
     } else if (delRespond.status === 404) {
       alertManagement.statusHandler(
         "error",
         "An error has occurred, the status does not exist"
-      )
-      closeDelModal(false)
-    } else if (delRespond.status === 401) {
-      alertManagement.statusHandler(
-        "error",
-        `For security reasons, your session has expired. Please log back in.`
-      )
-      accountStore.unAuthorizeHandle()
+      );
+      closeDelModal(false);
     }
-    statusManagement.deleteStatus(id)
+    statusManagement.deleteStatus(id);
   } else if (stage.value === "tranfer") {
-    delRespond = await deleteTaskAndTranfer(id, tranferId, route.params.id)
+    delRespond = await handleRequestWithTokenRefresh(
+      deleteTaskAndTranfer,
+      id,
+      tranferId,
+      route.params.id
+    );
     if (delRespond.ok) {
-      statusManagement.deleteStatus(id)
+      statusManagement.deleteStatus(id);
       taskManagement.tranferStatus(
         id,
         statusManagement.getStatusById(tranferId)
-      )
+      );
       alertManagement.statusHandler(
         "success",
         `${amoutTasks.value} task(s) have been tranfer and the status has been deleted`
-      )
-      closeDelModal(false)
+      );
+      closeDelModal(false);
     } else if (delRespond.status === 404 || delRespond.status === 400) {
-      const status = statusManagement.getStatusById(tranferId)
+      const status = statusManagement.getStatusById(tranferId);
       alertManagement.statusHandler(
         "error",
         `Cannot transfer to ${status.name} status since it will exceed the limit. Please choose another status to transfer to.`
-      )
-    } else if (delRespond.status === 401) {
-      alertManagement.statusHandler(
-        "error",
-        `For security reasons, your session has expired. Please log back in.`
-      )
-      accountStore.unAuthorizeHandle()
+      );
     }
   }
 }
 
+
 function closeDelModal(isclose) {
-  delState.value = isclose
-  stage.value = "delete"
+  delState.value = isclose;
+  stage.value = "delete";
 }
 </script>
 

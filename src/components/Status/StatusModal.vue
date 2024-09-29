@@ -11,6 +11,7 @@ import { useStatus } from "@/store/status"
 import { useTasks } from "@/store/task"
 import { useAlert } from "@/store/alert"
 import { useAccount } from "@/store/account"
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
 
 
 const router = useRouter()
@@ -44,10 +45,7 @@ onMounted(async () => {
 async function actionHandler(id, action) {
 	
 	if (action === "read") {
-		
-		statusDetails.value = await getStatusById(id,route.params.id)
-		
-
+		statusDetails.value = await handleRequestWithTokenRefresh(getStatusById,id,route.params.id)
 		if (typeof statusDetails.value === "object") {
 			statusDetails.value.createdOn = convertUtils(
 				statusDetails.value.createdOn
@@ -56,26 +54,17 @@ async function actionHandler(id, action) {
 				statusDetails.value.updatedOn
 			)
 			statusDetails.value.name = convertStatus(statusDetails.value.name)
-			
-			
 			mode.value = "read"
 		} else if (statusDetails.value === 404) {
 			alertManagement.statusHandler("error", "An error has occurred, the request status does not exist")
 			router.push('/board')
 		}else {
-      alertManagement.statusHandler(
-        "error",
-        `For security reasons, your session has expired. Please log back in.`
-      )
-      accountStore.unAuthorizeHandle()
     }
 		
 	} else if (action === "add") {
 		mode.value = "add"
 	} else if (action === "edit") {
-		statusDetails.value = await getStatusById(
-			id,route.params.id
-		);
+		statusDetails.value = await handleRequestWithTokenRefresh(getStatusById,id,route.params.id)
 		if (typeof statusDetails.value === "object") {
 			statusDetails.value.createdOn = convertUtils(
 				statusDetails.value.createdOn
@@ -85,13 +74,7 @@ async function actionHandler(id, action) {
 			);
 			oldStatus.value = { ...statusDetails.value }
 			mode.value = "edit";
-		}else if(statusDetails.value === 401){	
-      		alertManagement.statusHandler(
-       	 "error",
-        `For security reasons, your session has expired. Please log back in.`
-     	 )
-      accountStore.unAuthorizeHandle()
-		} 
+		}
 		else {
 			alertManagement.statusHandler("error", "An error has occurred, the status does not exist")
 			router.push("/status");
@@ -102,9 +85,7 @@ async function actionHandler(id, action) {
 			window.alert("The requested statuses can't delete default status")
 			router.push("/status")
 		}
-		statusDetails.value = await getStatusById(
-			id,route.params.id
-		)
+		statusDetails.value = await handleRequestWithTokenRefresh(getStatusById,id,route.params.id)
 	}
 }
 
@@ -114,20 +95,12 @@ async function confirmHandeler() {
 			return convertStatus(status.name) === convertStatus(statusDetails.value.name)
 		})
 		if (duplicateName.length === 0) {
-			const respone = await addStatus(
-				statusDetails.value,route.params.id
-			)
-			if (typeof respone === "object") {
+			const respone = await handleRequestWithTokenRefresh(addStatus,statusDetails.value,route.params.id)
+					
+			if (respone?.id) {
 				alertManagement.statusHandler("success", "The status has been added successfully")
 				statusManagement.addStatus(respone)
-			} else if (respone === 400) alertManagement.statusHandler("error", "Internal server error")
-			else if (respone === 401) {
-      alertManagement.statusHandler(
-        "error",
-        `For security reasons, your session has expired. Please log back in.`
-      )
-      accountStore.unAuthorizeHandle()
-    }
+			} else if (respone.status === 400) alertManagement.statusHandler("error", "Internal server error")
 		} else {
 			alertManagement.statusHandler("error", "Status name must be uniques, please choose another name.")
 			return
@@ -137,32 +110,26 @@ async function confirmHandeler() {
 		const duplicateName = statusManagement.getAllStatus().filter((status) => {
 			return ((convertStatus(status.name) === convertStatus(statusDetails.value.name)) && status.id !== statusDetails.value.id)
 		})
+		
 		if (duplicateName.length === 0) {
-			const respone = await editStatus(
-				statusDetails.value,route.params.id
-			);
+			const respone = await handleRequestWithTokenRefresh(editStatus,statusDetails.value,route.params.id)
 			if (typeof respone === "object") {
 				statusManagement.editStatus(statusDetails.value);
 				taskManagement.tranferStatus(statusDetails.value.id, statusDetails.value)
 				alertManagement.statusHandler( "success", "The status has been updated successfully");
-			} else if (respone === 400) {
+			} else if (respone.status === 400) {
 				alertManagement.statusHandler("error", "An error has occurred, the status has duplicate status name")
-			} else if (respone === 404) {
-				
+			} else if (respone.status === 404) {
 				alertManagement.statusHandler("error", "An error has occurred, the status does not exist")
-			}else if (respone	 === 401) {
-      alertManagement.statusHandler(
-        "error",
-        `For security reasons, your session has expired. Please log back in.`
-      )
-      accountStore.unAuthorizeHandle()
-    }
+			}
 		} else {
 			alertManagement.statusHandler("error", "An error has occurred, the status has duplicate status name")
 		}
 	}
+	log
 	closeModal()
 }
+
 function saveBthHandler() {
 	if (statusDetails.value.name?.length > 50 || statusDetails.value.description?.length > 200) {
 		isDisable.value = true

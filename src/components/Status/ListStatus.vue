@@ -1,37 +1,42 @@
 <script setup>
-import { ref } from "vue"
-import { RouterLink } from "vue-router"
-import { useStatus } from "@/store/status.js"
-import ListModel from "../Ui/ListModel.vue"
+import {computed, ref} from "vue";
+import {RouterLink} from "vue-router";
+import {useStatus} from "@/store/status.js";
+import ListModel from "../Ui/ListModel.vue";
+import TooltipBtn from "../Ui/TooltipBtn.vue";
+import {useAccount} from "@/store/account";
 
-const emit = defineEmits(["delAction"])
+const emit = defineEmits(["delAction"]);
 const prop = defineProps({
   limitExceed: {
-    type: Array
-  }
-})
+    type: Array,
+  },
+});
 
-const statusManagement = useStatus()
-const mode = ref("read")
+const accountStore = useAccount();
+const statusManagement = useStatus();
+const mode = ref("read");
+const permission = computed(() => accountStore.permission);
 
 function modalHandler(id, action) {
   if (action === "add") {
-    mode.value = "add"
+    mode.value = "add";
   } else if (action === "read") {
   } else if (action === "edit") {
-    mode.value = "edit"
+    mode.value = "edit";
   }
 }
 
 function delBtnHandler(id, tranferId) {
-  emit("delAction", id, tranferId)
+  emit("delAction", id, tranferId);
 }
 </script>
 
 <template>
   <router-link
-    :to="{ name: 'statusAdd' }"
+    :to="{name: 'statusAdd'}"
     class="invisible mobile-L:visible absolute left-0 bottom-0 mb-[20px] ml-[20px]"
+    :class="!permission ? 'pointer-events-none' : ''"
   >
     <div
       class="flex justify-center items-center w-[60px] h-[60px] rounded-[50%] bg-[#0058DD] border-2 shadow-xl"
@@ -91,39 +96,46 @@ function delBtnHandler(id, tranferId) {
         </div>
       </div>
     </div>
-    <router-link :to="{ name: 'statusAdd' }" class="mobile-L:hidden">
-      <div
-        class="transition itbkk-button-add flex items-center min-h-[55px] mb-[5px] px-[15px] bg bg-[#F6F6F6] hover:bg-white border-dashed border-[3px] border-[#FFCB45] rounded-[8px]"
+    <TooltipBtn>
+      <router-link
+        :to="{name: 'statusAdd'}"
+        class="mobile-L:hidden"
+        :class="!permission ? 'pointer-events-none' : ''"
       >
-        <div class="flex flex-row w-[50%]">
-          <div class="mr-[10px]">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 6L12 18"
-                stroke="#E2A300"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-              <path
-                d="M18 12L6 12"
-                stroke="#E2A300"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            </svg>
-          </div>
-          <div class="font-[430]" @click="modalHandler(null, 'add')">
-            Add New Status
+        <div
+          class="transition itbkk-button-add flex items-center min-h-[55px] w-[95vw] mb-[5px] px-[15px] bg bg-[#F6F6F6] hover:bg-white border-dashed border-[3px] border-[#FFCB45] rounded-[8px]"
+          :class="!permission ? 'opacity-50' : ''"
+        >
+          <div class="flex flex-row w-[50%]">
+            <div class="mr-[10px]">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 6L12 18"
+                  stroke="#E2A300"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M18 12L6 12"
+                  stroke="#E2A300"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <div class="font-[430]" @click="modalHandler(null, 'add')">
+              Add New Status
+            </div>
           </div>
         </div>
-      </div>
-    </router-link>
+      </router-link>
+    </TooltipBtn>
 
     <ListModel :jobs="statusManagement.getAllStatus()">
       <template #default="slotprop">
@@ -133,7 +145,7 @@ function delBtnHandler(id, tranferId) {
           <router-link
             :to="{
               name: 'statusDetail',
-              params: { statusId: slotprop.job.id }
+              params: {statusId: slotprop.job.id},
             }"
             class="w-full"
           >
@@ -144,7 +156,7 @@ function delBtnHandler(id, tranferId) {
               <div class="w-[33%]">
                 <div
                   class="text-white min-w-[80px] max-w-[150px] px-[10px] rounded-[5px] m-[auto] inline-block transition-icon duration-100 hover:drop-shadow-2xl"
-                  :style="{ backgroundColor: slotprop.job.statusColor }"
+                  :style="{backgroundColor: slotprop.job.statusColor}"
                 >
                   <p class="itbkk-status-name">{{ slotprop.job.name }}</p>
                 </div>
@@ -154,7 +166,7 @@ function delBtnHandler(id, tranferId) {
                 <div class="">
                   <p
                     :class="{
-                      'italic text-gray-500': !slotprop.job.description
+                      'italic text-gray-500': !slotprop.job.description,
                     }"
                     class="itbkk-status-description"
                   >
@@ -169,32 +181,37 @@ function delBtnHandler(id, tranferId) {
             </div>
           </router-link>
           <div class="w-[12%]">
-            <div class="flex tablet:flex-col w-[100px]">
-              <router-link
-                :to="{
-                  name: 'statusEdit',
-                  params: { statusId: slotprop.job.id }
-                }"
-                class="itbkk-button-edit"
-              >
-                <div
-                  class="transition-icon w-[50px] px-[6px] rounded-[10px] hover:drop-shadow-2xl duration-150"
-                >
-                  Edit
-                  <img src="/image/edit-icon.png" class="w-[30px]" />
-                </div>
-              </router-link>
+            <TooltipBtn>
               <div
-                class="transition-icon itbkk-button-deletew-[50px] text-red-500 rounded-[10px] hover:drop-shadow-2xl duration-150"
+                class="flex tablet:flex-col w-[100px]"
+                :class="!permission ? 'pointer-events-none opacity-50' : ''"
               >
-                Delete
-                <img
-                  src="/image/delete-image.png"
-                  class="w-[30px] ml-[5px] cursor-pointer"
-                  @click="delBtnHandler(slotprop.job, slotprop.job.id)"
-                />
+                <router-link
+                  :to="{
+                    name: 'statusEdit',
+                    params: {statusId: slotprop.job.id},
+                  }"
+                  class="itbkk-button-edit"
+                >
+                  <div
+                    class="transition-icon w-[50px] px-[6px] rounded-[10px] hover:drop-shadow-2xl duration-150"
+                  >
+                    Edit
+                    <img src="/image/edit-icon.png" class="w-[30px]" />
+                  </div>
+                </router-link>
+                <div
+                  class="transition-icon itbkk-button-deletew-[50px] text-red-500 rounded-[10px] hover:drop-shadow-2xl duration-150"
+                >
+                  Delete
+                  <img
+                    src="/image/delete-image.png"
+                    class="w-[30px] ml-[5px] cursor-pointer"
+                    @click="delBtnHandler(slotprop.job, slotprop.job.id)"
+                  />
+                </div>
               </div>
-            </div>
+            </TooltipBtn>
           </div>
         </div>
       </template>
