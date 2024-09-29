@@ -83,7 +83,6 @@ const router = createRouter({
 // Global Navigation Guard
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
-  console.log(token);
 
   const accountStore = useAccount();
   const boardsPathPattern =
