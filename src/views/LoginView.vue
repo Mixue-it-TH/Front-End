@@ -25,15 +25,6 @@ onMounted(() => {
   statusManagement.clearAllStatus();
 });
 
-if (localStorage.getItem("isPrivate")) {
-  alertManagement.statusHandler(
-    "error",
-    "Access denied, you do not have permission to view this page."
-  );
-
-  localStorage.removeItem("isPrivate");
-}
-
 async function register(e) {
   e.preventDefault();
   // fetch api

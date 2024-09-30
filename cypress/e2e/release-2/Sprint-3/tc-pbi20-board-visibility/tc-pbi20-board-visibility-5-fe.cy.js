@@ -70,7 +70,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
           });
         }
       });
-      
+
     // cy.get('.itbkk-board-visibility').should('be.disabled')
     // มีการแก้ Cypress ให้ตรวจสอบเจะาจงไปที่ tag input ว่ามี class disabled มั้ย
     cy.get('.itbkk-board-visibility input[type="checkbox"]').should(
@@ -99,7 +99,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
 
     cy.get(".itbkk-item").should("have.length", 4);
     cy.get(".itbkk-status-name").contains("No Status");
-    cy.get(".itbkk-status-name").contains("In Progress");
+    cy.get(".itbkk-status-name").contains("To Do");
     cy.get(".itbkk-status-name").contains("Doing");
     cy.get(".itbkk-status-name").contains("Done");
   });
