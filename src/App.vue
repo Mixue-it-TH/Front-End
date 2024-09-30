@@ -2,25 +2,17 @@
 import {RouterView} from "vue-router";
 import AlertMessage from "./components/Ui/AlertMessage.vue";
 import {useAlert} from "./store/alert";
+import {useCheckPrivate} from "./compasable/useCheckPrivate";
 
+const {isPrivateAlertShown} = useCheckPrivate();
 const alertManagement = useAlert();
-
 const {showAlertModal, message, statusType} = alertManagement.getAlertData();
-
-if (localStorage.getItem("isPrivate")) {
-  alertManagement.statusHandler(
-    "error",
-    "Access denied, you do not have permission to view this page."
-  );
-
-  localStorage.removeItem("isPrivate");
-}
 </script>
 
 <template>
   <div class="w-[auto] h-screen overflow-auto bg bg-[#F4F4F4]">
     <AlertMessage
-      v-if="showAlertModal"
+      v-if="showAlertModal || isPrivateAlertShown"
       @close="alertManagement.closeStatusModal"
       :message="message"
       :type="statusType"
