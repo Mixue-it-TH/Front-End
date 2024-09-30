@@ -46,7 +46,10 @@ async function getTaskById(id, paramId) {
 
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${id}`,
-      headers
+      {
+        method: "GET",
+        headers: headers,
+      }
     );
     if (response.ok) {
       const data = await response.json();
