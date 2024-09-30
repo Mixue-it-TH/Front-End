@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {useTasks} from "@/store/task.js";
 import {useStatus} from "@/store/status.js";
@@ -8,6 +8,7 @@ import {convertUtils, convertStatus} from "@/util/formatUtils";
 import {useAlert} from "@/store/alert";
 import {useAccount} from "@/store/account";
 import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+import getAccessToken from "@/util/tokenUtil";
 
 const alertManagement = useAlert();
 const taskManagement = useTasks();
@@ -32,6 +33,8 @@ const isDisable = ref(true);
 const mode = ref("read");
 const dataLoaded = ref(false);
 
+const permission = computed(() => accountStore.permission);
+
 onMounted(async () => {
   if (statusManagement.getAllStatus().length === 0) {
     statusManagement.addStatuses(listStatuses);
@@ -39,6 +42,12 @@ onMounted(async () => {
 
   const fullPath = router.currentRoute.value.fullPath;
   const data = fullPath.split("/");
+
+  //Check user permission to view this modal
+  if (!permission.value && (data.includes("add") || data.includes("edit"))) {
+    localStorage.setItem("isPrivate", true);
+    router.go(-1);
+  }
 
   if (data.length === 5 && !data.includes("add")) {
     actionHandler(data[4], "read");
@@ -324,7 +333,7 @@ function closeModal() {
                       :value="status.id"
                       class="bg-white"
                     >
-                      {{ convertStatus(status.name) }}
+                      {{ status.name }}
                     </option>
                   </select>
                 </div>

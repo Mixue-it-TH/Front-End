@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import {
 	getStatusById,
@@ -21,14 +21,23 @@ const oldStatus = ref({})
 const dataLoaded = ref(false)
 const mode = ref("read")
 const isDisable = ref(true)
+const accountStore = useAccount()
 const alertManagement = useAlert()
 const statusManagement = useStatus()
 const taskManagement = useTasks()
-const accountStore = useAccount()
 const delState = ref(false)
+const permission = computed(() => accountStore.permission);
 
 onMounted(async () => {
 	const data = router.currentRoute.value.fullPath.split("/")
+
+	// Check user permission to view this modal
+	if (!permission.value && (data.includes("add") || data.includes("edit"))) {
+    localStorage.setItem("isPrivate", true);
+    router.go(-1);
+  }
+
+
 	if (data.length === 5 && !data.includes("add")) {
 		actionHandler(data[4], "read")
 	} else if (data.includes("add")) {
@@ -126,7 +135,6 @@ async function confirmHandeler() {
 			alertManagement.statusHandler("error", "An error has occurred, the status has duplicate status name")
 		}
 	}
-	log
 	closeModal()
 }
 
