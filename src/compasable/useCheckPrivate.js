@@ -1,24 +1,26 @@
-import {ref, onMounted} from "vue";
+import {ref, watch} from "vue";
 import {useAlert} from "../store/alert";
 
 export function useCheckPrivate() {
   const alertManagement = useAlert();
-  const isPrivateAlertShown = ref(false);
+  const isPrivate = ref(false);
 
-  onMounted(() => {
-    const isPrivate = localStorage.getItem("isPrivate");
+  const checkLocalStorage = () => {
+    isPrivate.value = localStorage.getItem("isPrivate") !== null; // เปลี่ยนเป็น Boolean
+  };
 
-    if (isPrivate) {
+  watch(isPrivate, (newValue) => {
+    if (newValue) {
       alertManagement.statusHandler(
         "error",
         "Access denied, you do not have permission to view this page."
       );
       localStorage.removeItem("isPrivate");
-      isPrivateAlertShown.value = true;
     }
   });
 
   return {
-    isPrivateAlertShown,
+    checkLocalStorage,
+    isPrivate,
   };
 }
