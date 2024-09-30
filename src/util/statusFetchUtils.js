@@ -18,7 +18,10 @@ async function getStatusById(id, paramId) {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/${paramId}/statuses/${id}`,
-      headers
+      {
+        method: "GET",
+        headers: headers,
+      }
     );
     if (response.ok) {
       const data = await response.json();
