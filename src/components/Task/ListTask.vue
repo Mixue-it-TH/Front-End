@@ -85,7 +85,7 @@ const props = defineProps({
         :class="!permission ? 'pointer-events-none' : ''"
       >
         <div
-          class="transition itbkk-button-add flex items-center min-h-[55px] mb-[5px] px-[15px] w-[95vw] border-dashed border-[3px] hover:bg-white border-[#FFCB45] rounded-[8px]"
+          class="transition itbkk-button-add disabled flex items-center min-h-[55px] mb-[5px] px-[15px] w-[95vw] border-dashed border-[3px] hover:bg-white border-[#FFCB45] rounded-[8px]"
           :class="!permission ? 'opacity-50' : ''"
         >
           <div class="flex flex-row w-[50%]">
@@ -119,7 +119,7 @@ const props = defineProps({
     <Listmodel :jobs="listTasks" v-if="listTasks.length != 0">
       <template #default="slotprop">
         <div
-          class="transition flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
+          class="itbkk-item transition flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
         >
           <router-link
             :to="{name: 'taskDetail', params: {taskId: slotprop.job.id}}"
@@ -165,45 +165,59 @@ const props = defineProps({
             </div>
           </router-link>
 
-          <TooltipBtn>
+          <div
+            class="itbkk-button-action dropdown dropdown-end dropdown-hover z-[1]"
+          >
             <div
-              class="itbkk-button-action dropdown dropdown-end dropdown-hover z-[1]"
-              :class="!permission ? 'opacity-50 pointer-events-none' : ''"
+              tabindex="0"
+              role="button"
+              class="btn m-1 z-[1] bg bg-gray-[#A9A9A9]"
             >
-              <div
-                tabindex="0"
-                role="button"
-                class="btn m-1 z-[1] bg bg-gray-[#A9A9A9]"
+              <svg
+                width="7"
+                height="30"
+                viewBox="0 0 7 30"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <svg
-                  width="7"
-                  height="30"
-                  viewBox="0 0 7 30"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle cx="3.5" cy="3.5" r="3.5" fill="#969696" />
-                  <circle cx="3.5" cy="26.5" r="3.5" fill="#969696" />
-                  <circle cx="3.5" cy="14.8335" r="3.5" fill="#969696" />
-                </svg>
-              </div>
-              <ul
-                tabindex="0"
-                class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-[5] bg bg-gray-[#A9A9A9]"
-              >
+                <circle cx="3.5" cy="3.5" r="3.5" fill="#969696" />
+                <circle cx="3.5" cy="26.5" r="3.5" fill="#969696" />
+                <circle cx="3.5" cy="14.8335" r="3.5" fill="#969696" />
+              </svg>
+            </div>
+            <ul
+              tabindex="0"
+              class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-[5] bg bg-gray-[#A9A9A9]"
+            >
+              <TooltipBtn>
                 <router-link
                   :to="{name: 'taskEdit', params: {taskId: slotprop.job.id}}"
                 >
-                  <li class="itbkk-button-edit flex flex-row">
+                  <li
+                    class="itbkk-button-edit flex flex-row"
+                    :class="
+                      !permission
+                        ? 'opacity-50 pointer-events-none disabled'
+                        : ''
+                    "
+                  >
                     <a class="px-5"
                       >Edit
                       <img class="px-0" src="/image/edit-icon.png" width="25px"
                     /></a>
                   </li>
                 </router-link>
+              </TooltipBtn>
+
+              <TooltipBtn>
                 <div>
                   <li
                     class="itbkk-button-delete flex flex-row w-full"
+                    :class="
+                      !permission
+                        ? 'opacity-50 pointer-events-none disabled'
+                        : ''
+                    "
                     @click="emit('delete', slotprop.job, slotprop.key + 1)"
                   >
                     <a class="px-5 text-red-500"
@@ -214,9 +228,9 @@ const props = defineProps({
                     /></a>
                   </li>
                 </div>
-              </ul>
-            </div>
-          </TooltipBtn>
+              </TooltipBtn>
+            </ul>
+          </div>
         </div>
       </template>
     </Listmodel>

@@ -7,7 +7,6 @@ import {computed, onMounted, ref, watch} from "vue";
 import {
   getEnableLimit,
   getBoardIdByUserOIDs,
-  getVisibility,
   getBoardByBoardid,
 } from "@/util/fetchUtils";
 import {useAlert} from "@/store/alert";
@@ -38,7 +37,6 @@ const boardName = ref("");
 
 const visibilityToggle = ref(false);
 const showVisibilityModal = ref(false);
-const isPublicMode = ref(false);
 const permission = computed(() => accountStore.permission);
 
 onMounted(async () => {
@@ -119,8 +117,9 @@ watch(
   {immediate: true}
 );
 
-async function handleVisible() {
+async function handleVisible(status) {
   const mode = visibilityToggle.value ? "private" : "public";
+
   const response = await handleVisibleMode(mode, route.params.id);
   if (response.status === 401) {
     handleLogout();
@@ -134,9 +133,12 @@ async function handleVisible() {
   }
   alertManagement.statusHandler(
     "success",
-    `Change Visibility to ${response.visibility}`
+    `Change visibility to ${response.visibility.toLowerCase()}`
   );
+
   visibilityToggle.value = !visibilityToggle.value;
+  accountStore.setVisibility(status, accountStore.getData().oid);
+
   closeVisibleModal();
 }
 
@@ -268,7 +270,11 @@ function closeVisibleModal(isClose) {
     />
   </Teleport>
   <Teleport to="body" v-if="showVisibilityModal">
-    <VisibleModal @cancel="closeVisibleModal" @save="handleVisible" />
+    <VisibleModal
+      @cancel="closeVisibleModal"
+      @save="handleVisible"
+      :isPublic="accountStore.getVisibility()"
+    />
   </Teleport>
   <div
     class="flex flex-row justify-between tablet:h-[auto] tablet:flex-col w-[100%] h-[75px] mb-[15px]0"
@@ -468,7 +474,7 @@ function closeVisibleModal(isClose) {
     <TooltipBtn>
       <ul>
         <li class="border">
-          <div class="form-control w-[120px] itbkk-board-visibility">
+          <div class="itbkk-board-visibility form-control w-[120px]">
             <label class="label cursor-pointer">
               <span>{{
                 visibilityToggle === false ? "private" : "public"
@@ -480,6 +486,7 @@ function closeVisibleModal(isClose) {
                 type="checkbox"
                 @click.prevent="openVisibilityModal"
                 class="toggle bg bg-gray-200 checked:bg-blue-500"
+                :class="!permission ? 'disabled' : ''"
               />
             </label>
           </div>

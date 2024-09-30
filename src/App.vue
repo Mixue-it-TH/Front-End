@@ -1,11 +1,20 @@
 <script setup>
-import { RouterView } from "vue-router";
+import {RouterView} from "vue-router";
 import AlertMessage from "./components/Ui/AlertMessage.vue";
-import { useAlert } from "./store/alert";
+import {useAlert} from "./store/alert";
 
 const alertManagement = useAlert();
 
-const { showAlertModal, message, statusType } = alertManagement.getAlertData();
+const {showAlertModal, message, statusType} = alertManagement.getAlertData();
+
+if (localStorage.getItem("isPrivate")) {
+  alertManagement.statusHandler(
+    "error",
+    "Access denied, you do not have permission to view this page."
+  );
+
+  localStorage.removeItem("isPrivate");
+}
 </script>
 
 <template>

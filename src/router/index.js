@@ -86,7 +86,9 @@ router.beforeEach((to, from, next) => {
 
   const accountStore = useAccount();
   const boardsPathPattern =
-    /^\/(sy2\/)?board\/[a-zA-Z0-9\-_]+(\/(task\/\d+|status(\/\d+)?))?$/;
+    /^\/(sy2\/)?board\/[a-zA-Z0-9\-_]+(\/(task(\/(\d+|add))?|status(\/(\d+|add))?)(\/edit)?)?$/;
+
+  console.log(boardsPathPattern.test(to.path));
 
   if (to.path !== "/login") {
     if (!token) {

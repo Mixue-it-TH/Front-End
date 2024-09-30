@@ -20,13 +20,6 @@ onMounted(async () => {
   const token = localStorage.getItem("token");
   const boardId = localStorage.getItem("boardId");
 
-  // const board = await getBoardByBoardid(route.params.id);
-  // console.log(board[0].visibility);
-
-  // accountStore.setVisibility(board[0].visibility === "PUBLIC" ? true : false);
-
-  // console.log(accountStore.getVisibility());
-
   if (token) {
     accountStore.setisLogin(true);
     accountStore.decodedToken(token);
@@ -49,15 +42,8 @@ onMounted(async () => {
       router.go(-1);
     }
 
-    if (localStorage.getItem("isPrivate")) {
-      alertManagement.statusHandler(
-        "error",
-        "Access denied, you do not have permission to view this page."
-      );
-    }
     if (listStatuses.status !== 400) statusManagement.addStatuses(listStatuses);
     if (listTasks.status !== 400) taskManagement.addTasks(listTasks);
-    localStorage.removeItem("isPrivate");
   }
 
   isLoaded.value = true;

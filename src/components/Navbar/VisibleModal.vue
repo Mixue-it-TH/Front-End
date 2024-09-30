@@ -1,5 +1,9 @@
 <script setup>
-import {ref} from "vue";
+const prop = defineProps({
+  isPublic: {
+    type: Boolean,
+  },
+});
 </script>
 
 <template>
@@ -18,14 +22,17 @@ import {ref} from "vue";
         <div class="itbkk-message font-[400] px-[15px] text-[17px]">
           <p class="">
             In public, any one can view the board, task list and task detail of
-            tasks in the board. Do you want to change the visibility to Public?
+            tasks in the board. Do you want to change the visibility to
+            <span class="text-[20px] font-[500] text-blue-800">{{
+              isPublic ? "private" : "public"
+            }}</span>
           </p>
         </div>
       </div>
       <div class="flex justify-end gap-2 p-5">
         <button
           class="itbkk-button itbkk-button-confirm w-[80px] h-[40px] font-bold text-white bg-green-500 hover:bg-green-400 rounded-lg transition duration-200"
-          @click="[$emit('save')]"
+          @click="[$emit('save', !isPublic)]"
         >
           Confirm
         </button>

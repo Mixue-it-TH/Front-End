@@ -64,7 +64,6 @@ async function getTaskById(id, paramId) {
 
 async function addTask(task, paramId) {
   try {
-    console.log(task);
     const token = getToken();
     const boardId = paramId;
 
@@ -88,8 +87,6 @@ async function addTask(task, paramId) {
       const responseData = await response.json();
       return responseData;
     } else {
-      console.log(response);
-
       return response;
     }
   } catch (e) {

@@ -87,7 +87,6 @@ async function editStatus(status, paramId) {
         }),
       }
     );
-    console.log(respone);
 
     if (respone.ok) {
       const responseData = await respone.json();
