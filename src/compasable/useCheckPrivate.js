@@ -1,4 +1,4 @@
-import {ref, watch} from "vue";
+import {ref, watchEffect} from "vue";
 import {useAlert} from "../store/alert";
 
 export function useCheckPrivate() {
@@ -6,11 +6,15 @@ export function useCheckPrivate() {
   const isPrivate = ref(false);
 
   const checkLocalStorage = () => {
-    isPrivate.value = localStorage.getItem("isPrivate") !== null; // เปลี่ยนเป็น Boolean
+    isPrivate.value = localStorage.getItem("isPrivate") !== null;
   };
 
-  watch(isPrivate, (newValue) => {
-    if (newValue) {
+  checkLocalStorage();
+
+  watchEffect(() => {
+    isPrivate.value = localStorage.getItem("isPrivate") !== null;
+
+    if (isPrivate.value) {
       alertManagement.statusHandler(
         "error",
         "Access denied, you do not have permission to view this page."
