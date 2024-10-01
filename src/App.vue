@@ -9,9 +9,7 @@ const isPrivate = ref(localStorage.getItem("isPrivate") === "true");
 const {showAlertModal, message, statusType} = alertManagement.getAlertData();
 
 const checkLocalStorage = () => {
-  const currentIsPrivate = localStorage.getItem("isPrivate") === "true";
-  if (currentIsPrivate !== isPrivate.value) {
-    isPrivate.value = currentIsPrivate;
+  if (isPrivate) {
     if (isPrivate.value) {
       alertManagement.statusHandler(
         "error",
