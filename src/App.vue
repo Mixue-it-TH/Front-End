@@ -9,14 +9,14 @@ const isPrivate = ref(localStorage.getItem("isPrivate") === "true");
 const {showAlertModal, message, statusType} = alertManagement.getAlertData();
 
 const checkLocalStorage = () => {
-  if (isPrivate) {
-    if (isPrivate.value) {
-      alertManagement.statusHandler(
-        "error",
-        "Access denied, you do not have permission to view this page."
-      );
-      localStorage.removeItem("isPrivate");
-    }
+  console.log(isPrivate.value);
+
+  if (isPrivate.value) {
+    alertManagement.statusHandler(
+      "error",
+      "Access denied, you do not have permission to view this page."
+    );
+    localStorage.removeItem("isPrivate");
   }
 };
 
