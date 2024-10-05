@@ -1,22 +1,22 @@
 <script setup>
 import router from "@/router";
-import {handelLimitMaximum} from "@/util/statusFetchUtils";
-import {useStatus} from "@/store/status";
-import {useTasks} from "@/store/task";
-import {computed, onMounted, ref, watch} from "vue";
+import { handelLimitMaximum } from "@/util/statusFetchUtils";
+import { useStatus } from "@/store/status";
+import { useTasks } from "@/store/task";
+import { computed, onMounted, ref, watch } from "vue";
 import {
   getEnableLimit,
   getBoardIdByUserOIDs,
   getBoardByBoardid,
 } from "@/util/fetchUtils";
-import {useAlert} from "@/store/alert";
-import {useAccount} from "@/store/account";
-import {useLimit} from "@/store/limitReached";
+import { useAlert } from "@/store/alert";
+import { useAccount } from "@/store/account";
+import { useLimit } from "@/store/limitReached";
 import LimitTaskModal from "./LimitTaskModal.vue";
 import VisibleModal from "./VisibleModal.vue";
-import {useRoute} from "vue-router";
-import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
-import {handleVisibleMode} from "@/util/accountFetchUtil";
+import { useRoute } from "vue-router";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import { handleVisibleMode } from "@/util/accountFetchUtil";
 import getAccessToken from "@/util/tokenUtil";
 import TooltipBtn from "../Ui/TooltipBtn.vue";
 
@@ -114,7 +114,7 @@ watch(
         .find((board) => board.id === route.params.id);
     }
   },
-  {immediate: true}
+  { immediate: true }
 );
 
 async function handleVisible(status) {
@@ -420,7 +420,7 @@ function closeVisibleModal(isClose) {
           </div>
         </TooltipBtn>
       </div>
-      <RouterLink v-if="!accountStore.getisLogin()" :to="{name: 'login'}">
+      <RouterLink v-if="!accountStore.getisLogin()" :to="{ name: 'login' }">
         <div class="flex btn btn-outline mt-[5px]">Login</div>
       </RouterLink>
       <div v-else class="dropdown dropdown-end flex items-center">
@@ -473,24 +473,37 @@ function closeVisibleModal(isClose) {
     </ul>
     <TooltipBtn>
       <ul>
-        <li class="border">
-          <div class="itbkk-board-visibility form-control w-[120px]">
-            <label class="label cursor-pointer">
-              <span>{{
-                visibilityToggle === false ? "private" : "public"
-              }}</span>
-
-              <input
-                v-model="visibilityToggle"
-                :disabled="!permission"
-                type="checkbox"
-                @click.prevent="openVisibilityModal"
-                class="toggle bg bg-gray-200 checked:bg-blue-500"
-                :class="!permission ? 'disabled' : ''"
-              />
-            </label>
+        <div class="flex gap-[15px]">
+          <div class="">
+            <!-- <router-link
+              :to="{ name: 'collaborator', params: { id: route.params.id } }"
+            > -->
+            <button
+              class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 hover:text-black transition duration-200"
+            >
+              Manage Collaborator
+            </button>
+            <!-- </router-link> -->
           </div>
-        </li>
+          <li class="border">
+            <div class="itbkk-board-visibility form-control w-[120px]">
+              <label class="label cursor-pointer">
+                <span>{{
+                  visibilityToggle === false ? "private" : "public"
+                }}</span>
+
+                <input
+                  v-model="visibilityToggle"
+                  :disabled="!permission"
+                  type="checkbox"
+                  @click.prevent="openVisibilityModal"
+                  class="toggle bg bg-gray-200 checked:bg-blue-500"
+                  :class="!permission ? 'disabled' : ''"
+                />
+              </label>
+            </div>
+          </li>
+        </div>
       </ul>
     </TooltipBtn>
   </div>

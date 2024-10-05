@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
 import NotFound from "@/views/NotFound.vue";
 import TaskModal from "@/components/Task/TaskModal.vue";
@@ -9,21 +9,23 @@ import Board from "@/components/Board/Board.vue";
 import Tasks from "@/components/Task/Tasks.vue";
 import Statuses from "@/components/Status/Statuses.vue";
 import CreateBoardModal from "@/components/Board/CreateBoardModal.vue";
-import {useAccount} from "@/store/account";
-import {useAlert} from "@/store/alert";
+import { useAccount } from "@/store/account";
+import { useAlert } from "@/store/alert";
 
+import collaborator from "@/components/collaborator/Collaborator.vue";
+import collaboratorModal from "@/components/collaborator/CollaboratorModal.vue";
 const routes = [
   {
     path: "/",
     component: AppLayout,
 
     children: [
-      {path: "", redirect: "/board"},
+      { path: "", redirect: "/board" },
       {
         path: "/board",
         component: Board,
         children: [
-          {path: "add", name: "boardAdd", component: CreateBoardModal},
+          { path: "add", name: "boardAdd", component: CreateBoardModal },
         ],
       },
 
@@ -32,7 +34,7 @@ const routes = [
         name: "boardTask",
         component: Tasks,
         children: [
-          {path: "task/add", name: "taskAdd", component: TaskModal},
+          { path: "task/add", name: "taskAdd", component: TaskModal },
           {
             path: "task/:taskId",
             name: "taskDetail",
@@ -50,7 +52,7 @@ const routes = [
         path: "/board/:id/status",
         component: Statuses,
         children: [
-          {path: "add", name: "statusAdd", component: StatusModal},
+          { path: "add", name: "statusAdd", component: StatusModal },
           {
             path: ":statusId",
             name: "statusDetail",
@@ -61,6 +63,18 @@ const routes = [
             name: "statusEdit",
             component: StatusModal,
           },
+        ],
+      },
+      {
+        path: "/board/:id/collab",
+        name: "collaborator",
+        component: collaborator,
+        children: [
+          // {
+          //   path: ":collabId",
+          //   name: "collaboratorDetail",
+          //   component: collaboratorModal,
+          // },
         ],
       },
     ],
