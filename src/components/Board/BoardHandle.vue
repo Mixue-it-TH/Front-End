@@ -1,10 +1,10 @@
 <script setup>
-import {useAccount} from "@/store/account";
-import {getBoardIdByUserOIDs} from "@/util/fetchUtils";
-import {onMounted} from "vue";
-import {RouterLink, RouterView} from "vue-router";
+import { useAccount } from "@/store/account";
+import { getBoardIdByUserOIDs } from "@/util/fetchUtils";
+import { onMounted } from "vue";
+import { RouterLink, RouterView } from "vue-router";
 import ListModel from "../Ui/ListModel.vue";
-import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 
 const emit = defineEmits(["isCreate"]);
 
@@ -24,7 +24,7 @@ onMounted(async () => {
 
 <template>
   <div class="mt-[50px] flex justify-end">
-    <router-link :to="{name: 'boardAdd'}">
+    <router-link :to="{ name: 'boardAdd' }">
       <button
         class="itbkk-button-create bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
       >
@@ -40,17 +40,50 @@ onMounted(async () => {
     >
       <template #default="slotprop">
         <div
-          class="relative mx-auto py-2 inline-block w-[80%] bg-slate-500 text-white rounded-[30px] transition-all duration-300 ease-in-out hover:-translate-x-[12px] hover:-translate-y-[12px] h-[auto] cursor-pointer"
+          class="relative mx-auto py-4 px-6 inline-block w-[80%] bg-white text-black rounded-[20px] transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-x-[10px] hover:-translate-y-[10px] cursor-pointer border border-gray-300"
         >
-          <router-link :to="{name: 'boardTask', params: {id: slotprop.job.id}}">
+          <router-link
+            :to="{ name: 'boardTask', params: { id: slotprop.job.id } }"
+          >
             <div>
-              <span class="flex justify-center p-2">
+              <span
+                class="itbkk-board-name flex justify-center p-2 font-semibold text-lg"
+              >
                 {{ slotprop.key + 1 }}. {{ slotprop.job.name }}
               </span>
+
+              <div
+                class="itbkk-owner-name flex justify-start items-center my-2"
+              >
+                <p class="mr-2 font-medium">Owner:</p>
+                <span>{{ accountStore.getData().name }}</span>
+              </div>
+
+              <div class="flex justify-start items-center my-2">
+                <p class="mr-2 font-medium">Access Right:</p>
+                <span>{{ slotprop.job.accessRight || "Read" }}</span>
+              </div>
             </div>
-            <div class="flex justify-center gap-4">
-              <button class="btn btn-outline btn-warning">Edit</button>
-              <button class="btn btn-outline btn-error">Delete</button>
+
+            <div class="flex justify-center gap-4 mt-4">
+              <button
+                class="bg-transparent border border-black text-black font-semibold py-2 px-4 rounded-lg hover:bg-black hover:text-white transition duration-200 ease-in-out"
+              >
+                Edit
+              </button>
+              <button
+                class="bg-transparent border border-red-500 text-red-500 font-semibold py-2 px-4 rounded-lg hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
+              >
+                Delete
+              </button>
+            </div>
+
+            <div class="flex justify-center mt-4">
+              <button
+                class="bg-transparent text-black font-medium py-2 px-4 rounded-lg border border-gray-400 hover:bg-gray-200 transition duration-200 ease-in-out"
+              >
+                Leave
+              </button>
             </div>
           </router-link>
         </div>
