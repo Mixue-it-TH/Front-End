@@ -1,20 +1,31 @@
 <script setup>
-import {RouterView, useRoute} from "vue-router";
+import {RouterView} from "vue-router";
 import AlertMessage from "./components/Ui/AlertMessage.vue";
 import {useAlert} from "./store/alert";
-import {useCheckPrivate} from "./compasable/useCheckPrivate";
-import {watch} from "vue";
+import {onBeforeMount, onMounted} from "vue";
 
 const alertManagement = useAlert();
-const {checkLocalStorage, isPrivate} = useCheckPrivate();
 const {showAlertModal, message, statusType} = alertManagement.getAlertData();
-const route = useRoute();
 
-watch(route, () => {
-  checkLocalStorage();
+const checkLocalStorage = () => {
+  if (localStorage.getItem("isPrivate")) {
+    alertManagement.statusHandler(
+      "error",
+      "Access denied, you do not have permission to view this page."
+    );
+    localStorage.removeItem("isPrivate");
+  }
+};
+
+let intervalId;
+
+onMounted(() => {
+  intervalId = setInterval(checkLocalStorage, 500);
 });
 
-checkLocalStorage();
+onBeforeMount(() => {
+  clearInterval(intervalId);
+});
 </script>
 
 <template>
@@ -28,7 +39,7 @@ checkLocalStorage();
     <div
       class="w-full h-[auto] bg-[#F4F4F4] text-gray-700 px-[2%] py-[25px] font-nonto"
     >
-      <RouterView :key="$route.fullPath" />
+      <RouterView />
     </div>
   </div>
 </template>

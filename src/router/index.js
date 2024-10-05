@@ -10,6 +10,7 @@ import Tasks from "@/components/Task/Tasks.vue";
 import Statuses from "@/components/Status/Statuses.vue";
 import CreateBoardModal from "@/components/Board/CreateBoardModal.vue";
 import { useAccount } from "@/store/account";
+import { useAlert } from "@/store/alert";
 
 import collaborator from "@/components/collaborator/Collaborator.vue";
 import collaboratorModal from "@/components/collaborator/CollaboratorModal.vue";
@@ -97,7 +98,6 @@ const router = createRouter({
 // Global Navigation Guard
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
-
   const accountStore = useAccount();
   const boardsPathPattern =
     /^\/(sy2\/)?board\/[a-zA-Z0-9\-_]+(\/(task(\/(\d+|add))?|status(\/(\d+|add))?)(\/edit)?)?$/;

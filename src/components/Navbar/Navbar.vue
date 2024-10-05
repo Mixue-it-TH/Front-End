@@ -475,15 +475,15 @@ function closeVisibleModal(isClose) {
       <ul>
         <div class="flex gap-[15px]">
           <div class="">
-            <router-link
+            <!-- <router-link
               :to="{ name: 'collaborator', params: { id: route.params.id } }"
+            > -->
+            <button
+              class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 hover:text-black transition duration-200"
             >
-              <button
-                class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 hover:text-black transition duration-200"
-              >
-                Manage Collaborator
-              </button>
-            </router-link>
+              Manage Collaborator
+            </button>
+            <!-- </router-link> -->
           </div>
           <li class="border">
             <div class="itbkk-board-visibility form-control w-[120px]">
