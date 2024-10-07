@@ -1,35 +1,34 @@
 <script setup>
-import { useAccount } from "@/store/account"
-import { getBoardIdByUserOIDs } from "@/util/fetchUtils"
-import { onMounted } from "vue"
-import { RouterLink, RouterView } from "vue-router"
-import ListModel from "../Ui/ListModel.vue"
-import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
+import {useAccount} from "@/store/account";
+import {getBoardIdByUserOIDs} from "@/util/fetchUtils";
+import {onMounted} from "vue";
+import {RouterLink, RouterView} from "vue-router";
+import ListModel from "../Ui/ListModel.vue";
+import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
 
-const emit = defineEmits(["isCreate"])
+const emit = defineEmits(["isCreate"]);
 
-const accountStore = useAccount()
+const accountStore = useAccount();
 
 onMounted(async () => {
   const boards = await handleRequestWithTokenRefresh(
     getBoardIdByUserOIDs,
     accountStore.getData()?.oid
-  )
+  );
   if (boards.owners) {
-    accountStore.setBoardList(boards.owners)
+    accountStore.setBoardList(boards.owners);
   }
   if (boards.collabs.length !== 0) {
     boards.collabs.forEach((board) => {
-      accountStore.getBoardList().push(board)
-    })
+      accountStore.getBoardList().push(board);
+    });
   }
-  console.log("board", accountStore.getBoardList())
-})
+});
 </script>
 
 <template>
   <div class="mt-[50px] flex justify-end">
-    <router-link :to="{ name: 'boardAdd' }">
+    <router-link :to="{name: 'boardAdd'}">
       <button
         class="itbkk-button-create bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
       >
@@ -47,9 +46,7 @@ onMounted(async () => {
         <div
           class="relative mx-auto py-4 px-6 inline-block w-[80%] bg-white text-black rounded-[20px] transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-x-[10px] hover:-translate-y-[10px] cursor-pointer border border-gray-300"
         >
-          <router-link
-            :to="{ name: 'boardTask', params: { id: slotprop.job.id } }"
-          >
+          <router-link :to="{name: 'boardTask', params: {id: slotprop.job.id}}">
             <div>
               <span
                 class="itbkk-board-name flex justify-center p-2 font-semibold text-lg"
