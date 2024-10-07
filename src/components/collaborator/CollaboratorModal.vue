@@ -1,74 +1,72 @@
 <script setup>
-import { computed } from "vue";
-import { useRouter } from "vue-router";
-import { useStatus } from "@/store/status.js";
-import { useAccount } from "@/store/account";
-const router = useRouter();
-
-const accountStore = useAccount();
-const statusManagement = useStatus();
-
-const permission = computed(() => accountStore.permission);
-// function closeModal() {
-//   router.push("/collab");
-//   router.go(-1);
-// }
-
-console.log(accountStore.getData());
-console.log(accountStore.getData().role);
-console.log(accountStore.getData().name);
-console.log(accountStore.getData().email);
+const emit = defineEmits(["cancel", "confirm"])
+const props = defineProps({
+  objectDetail: {
+    type: Object
+  },
+  mode: {
+    type: String
+  }
+})
 </script>
 
 <template>
   <div
-    class="bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] flex items-center justify-center font-noto"
+    class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto"
   >
-    <div
-      class="fade-up itbkk-modal-setting text-black flex flex-col w-[90%] min-w-[300px] max-w-[600px] rounded-lg bg-white shadow-lg overflow-hidden"
-    >
-      <div class="">
+    <div class="flex justify-center items-center w-screen h-screen">
+      <div
+        class="fade-up flex flex-col bg bg-white w-[45%] min-w-[300px] min-h-[250px] rounded-[7px]"
+      >
+        <div class="text-[28px] font-[600] h-[40%] px-[15px] py-[10px]">
+          {{
+            mode === "delete"
+              ? "Remove Collaborator"
+              : mode === "edit"
+              ? "Change Access Right"
+              : "Leave Board"
+          }}
+        </div>
         <div
-          class="border-b border-gray-500 px-[15px] py-[8px] mb-[15px] text-[30px] font-[500]"
+          v-if="mode === 'delete'"
+          class="itbkk-message border border-gray-300 min-h-[120px] px-[15px] py-[10px] break-all"
         >
-          <h2 class="">Add Collaborator</h2>
+          Do you want to remove "{{ objectDetail.name }}" from the board?
         </div>
 
-        <div class="flex px-4 space-x-4">
-          <div class="flex-1">
-            <p>Collaborator Email</p>
-            <input
-              type="text"
-              placeholder="Enter Your E-mail"
-              class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
+        <div
+          v-else-if="mode === 'edit'"
+          class="itbkk-message border border-gray-300 min-h-[120px] px-[15px] py-[10px] break-all"
+        >
+          Do you want to change access right of "{{ objectDetail.name }}" to
+          {{ objectDetail.access_right === "READ" ? "READ" : "WRITE" }}
+        </div>
 
-          <div class="flex-1">
-            <p>Access Right</p>
-            <select
-              class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option>Read</option>
-              <option>Write</option>
-            </select>
+        <div
+          v-else
+          class="itbkk-message border border-gray-300 min-h-[120px] px-[15px] py-[10px] break-all"
+        >
+          Do you want to leave this "{{ objectDetail.name }} personal board"
+          board?
+          <!-- {{ collabDetail.access_right === "READ" ? "READ" : "WRITE" }} -->
+        </div>
+
+        <div
+          class="flex flex-row justify-end items-end gap-[20px] h-[25%] mt-[auto] px-[15px] py-[10px]"
+        >
+          <div
+            @click="$emit('confirm', objectDetail.oid, objectDetail)"
+            class="itbkk-button-confirm flex items-center justify-center h-[50px] w-[100px] text-white bg-green-500 rounded-[5px]"
+          >
+            <button class="w-full h-full">Confirm</button>
+          </div>
+          <div
+            class="itbkk-button-cancel flex items-center justify-center h-[50px] w-[100px] text-white bg-red-500 rounded-[5px]"
+            @click="$emit('cancel', false)"
+          >
+            <button class="w-full h-full">Cancel</button>
           </div>
         </div>
-      </div>
-
-      <div class="flex justify-end gap-2 p-5">
-        <button
-          class="itbkk-button itbkk-button-confirm w-[80px] h-[40px] font-bold text-white bg-green-600 hover:bg-green-500 rounded-lg transition duration-200"
-          @click="$emit('save')"
-        >
-          Add
-        </button>
-        <button
-          class="itbkk-button itbkk-button-cancel w-[80px] h-[40px] font-bold bg-white text-red-600 border border-red-600 hover:bg-red-100 rounded-lg transition duration-200"
-          @click="$emit('cancel')"
-        >
-          Cancel
-        </button>
       </div>
     </div>
   </div>

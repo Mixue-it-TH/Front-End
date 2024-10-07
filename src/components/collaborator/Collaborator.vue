@@ -1,39 +1,166 @@
 <script setup>
-import router from "@/router";
-import { useRoute } from "vue-router";
-import { computed, ref } from "vue";
-import TooltipBtn from "../Ui/TooltipBtn.vue";
-import ListCollaborator from "./ListCollaborator.vue";
-import { useAccount } from "@/store/account";
-import { getBoardIdByUserOIDs } from "@/util/fetchUtils";
-import { onMounted } from "vue";
-import { RouterLink, RouterView } from "vue-router";
-import ListModel from "../Ui/ListModel.vue";
-import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
-import CollaboratorModal from "./CollaboratorModal.vue";
+import { useRoute } from "vue-router"
+import { ref } from "vue"
+import ListCollaborator from "./ListCollaborator.vue"
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
+import CollaboratorAddModal from "./CollaboratorAddModal.vue"
+import CollaboratorModal from "./CollaboratorModal.vue"
+import {
+  addCollaborator,
+  changeAccessCollaborator,
+  getCollaborators,
+  removeCollaborator
+} from "@/util/accountFetchUtil"
+import { useCollaborator } from "@/store/collaborator"
+import { useAlert } from "@/store/alert"
 
-const emit = defineEmits(["isCreate"]);
+const emit = defineEmits(["cancle", "save"])
+const route = useRoute()
+const collabStore = useCollaborator()
+const alertManagement = useAlert()
+const showCollaboratorModal = ref(false)
+const showDeleteModal = ref(false)
+const collabDetail = ref({})
+const mode = ref("")
 
-const prop = defineProps({
-  limitExceed: {
-    type: Array,
-  },
-});
-const route = useRoute();
-const accountStore = useAccount();
+async function addUserCollaborator(access, email) {
+  const response = await handleRequestWithTokenRefresh(
+    addCollaborator,
+    email,
+    access,
+    route.params.id
+  )
+  console.log(response)
+  if (response.user) {
+    // ที่ต้อง fresh ใหม่จุดนี้ก็เพื่อให้ข้อมูลมัน display ได้เพราะ body มันส่งไม่ตรงกันกับตัวปกติถ้า push ตัวใหม่ปกติมันจะอ่านค่าไม่เจอ
+    const refreshCollabs = await getCollaborators(route.params.id)
+    collabStore.setCollaborator(refreshCollabs)
+    closeAddModal()
+    alertManagement.statusHandler(
+      "success",
+      "You add new Collaborator successfull"
+    )
+  } else if (response.status === 409) {
+    alertManagement.statusHandler(
+      "error",
+      "This user email already be collaborator"
+    )
+  } else if (response.status === 404) {
+    alertManagement.statusHandler("error", "The user does not exit")
+  } else if (response.status === 403) {
+    closeAddModal()
+    alertManagement.statusHandler(
+      "error",
+      "You don't have permission to add board collaborator"
+    )
+  }
+}
+function closeAddModal(isClose) {
+  showCollaboratorModal.value = isClose
+}
 
-const showCollaboratorModal = ref(false);
-const mode = ref("read");
-const permission = computed(() => accountStore.permission);
+function deleteModalHandler(collaboratorDetail) {
+  collabDetail.value = collaboratorDetail
+  mode.value = "delete"
+  showDeleteModal.value = true
+}
 function closeModal(isClose) {
-  showCollaboratorModal.value = isClose;
+  if (mode.value === "edit") {
+    console.log("collab from edit", collabDetail.value)
+    const oldAccess =
+      collabDetail.value.access_right === "READ" ? "WRITE" : "READ"
+    collabStore.changeAccess(collabDetail.value.oid, oldAccess)
+  }
+  collabDetail.value = {}
+  showDeleteModal.value = isClose
+}
+
+async function confirmHandeler(oid, collabDetail) {
+  if (mode.value === "delete") {
+    const response = await handleRequestWithTokenRefresh(
+      removeCollaborator,
+      route.params.id,
+      oid
+    )
+    if (response.access_right) {
+      collabStore.deleteCollaborator(oid)
+      showDeleteModal.value = false
+      collabDetail.value = {}
+      alertManagement.statusHandler(
+        "success",
+        "remove the collaborator from the table"
+      )
+    } else if (response.status === 404) {
+      alertManagement.statusHandler(
+        "error",
+        `${collabDetail.value.user.userName} is not a collaborator`
+      )
+      showDeleteModal.value = false
+      collabDetail.value = {}
+    } else if (response.status === 403) {
+      alertManagement.statusHandler(
+        "error",
+        `You do not have permission to remove collaborator`
+      )
+    } else {
+      alertManagement.statusHandler(
+        "error",
+        `There is a problem please try again later`
+      )
+    }
+  } else {
+    const oldAccess = collabDetail.access_right === "READ" ? "WRITE" : "READ"
+    const response = await handleRequestWithTokenRefresh(
+      changeAccessCollaborator,
+      route.params.id,
+      collabDetail,
+      oid
+    )
+    if (response.access_right) {
+      collabStore.changeAccess(oid, collabDetail.access_right)
+      console.log("collabList", collabStore.getCollaborator())
+      showDeleteModal.value = false
+      collabDetail.value = {}
+      alertManagement.statusHandler(
+        "success",
+        "Change access right successfully"
+      )
+    } else if (response.status === 404) {
+      collabStore.changeAccess(oid, oldAccess) //ทำกันไว้กรณีที่ backe end ทำไม่สำเร็จก็จะ set access เดิมกลับเข้าไป
+      alertManagement.statusHandler(
+        "error",
+        `${collabDetail.value.user.userName} is not a collaborator`
+      )
+      showDeleteModal.value = false
+      collabDetail.value = {}
+    } else if (response.status === 403) {
+      collabStore.changeAccess(oid, oldAccess)
+      alertManagement.statusHandler(
+        "error",
+        `You do not have permission to remove collaborator`
+      )
+    } else {
+      collabStore.changeAccess(oid, oldAccess)
+      alertManagement.statusHandler(
+        "error",
+        `There is a problem please try again later`
+      )
+    }
+  }
+}
+
+function editModalHandler(collaboratorDetail) {
+  collabDetail.value = collaboratorDetail
+  mode.value = "edit"
+  showDeleteModal.value = true
 }
 </script>
 
 <template>
   <Teleport to="body" v-if="showCollaboratorModal">
-    <CollaboratorModal @cancel="closeModal" @save="" />
+    <CollaboratorAddModal @cancle="closeAddModal" @save="addUserCollaborator" />
   </Teleport>
+
   <div class="pt-[20px] flex justify-end">
     <button
       @click="showCollaboratorModal = !showCollaboratorModal"
@@ -42,8 +169,18 @@ function closeModal(isClose) {
       Add Collaborator
     </button>
   </div>
+
+  <Teleport to="body" v-if="showDeleteModal">
+    <CollaboratorModal
+      @cancel="closeModal"
+      @confirm="confirmHandeler"
+      :objectDetail="collabDetail"
+      :mode="mode"
+    />
+  </Teleport>
+
   <div>
-    <ListCollaborator />
+    <ListCollaborator @delete="deleteModalHandler" @edit="editModalHandler" />
   </div>
 </template>
 

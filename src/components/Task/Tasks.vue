@@ -15,6 +15,7 @@ import { useStatus } from "@/store/status"
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
 import { useAccount } from "@/store/account"
 import getAccessToken from "@/util/tokenUtil"
+import { getCollaboratorsByCollabId } from "@/util/accountFetchUtil"
 
 const accountStore = useAccount()
 const alertManagement = useAlert()
@@ -33,7 +34,7 @@ onMounted(async () => {
     accountStore.setVisibility(true, null)
   } else {
     const board = await getBoardByBoardid(route.params.id)
-
+    // PBI 25
     if (board.status === 403) {
       accountStore.setVisibility("PRIVATE")
     } else {
@@ -43,6 +44,7 @@ onMounted(async () => {
       )
     }
   }
+
   ///// REFACTOR SOON ///////
 
   const listTasks = await handleRequestWithTokenRefresh(

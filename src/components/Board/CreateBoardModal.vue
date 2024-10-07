@@ -1,37 +1,37 @@
 <script setup>
-import { useRouter } from "vue-router";
-import { ref } from "vue";
-import { createBoard } from "@/util/fetchUtils";
-import { useAccount } from "@/store/account";
-import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import { useRouter } from "vue-router"
+import { ref } from "vue"
+import { createBoard } from "@/util/fetchUtils"
+import { useAccount } from "@/store/account"
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
 
-const router = useRouter();
+const router = useRouter()
 const prop = defineProps({
   name: {
-    type: String,
-  },
-});
+    type: String
+  }
+})
 
-const accountStore = useAccount();
-const boardName = ref(accountStore.getData().name);
-const isDisable = ref(false);
+const accountStore = useAccount()
+const boardName = ref(accountStore.getData().name)
+const isDisable = ref(false)
 
 async function saveBoard(name) {
-  const newBoard = await handleRequestWithTokenRefresh(createBoard, name);
-  accountStore.addBoard(newBoard);
-  closeModal();
+  const newBoard = await handleRequestWithTokenRefresh(createBoard, name)
+  accountStore.addBoard(newBoard)
+  closeModal()
 }
 
 function closeModal() {
-  router.push("/board");
-  router.go(-1);
+  router.push("/board")
+  router.go(-1)
 }
 
 function handleCreateBoard() {
   if (boardName.value.length === 0) {
-    isDisable.value = true;
+    isDisable.value = true
   } else {
-    isDisable.value = false;
+    isDisable.value = false
   }
 }
 </script>

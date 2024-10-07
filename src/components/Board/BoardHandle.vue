@@ -15,10 +15,15 @@ onMounted(async () => {
     getBoardIdByUserOIDs,
     accountStore.getData()?.oid
   )
-
-  if (boards) {
-    accountStore.setBoardList(boards)
+  if (boards.owners) {
+    accountStore.setBoardList(boards.owners)
   }
+  if (boards.collabs.length !== 0) {
+    boards.collabs.forEach((board) => {
+      accountStore.getBoardList().push(board)
+    })
+  }
+  console.log("board", accountStore.getBoardList())
 })
 </script>
 
@@ -56,12 +61,16 @@ onMounted(async () => {
                 class="itbkk-owner-name flex justify-start items-center my-2"
               >
                 <p class="mr-2 font-medium">Owner:</p>
-                <span>{{ accountStore.getData().name }}</span>
+                <span>{{ slotprop.job.name }}</span>
               </div>
 
               <div class="flex justify-start items-center my-2">
                 <p class="mr-2 font-medium">Access Right:</p>
-                <span>{{ slotprop.job.accessRight || "Read" }}</span>
+                <span>{{
+                  slotprop.job.access_right
+                    ? slotprop.job.access_right
+                    : "OWNER"
+                }}</span>
               </div>
             </div>
 
@@ -77,15 +86,18 @@ onMounted(async () => {
                 Delete
               </button>
             </div>
-
-            <div class="flex justify-center mt-4">
-              <button
-                class="bg-transparent text-black font-medium py-2 px-4 rounded-lg border border-gray-400 hover:bg-gray-200 transition duration-200 ease-in-out"
-              >
-                Leave
-              </button>
-            </div>
           </router-link>
+          <div
+            v-if="slotprop.job.access_right"
+            class="flex justify-center mt-4"
+          >
+            <button
+              @click="$emit('leave', slotprop.job)"
+              class="bg-transparent text-black font-medium py-2 px-4 rounded-lg border border-gray-400 hover:bg-gray-200 transition duration-200 ease-in-out"
+            >
+              Leave
+            </button>
+          </div>
         </div>
       </template>
     </ListModel>

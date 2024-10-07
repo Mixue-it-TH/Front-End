@@ -1,36 +1,33 @@
 <script setup>
-import { computed, ref, onMounted } from "vue";
-import { getStatusList } from "@/util/fetchUtils";
+import { computed, ref, onMounted } from "vue"
+import { getCollaborators } from "@/util/accountFetchUtil"
+import { RouterLink, RouterView, useRoute } from "vue-router"
+import { useStatus } from "@/store/status.js"
+import ListModel from "../Ui/ListModel.vue"
+import TooltipBtn from "../Ui/TooltipBtn.vue"
+import { useAccount } from "@/store/account"
+import { useCollaborator } from "@/store/collaborator"
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
 
-import { RouterLink, RouterView, useRoute } from "vue-router";
-import { useStatus } from "@/store/status.js";
-import ListModel from "../Ui/ListModel.vue";
-import TooltipBtn from "../Ui/TooltipBtn.vue";
-import { useAccount } from "@/store/account";
+const emit = defineEmits(["delete", "edit"])
+const accountStore = useAccount()
+const collabStore = useCollaborator()
+const route = useRoute()
+const access = ref("") //ใส่เป็นค่า default ไปก่อนค่อยกลับมาแก้
 
-const accountStore = useAccount();
-const statusManagement = useStatus();
-const route = useRoute();
-const permission = computed(() => accountStore.permission);
+onMounted(async () => {
+  const collaboratorList = await handleRequestWithTokenRefresh(
+    getCollaborators,
+    route.params.id
+  )
+  if (collaboratorList) {
+    collabStore.setCollaborator(collaboratorList)
+  }
+})
 
-console.log(accountStore.getData());
-console.log(accountStore.getData().role);
-console.log(accountStore.getData().name);
-console.log(accountStore.getData().email);
-console.log(accountStore.getData().email);
-// onMounted(async () => {
-//   const listStatuses = await handleRequestWithTokenRefresh(
-//     getStatusList,
-//     route.params.id
-//   );
-
-//   if (listStatuses === 404) {
-//     router.push("/login");
-//   }
-//   if (statusManagement.getAllStatus().length === 0) {
-//     statusManagement.addStatuses(listStatuses);
-//   }
-// });
+function changeAccessRight(collabDetail) {
+  emit("edit", collabDetail)
+}
 </script>
 
 <template>
@@ -56,7 +53,10 @@ console.log(accountStore.getData().email);
         </div>
       </div>
 
-      <ListModel :jobs="statusManagement.getAllStatus()">
+      <ListModel
+        :jobs="collabStore.getCollaborator()"
+        v-if="collabStore.getCollaborator().length !== 0"
+      >
         <template #default="slotprop">
           <div
             class="transition itbkk-item flex justify-between w-full min-h-[55px] px-[20px] py-[10px] mb-[3px] border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
@@ -73,29 +73,34 @@ console.log(accountStore.getData().email);
 
             <div class="w-[25%]">
               <p class="itbkk-status-email text-center">
-                {{ slotprop.job.name }}
+                {{ slotprop.job.email }}
               </p>
             </div>
 
             <div class="w-[20%] text-center">
               <select
+                @change="changeAccessRight(slotprop.job)"
+                v-model="slotprop.job.access_right"
                 class="border p-2 rounded text-center w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="Read">Read</option>
-                <option value="Write">Write</option>
+                <option :value="slotprop.job.access_right">
+                  {{ slotprop.job.access_right }}
+                </option>
+                <option
+                  :value="
+                    slotprop.job.access_right === 'WRITE' ? 'READ' : 'WRITE'
+                  "
+                >
+                  {{ slotprop.job.access_right === "WRITE" ? "READ" : "WRITE" }}
+                </option>
               </select>
             </div>
 
             <div class="w-[10%] flex justify-center">
               <TooltipBtn>
                 <div class="flex gap-4 justify-center">
-                  <router-link
-                    :to="{
-                      name: 'statusEdit',
-                      params: { statusId: slotprop.job.id },
-                    }"
-                  ></router-link>
                   <button
+                    @click="emit('delete', slotprop.job)"
                     class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-lg hover:scale-105 transition duration-200 ease-in-out border border-transparent"
                   >
                     Remove
@@ -106,9 +111,15 @@ console.log(accountStore.getData().email);
           </div>
         </template>
       </ListModel>
+      <div
+        v-else
+        class="w-[100%] border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] min-h-[45px] flex items-center justify-center"
+      >
+        <div class="m-[auto]">NO Collaborator</div>
+      </div>
     </div>
   </div>
-  <RouterView></RouterView>
+  <RouterView />
 </template>
 
 <style scoped></style>

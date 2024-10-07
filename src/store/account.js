@@ -15,8 +15,9 @@ export const useAccount = defineStore("account", () => {
   const isPublic = ref(false)
   const ownerOID = ref(null)
   const permission = ref(false)
+  const isOwner = ref(false)
 
-  function setVisibility(visibility, oid) {
+  function setVisibility(visibility, oid, access_right) {
     isPublic.value = visibility
     ownerOID.value = oid
 
@@ -29,13 +30,21 @@ export const useAccount = defineStore("account", () => {
 
     //กรณีไม่ใช่เจ้าของ
     if (data.value?.oid !== ownerOID.value) {
-      permission.value = false
-      return
+      if (access_right === "READ") {
+        permission.value = false
+        isOwner.value = false
+        return
+      } else if (access_right === "WRITE") {
+        permission.value = true
+        isOwner.value = false
+        return
+      }
     }
 
     // กรณีเป็นเจ้าของ
     if (data.value?.oid === ownerOID.value) {
       permission.value = true
+      isOwner.value = true
     }
   }
   function getVisibility() {
@@ -144,6 +153,11 @@ export const useAccount = defineStore("account", () => {
       return true
     }
   }
+
+  function deleteBoard(boardId) {
+    const delBoard = boardList.value.findIndex((board) => board.id === boardId)
+    boardList.value.splice(delBoard, 1)
+  }
   return {
     decodedToken,
     setToken,
@@ -161,6 +175,8 @@ export const useAccount = defineStore("account", () => {
     handleUnauthorized,
     setVisibility,
     getVisibility,
-    permission
+    deleteBoard,
+    permission,
+    isOwner
   }
 })
