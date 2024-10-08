@@ -5,6 +5,7 @@ import { onMounted } from "vue"
 import { RouterLink, RouterView } from "vue-router"
 import ListModel from "../Ui/ListModel.vue"
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
+import { useCollaborator } from "@/store/collaborator"
 
 const emit = defineEmits(["isCreate"])
 
@@ -23,7 +24,6 @@ onMounted(async () => {
       accountStore.getBoardList().push(board)
     })
   }
-  console.log("board", accountStore.getBoardList())
 })
 </script>
 
