@@ -187,7 +187,7 @@ const props = defineProps({
             </div>
             <ul
               tabindex="0"
-              class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-[5] bg bg-gray-[#A9A9A9]"
+              class="dropdown-content menu p-2 shadow bg-slate-400 rounded-box w-52 z-[5] bg bg-gray-[#A9A9A9]"
             >
               <TooltipBtn>
                 <router-link

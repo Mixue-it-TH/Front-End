@@ -7,7 +7,7 @@ import ListModel from "../Ui/ListModel.vue"
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
 import { useCollaborator } from "@/store/collaborator"
 
-const emit = defineEmits(["isCreate"])
+const emit = defineEmits(["leave"])
 
 const accountStore = useAccount()
 const collaboratorStore = useCollaborator()
@@ -22,9 +22,7 @@ onMounted(async () => {
   }
   if (boards.collabs) {
     collaboratorStore.setListCollabBoard(boards.collabs)
-    console.log(collaboratorStore.getListCollabBoard())
   }
-  console.log(accountStore.getData())
 })
 </script>
 

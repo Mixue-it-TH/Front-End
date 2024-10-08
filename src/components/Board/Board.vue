@@ -16,8 +16,8 @@ import { useAccount } from "@/store/account"
 
 const emit = defineEmits(["cancle", "save"])
 const route = useRoute()
-const collabStore = useCollaborator()
 const accountStore = useAccount()
+const collabStore = useCollaborator()
 const alertManagement = useAlert()
 const showDeleteModal = ref(false)
 const boardDetail = ref({})
@@ -41,7 +41,7 @@ async function confirmHandeler(oid, board) {
       accountStore.getData().oid
     )
     if (response.access_right) {
-      accountStore.deleteBoard(board.id)
+      collabStore.leaveBoard(board.id)
       showDeleteModal.value = false
       boardDetail.value = {}
       alertManagement.statusHandler(
