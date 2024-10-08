@@ -81,7 +81,7 @@ function changeAccessRight(collabDetail) {
               <select
                 @change="changeAccessRight(slotprop.job)"
                 v-model="slotprop.job.access_right"
-                class="border p-2 rounded text-center w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="border p-2 rounded text-center w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
               >
                 <option :value="slotprop.job.access_right">
                   {{ slotprop.job.access_right }}
