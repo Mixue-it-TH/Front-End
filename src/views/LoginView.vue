@@ -9,8 +9,8 @@ import {getBoardIdByUserOIDs} from "@/util/fetchUtils";
 import {useTasks} from "@/store/task";
 import {useStatus} from "@/store/status";
 
-const userName = ref("");
-const password = ref("");
+const userName = ref("itbkk.olarn");
+const password = ref("ip23/OLA");
 const passwordField = ref(null);
 const accountStore = useAccount();
 const alertManagement = useAlert();

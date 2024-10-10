@@ -1,37 +1,37 @@
 <script setup>
-import { useRouter } from "vue-router"
-import { ref } from "vue"
-import { createBoard } from "@/util/fetchUtils"
-import { useAccount } from "@/store/account"
-import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAccount } from "@/store/account";
+import { createBoard } from "@/util/fetchUtils";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 
-const router = useRouter()
+const router = useRouter();
 const prop = defineProps({
   name: {
-    type: String
-  }
-})
+    type: String,
+  },
+});
 
-const accountStore = useAccount()
-const boardName = ref(accountStore.getData().name)
-const isDisable = ref(false)
+const accountStore = useAccount();
+const boardName = ref(accountStore.getData().name);
+const isDisable = ref(false);
 
 async function saveBoard(name) {
-  const newBoard = await handleRequestWithTokenRefresh(createBoard, name)
-  accountStore.addBoard(newBoard)
-  closeModal()
+  const newBoard = await handleRequestWithTokenRefresh(createBoard, name);
+  accountStore.addBoard(newBoard);
+  closeModal();
 }
 
 function closeModal() {
-  router.push("/board")
-  router.go(-1)
+  router.push("/board");
+  router.go(-1);
 }
 
 function handleCreateBoard() {
   if (boardName.value.length === 0) {
-    isDisable.value = true
+    isDisable.value = true;
   } else {
-    isDisable.value = false
+    isDisable.value = false;
   }
 }
 </script>
@@ -43,9 +43,7 @@ function handleCreateBoard() {
     <div
       class="fade-up itbkk-modal-setting flex flex-col w-[75%] min-w-[320px] h-auto max-w-[600px] p-6 rounded-lg bg-white shadow-xl"
     >
-      <div
-        class="border-b pb-3 border-gray-300 text-2xl font-bold flex items-center justify-between"
-      >
+      <div class="border-b pb-3 border-gray-300 text-2xl font-bold flex items-center justify-between">
         <p>Create Your Board</p>
       </div>
 
@@ -61,7 +59,7 @@ function handleCreateBoard() {
           @input="handleCreateBoard"
           maxlength="120"
           placeholder="Your board name here"
-          class="w-full border-2 border-gray-300 rounded-md h-12 px-4 placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition duration-200"
+          class="w-full bg bg-white border-2 border-gray-300 rounded-md h-12 px-4 placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition duration-200"
         />
 
         <div class="flex justify-end gap-4 mt-6">

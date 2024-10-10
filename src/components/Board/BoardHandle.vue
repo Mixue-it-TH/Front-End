@@ -1,32 +1,49 @@
 <script setup>
-import { useAccount } from "@/store/account"
-import { getBoardIdByUserOIDs } from "@/util/fetchUtils"
-import { onMounted } from "vue"
-import { RouterLink, RouterView } from "vue-router"
-import ListModel from "../Ui/ListModel.vue"
-import { handleRequestWithTokenRefresh } from "@/util/handleRequest"
-import { useCollaborator } from "@/store/collaborator"
+import { onMounted } from "vue";
+import { RouterLink, RouterView } from "vue-router";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import { getBoardIdByUserOIDs } from "@/util/fetchUtils";
+import { useAccount } from "@/store/account";
+import { useCollaborator } from "@/store/collaborator";
+import ListModel from "../Ui/ListModel.vue";
+import Board from "./Board.vue";
 
-const emit = defineEmits(["leave"])
+const emit = defineEmits(["leave"]);
 
-const accountStore = useAccount()
-const collaboratorStore = useCollaborator()
+const accountStore = useAccount();
+const collaboratorStore = useCollaborator();
 
 onMounted(async () => {
-  const boards = await handleRequestWithTokenRefresh(
-    getBoardIdByUserOIDs,
-    accountStore.getData()?.oid
-  )
+  const boards = await handleRequestWithTokenRefresh(getBoardIdByUserOIDs, accountStore.getData()?.oid);
   if (boards.owners) {
-    accountStore.setBoardList(boards.owners)
+    accountStore.setBoardList(boards.owners);
   }
   if (boards.collabs) {
-    collaboratorStore.setListCollabBoard(boards.collabs)
+    collaboratorStore.setListCollabBoard(boards.collabs);
   }
-})
+
+  console.log(boards.owners);
+  console.log(boards.collabs);
+});
 </script>
 
 <template>
+  <ListModel
+    class="grid grid-cols-[repeat(auto-fit,minmax(250px,330px))] gap-y-8 justify-evenly"
+    :jobs="accountStore.getBoardList()"
+  >
+    <template #default="slotprop">
+      <Board v-if="accountStore.getBoardList().length !== 0" :board="slotprop.job" />
+    </template>
+  </ListModel>
+  <ListModel
+    class="grid grid-cols-[repeat(auto-fit,minmax(250px,330px))] gap-y-8 justify-evenly"
+    :jobs="collaboratorStore.getListCollabBoard()"
+  >
+    <template #default="slotprop">
+      <Board v-if="collaboratorStore.getListCollabBoard().length !== 0" :board="slotprop.job" />
+    </template>
+  </ListModel>
   <div class="mt-[50px] flex justify-end">
     <router-link :to="{ name: 'boardAdd' }">
       <button
@@ -39,33 +56,20 @@ onMounted(async () => {
 
   <div v-if="accountStore.getBoardList().length !== 0" class="gap-2 p-3">
     <div class="itbkk-personal-item text-center p-4">
-      <p
-        class="itbkk-personal-board text-3xl font-bold text-black drop-shadow-lg"
-      >
-        Personal Boards
-      </p>
+      <p class="itbkk-personal-board text-3xl font-bold text-black drop-shadow-lg">Personal Boards</p>
     </div>
-    <ListModel
-      class="grid grid-cols-3 mx-auto gap-3"
-      :jobs="accountStore.getBoardList()"
-    >
+    <ListModel class="grid grid-cols-3 mx-auto gap-3" :jobs="accountStore.getBoardList()">
       <template #default="slotprop">
         <div
           class="relative mx-auto py-4 px-6 inline-block w-[80%] bg-white text-black rounded-[20px] transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-x-[10px] hover:-translate-y-[10px] cursor-pointer border border-gray-300"
         >
-          <router-link
-            :to="{ name: 'boardTask', params: { id: slotprop.job.id } }"
-          >
+          <router-link :to="{ name: 'boardTask', params: { id: slotprop.job.id } }">
             <div>
-              <span
-                class="itbkk-board-name flex justify-center p-2 font-semibold text-lg"
-              >
+              <span class="itbkk-board-name flex justify-center p-2 font-semibold text-lg">
                 {{ slotprop.key + 1 }}. {{ slotprop.job.name }}
               </span>
 
-              <div
-                class="itbkk-board-visibility flex justify-start items-center my-2"
-              >
+              <div class="itbkk-board-visibility flex justify-start items-center my-2">
                 <p class="mr-2 font-medium">Visibility:</p>
                 <span>{{ slotprop.job.visibility }}</span>
               </div>
@@ -88,43 +92,29 @@ onMounted(async () => {
     </ListModel>
   </div>
 
-  <div
-    v-if="collaboratorStore.getListCollabBoard().length !== 0"
-    class="gap-2 p-3 itbkk-collab-item"
-  >
+  <div v-if="collaboratorStore.getListCollabBoard().length !== 0" class="gap-2 p-3 itbkk-collab-item">
     <div class="text-center p-4">
       <p class="text-3xl font-bold text-black drop-shadow-lg">collab Boards</p>
     </div>
-    <ListModel
-      class="grid grid-cols-3 mx-auto gap-3"
-      :jobs="collaboratorStore.getListCollabBoard()"
-    >
+    <ListModel class="grid grid-cols-3 mx-auto gap-3" :jobs="collaboratorStore.getListCollabBoard()">
       <template #default="slotprop">
         <div
           class="relative mx-auto py-4 px-6 inline-block w-[80%] bg-white text-black rounded-[20px] transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-x-[10px] hover:-translate-y-[10px] cursor-pointer border border-gray-300"
         >
-          <router-link
-            :to="{ name: 'boardTask', params: { id: slotprop.job.id } }"
-          >
+          <router-link :to="{ name: 'boardTask', params: { id: slotprop.job.id } }">
             <div>
-              <span
-                class="itbkk-board-name flex justify-center p-2 font-semibold text-lg"
-              >
+              <span class="itbkk-board-name flex justify-center p-2 font-semibold text-lg">
                 {{ slotprop.key + 1 }}. {{ slotprop.job.name }}
               </span>
 
-              <div
-                class="itbkk-owner-name flex justify-start items-center my-2"
-              >
+              <div class="itbkk-owner-name flex justify-start items-center my-2">
                 <p class="mr-2 font-medium">Owner:</p>
                 <span>{{ slotprop.job.ownerName }}</span>
               </div>
 
               <div class="flex justify-start items-center my-2">
                 <p class="mr-2 font-medium">Access Right:</p>
-                <span class="itbkk-access-right">{{
-                  slotprop.job.access_right
-                }}</span>
+                <span class="itbkk-access-right">{{ slotprop.job.access_right }}</span>
               </div>
             </div>
           </router-link>
