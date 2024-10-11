@@ -1,6 +1,6 @@
 <script setup>
-import {useAccount} from "@/store/account";
-import {computed} from "vue";
+import { useAccount } from "@/store/account";
+import { computed } from "vue";
 
 const props = defineProps({
   data: {
@@ -12,10 +12,12 @@ const props = defineProps({
     default: false,
   },
 });
+console.log("access", props.access);
 
 const accountStore = useAccount();
 
 const permission = computed(() => accountStore.permission);
+console.log("permission", permission.value);
 </script>
 
 <template>

@@ -398,18 +398,19 @@ function collabPageHandle() {
         {{ boardName }}
       </li>
     </ul>
-    <ToolTipOwnerBtn>
-      <ul>
-        <div class="flex gap-[15px]" :class="!permission_owner ? 'pointer-events-none opacity-50' : ''">
-          <div :disabled="!permission_owner">
-            <button
-              v-if="route.params.id"
-              @click="collabPageHandle"
-              class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 hover:text-black transition duration-200"
-            >
-              Manage Collaborator
-            </button>
-          </div>
+
+    <ul>
+      <div class="flex gap-[15px]">
+        <div>
+          <button
+            v-if="route.params.id"
+            @click="collabPageHandle"
+            class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 hover:text-black transition duration-200"
+          >
+            Manage Collaborator
+          </button>
+        </div>
+        <ToolTipOwnerBtn>
           <li class="border">
             <div class="itbkk-board-visibility form-control w-[120px]">
               <label class="label cursor-pointer">
@@ -426,9 +427,9 @@ function collabPageHandle() {
               </label>
             </div>
           </li>
-        </div>
-      </ul>
-    </ToolTipOwnerBtn>
+        </ToolTipOwnerBtn>
+      </div>
+    </ul>
   </div>
 </template>
 
