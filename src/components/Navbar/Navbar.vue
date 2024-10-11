@@ -90,6 +90,7 @@ watch(
             route.params.id,
             accountStore.getData().oid
           );
+
           accountStore.setVisibility(
             board[0]?.visibility === "PUBLIC" ? true : false,
             board[0]?.owner.oid,

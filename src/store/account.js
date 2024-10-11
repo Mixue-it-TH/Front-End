@@ -1,162 +1,159 @@
-import { defineStore } from "pinia"
-import { ref } from "vue"
-import { useRouter } from "vue-router"
-import { useAlert } from "./alert"
-import { getTokenByRefreshToken } from "@/util/accountFetchUtil"
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAlert } from "./alert";
+import { getTokenByRefreshToken } from "@/util/accountFetchUtil";
 
 export const useAccount = defineStore("account", () => {
-  const router = useRouter()
-  const alertManagement = useAlert()
-  const token = ref("")
-  const boardId = ref("")
-  const data = ref()
-  const isLogin = ref(false)
-  const boardList = ref([])
-  const isPublic = ref(false)
-  const ownerOID = ref(null)
-  const permission = ref(false)
-  const isOwner = ref(false)
+  const router = useRouter();
+  const alertManagement = useAlert();
+  const token = ref("");
+  const boardId = ref("");
+  const data = ref();
+  const isLogin = ref(false);
+  const boardList = ref([]);
+  const isPublic = ref(false);
+  const ownerOID = ref(null);
+  const permission = ref(false);
+  const isOwner = ref(false);
 
   function setVisibility(visibility, oid, access_right) {
-    isPublic.value = visibility
-    ownerOID.value = oid
+    isPublic.value = visibility;
+    ownerOID.value = oid;
 
     // เพิ่มเงื่อนไขในการ handle จุดนี้
 
     if (data.value?.oid === undefined) {
-      permission.value = false
-      return
+      permission.value = false;
+      return;
     }
 
     //กรณีไม่ใช่เจ้าของ
     if (data.value?.oid !== ownerOID.value) {
       if (access_right === "READ") {
-        permission.value = false
-        isOwner.value = false
-        return
+        permission.value = false;
+        isOwner.value = false;
+        return;
       } else if (access_right === "WRITE") {
-        permission.value = true
-        isOwner.value = false
-        return
+        permission.value = true;
+        isOwner.value = false;
+        return;
       }
     }
 
     // กรณีเป็นเจ้าของ
     if (data.value?.oid === ownerOID.value) {
-      permission.value = true
-      isOwner.value = true
+      permission.value = true;
+      isOwner.value = true;
     }
   }
   function getVisibility() {
-    return isPublic.value
+    return isPublic.value;
   }
 
   function decodedToken(token) {
     if (isValidTokenToken(token)) {
       try {
-        const base64Url = token.split(".")[1]
-        const base64 = base64Url?.replace(/-/g, "+")?.replace(/_/g, "/")
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url?.replace(/-/g, "+")?.replace(/_/g, "/");
         const jsonPayload = decodeURIComponent(
           atob(base64)
             .split("")
             .map(function (c) {
-              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
             })
             .join("")
-        )
-        data.value = JSON.parse(jsonPayload)
+        );
+        data.value = JSON.parse(jsonPayload);
       } catch (error) {
-        return null
+        return null;
       }
-    } else return null
+    } else return null;
   }
 
   function setToken(rawToken, refreshToken) {
-    token.value = rawToken
-    localStorage.setItem("token", token.value)
-    localStorage.setItem("refreshToken", refreshToken)
-    isLogin.value = true
+    token.value = rawToken;
+    localStorage.setItem("token", token.value);
+    localStorage.setItem("refreshToken", refreshToken);
+    isLogin.value = true;
   }
 
   function getToken() {
-    return token.value
+    return token.value;
   }
 
   function logOut() {
-    localStorage.removeItem("refreshToken")
-    localStorage.removeItem("token")
-    localStorage.removeItem("boardId")
-    localStorage.removeItem("boardName")
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("token");
+    localStorage.removeItem("boardId");
+    localStorage.removeItem("boardName");
   }
 
   function getData() {
-    return data.value
+    return data.value;
   }
   function getisLogin() {
-    return isLogin.value
+    return isLogin.value;
   }
   function setisLogin(islogin) {
-    isLogin.value = islogin
+    isLogin.value = islogin;
   }
 
   function setBoardId(rawboardId) {
-    boardId.value = rawboardId
+    boardId.value = rawboardId;
   }
   function getBoardId() {
-    return boardId.value
+    return boardId.value;
   }
 
   function setBoardList(boards) {
-    boardList.value = boards
+    boardList.value = boards;
   }
 
   function getBoardList() {
-    return boardList.value
+    return boardList.value;
   }
   function addBoard(newBoard) {
-    boardList.value.push(newBoard)
+    boardList.value.push(newBoard);
   }
 
   async function handleUnauthorized(action, ...args) {
-    const response = await reFetch(action, ...args)
+    const response = await reFetch(action, ...args);
     if (response.status === 401) {
-      alertManagement.statusHandler(
-        "error",
-        `For security reasons, your session has expired. Please log back in.`
-      )
-      logOut()
-      router.push("/login")
-    } else return response
+      alertManagement.statusHandler("error", `For security reasons, your session has expired. Please log back in.`);
+      logOut();
+      router.push("/login");
+    } else return response;
   }
 
   async function reFetch(action, ...args) {
     try {
-      const token = await getTokenByRefreshToken()
+      const token = await getTokenByRefreshToken();
 
       if (token.status === 401) {
-        return token
+        return token;
       } else {
-        localStorage.setItem("token", token.access_token)
-        const response = await action(...args)
-        return response
+        localStorage.setItem("token", token.access_token);
+        const response = await action(...args);
+        return response;
       }
     } catch (error) {
-      console.error("Error fetching new token:", error)
+      console.error("Error fetching new token:", error);
     }
   }
 
   function isValidTokenToken(token) {
-    const validToken = token.split(".")
+    const validToken = token.split(".");
     if (validToken.length < 3) {
-      return false
+      return false;
     } else {
-      return true
+      return true;
     }
   }
 
   function deleteBoard(boardId) {
-    const delBoard = boardList.value.findIndex((board) => board.id === boardId)
-    boardList.value.splice(delBoard, 1)
+    const delBoard = boardList.value.findIndex((board) => board.id === boardId);
+    boardList.value.splice(delBoard, 1);
   }
   return {
     decodedToken,
@@ -177,6 +174,6 @@ export const useAccount = defineStore("account", () => {
     getVisibility,
     deleteBoard,
     permission,
-    isOwner
-  }
-})
+    isOwner,
+  };
+});
