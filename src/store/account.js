@@ -1,8 +1,8 @@
-import {defineStore} from "pinia";
-import {ref} from "vue";
-import {useRouter} from "vue-router";
-import {useAlert} from "./alert";
-import {getTokenByRefreshToken} from "@/util/accountFetchUtil";
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAlert } from "./alert";
+import { getTokenByRefreshToken } from "@/util/accountFetchUtil";
 
 export const useAccount = defineStore("account", () => {
   const router = useRouter();
@@ -15,21 +15,36 @@ export const useAccount = defineStore("account", () => {
   const isPublic = ref(false);
   const ownerOID = ref(null);
   const permission = ref(false);
+  const isOwner = ref(false);
 
-  function setVisibility(visibility, oid) {
+  function setVisibility(visibility, oid, access_right) {
     isPublic.value = visibility;
     ownerOID.value = oid;
+
+    // เพิ่มเงื่อนไขในการ handle จุดนี้
 
     if (data.value?.oid === undefined) {
       permission.value = false;
       return;
     }
+
+    //กรณีไม่ใช่เจ้าของ
     if (data.value?.oid !== ownerOID.value) {
-      permission.value = false;
-      return;
+      if (access_right === "READ") {
+        permission.value = false;
+        isOwner.value = false;
+        return;
+      } else if (access_right === "WRITE") {
+        permission.value = true;
+        isOwner.value = false;
+        return;
+      }
     }
+
+    // กรณีเป็นเจ้าของ
     if (data.value?.oid === ownerOID.value) {
       permission.value = true;
+      isOwner.value = true;
     }
   }
   function getVisibility() {
@@ -105,10 +120,7 @@ export const useAccount = defineStore("account", () => {
   async function handleUnauthorized(action, ...args) {
     const response = await reFetch(action, ...args);
     if (response.status === 401) {
-      alertManagement.statusHandler(
-        "error",
-        `For security reasons, your session has expired. Please log back in.`
-      );
+      alertManagement.statusHandler("error", `For security reasons, your session has expired. Please log back in.`);
       logOut();
       router.push("/login");
     } else return response;
@@ -138,6 +150,11 @@ export const useAccount = defineStore("account", () => {
       return true;
     }
   }
+
+  function deleteBoard(boardId) {
+    const delBoard = boardList.value.findIndex((board) => board.id === boardId);
+    boardList.value.splice(delBoard, 1);
+  }
   return {
     decodedToken,
     setToken,
@@ -155,6 +172,8 @@ export const useAccount = defineStore("account", () => {
     handleUnauthorized,
     setVisibility,
     getVisibility,
+    deleteBoard,
     permission,
+    isOwner,
   };
 });

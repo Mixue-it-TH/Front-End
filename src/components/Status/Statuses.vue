@@ -1,17 +1,17 @@
 <script setup>
-import {onMounted, ref} from "vue";
-import {useTasks} from "@/store/task";
-import {useStatus} from "@/store/status";
+import { onMounted, ref } from "vue";
+import { useTasks } from "@/store/task";
+import { useStatus } from "@/store/status";
 import ListStatus from "./ListStatus.vue";
 import DeleteStatusModal from "./DeleteStatusModal.vue";
-import {deleteStatusById, deleteTaskAndTranfer} from "@/util/statusFetchUtils";
-import {getStatusList} from "@/util/fetchUtils";
-import {useLimit} from "@/store/limitReached";
+import { deleteStatusById, deleteTaskAndTranfer } from "@/util/statusFetchUtils";
+import { getStatusList } from "@/util/fetchUtils";
+import { useLimit } from "@/store/limitReached";
 
-import {useAlert} from "@/store/alert";
-import {useRoute, useRouter} from "vue-router";
-import {useAccount} from "@/store/account";
-import {handleRequestWithTokenRefresh} from "@/util/handleRequest";
+import { useAlert } from "@/store/alert";
+import { useRoute, useRouter } from "vue-router";
+import { useAccount } from "@/store/account";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 
 const accountStore = useAccount();
 const alertManagement = useAlert();
@@ -26,12 +26,10 @@ const arrTranfer = ref([]);
 const amoutTasks = ref(0);
 const router = useRouter();
 const route = useRoute();
+const isLoaded = ref();
 
 onMounted(async () => {
-  const listStatuses = await handleRequestWithTokenRefresh(
-    getStatusList,
-    route.params.id
-  );
+  const listStatuses = await handleRequestWithTokenRefresh(getStatusList, route.params.id);
 
   if (listStatuses === 404) {
     router.push("/login");
@@ -39,6 +37,7 @@ onMounted(async () => {
   if (statusManagement.getAllStatus().length === 0) {
     statusManagement.addStatuses(listStatuses);
   }
+  isLoaded.value = true;
 });
 
 function delAction(status, id) {
@@ -60,38 +59,20 @@ function delAction(status, id) {
 async function delConfirm(id, tranferId) {
   let delRespond;
   if (stage.value === "delete") {
-    delRespond = await handleRequestWithTokenRefresh(
-      deleteStatusById,
-      id,
-      route.params.id
-    );
+    delRespond = await handleRequestWithTokenRefresh(deleteStatusById, id, route.params.id);
     if (delRespond.ok) {
-      alertManagement.statusHandler(
-        "success",
-        "The status has been deleted successfully"
-      );
+      alertManagement.statusHandler("success", "The status has been deleted successfully");
       closeDelModal(false);
     } else if (delRespond.status === 404) {
-      alertManagement.statusHandler(
-        "error",
-        "An error has occurred, the status does not exist"
-      );
+      alertManagement.statusHandler("error", "An error has occurred, the status does not exist");
       closeDelModal(false);
     }
     statusManagement.deleteStatus(id);
   } else if (stage.value === "tranfer") {
-    delRespond = await handleRequestWithTokenRefresh(
-      deleteTaskAndTranfer,
-      id,
-      tranferId,
-      route.params.id
-    );
+    delRespond = await handleRequestWithTokenRefresh(deleteTaskAndTranfer, id, tranferId, route.params.id);
     if (delRespond.ok) {
       statusManagement.deleteStatus(id);
-      taskManagement.tranferStatus(
-        id,
-        statusManagement.getStatusById(tranferId)
-      );
+      taskManagement.tranferStatus(id, statusManagement.getStatusById(tranferId));
       alertManagement.statusHandler(
         "success",
         `${amoutTasks.value} task(s) have been tranfer and the status has been deleted`
@@ -106,7 +87,6 @@ async function delConfirm(id, tranferId) {
     }
   }
 }
-
 
 function closeDelModal(isclose) {
   delState.value = isclose;
@@ -127,8 +107,8 @@ function closeDelModal(isclose) {
     />
   </Teleport>
   <div>
-    <ListStatus @delAction="delAction" />
-    <RouterView />
+    <ListStatus v-if="isLoaded" @delAction="delAction" />
+    <RouterView v-if="isLoaded" />
   </div>
 </template>
 

@@ -1,23 +1,23 @@
 <script setup>
-import {RouterLink} from "vue-router";
-import Listmodel from "@/components/Ui/ListModel.vue";
-import TooltipBtn from "../Ui/TooltipBtn.vue";
+import { RouterLink } from "vue-router"
+import Listmodel from "@/components/Ui/ListModel.vue"
+import TooltipBtn from "../Ui/TooltipBtn.vue"
 
-const emit = defineEmits(["delete"]);
+const emit = defineEmits(["delete"])
 const props = defineProps({
   listTasks: {
-    type: Array,
+    type: Array
   },
   permission: {
     type: Boolean,
-    default: false,
-  },
-});
+    default: false
+  }
+})
 </script>
 
 <template>
   <router-link
-    :to="{name: 'taskAdd'}"
+    :to="{ name: 'taskAdd' }"
     class="invisible mobile-L:visible absolute left-0 bottom-0 mb-[20px] ml-[20px]"
     :class="!permission ? 'pointer-events-none' : ''"
   >
@@ -80,7 +80,7 @@ const props = defineProps({
 
     <TooltipBtn>
       <router-link
-        :to="{name: 'taskAdd'}"
+        :to="{ name: 'taskAdd' }"
         class="mobile-L:hidden"
         :class="!permission ? 'pointer-events-none' : ''"
       >
@@ -122,7 +122,7 @@ const props = defineProps({
           class="itbkk-item transition flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
         >
           <router-link
-            :to="{name: 'taskDetail', params: {taskId: slotprop.job.id}}"
+            :to="{ name: 'taskDetail', params: { taskId: slotprop.job.id } }"
             class="w-full h-full"
           >
             <div class="flex w-full min-h-[55px]">
@@ -140,7 +140,7 @@ const props = defineProps({
                 <div
                   class="min-w-[95px] max-w-[120px] w-[90%] rounded-[5px] py-[3px] flex items-center justify-center"
                   :style="{
-                    backgroundColor: slotprop.job.status.statusColor,
+                    backgroundColor: slotprop.job.status.statusColor
                   }"
                 >
                   <p class="itbkk-status text-white">
@@ -152,7 +152,7 @@ const props = defineProps({
                 <p
                   class="itbkk-assignees"
                   :class="{
-                    'italic text-gray-500': !slotprop.job.assignees,
+                    'italic text-gray-500': !slotprop.job.assignees
                   }"
                 >
                   {{
@@ -187,11 +187,14 @@ const props = defineProps({
             </div>
             <ul
               tabindex="0"
-              class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-[5] bg bg-gray-[#A9A9A9]"
+              class="dropdown-content menu p-2 shadow bg-base-100 text-white rounded-box w-52 z-[5] bg bg-gray-[#A9A9A9]"
             >
               <TooltipBtn>
                 <router-link
-                  :to="{name: 'taskEdit', params: {taskId: slotprop.job.id}}"
+                  :to="{
+                    name: 'taskEdit',
+                    params: { taskId: slotprop.job.id }
+                  }"
                 >
                   <li
                     class="itbkk-button-edit flex flex-row"
