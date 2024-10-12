@@ -12,12 +12,10 @@ const props = defineProps({
     default: false,
   },
 });
-console.log("access", props.access);
 
 const accountStore = useAccount();
 
 const permission = computed(() => accountStore.permission);
-console.log("permission", permission.value);
 </script>
 
 <template>
