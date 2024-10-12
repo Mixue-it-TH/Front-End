@@ -54,11 +54,12 @@ async function sumbitHandler(e) {
       <div class="text-[14px]">This project is part of the Integrated project course</div>
     </div>
 
+    <!-- FORM INPUT USERNAME & PASSWORD -->
     <form class="flex flex-col gap-[15px] mt-auto h-full" :onsubmit="sumbitHandler">
       <div class="flex flex-col gap-[20px] mt-[20px]">
         <div class="w-auto h-[50px] rounded-lg mb-[15px]">
           <div class="flex gap-[5px]">
-            <div>Username</div>
+            <div class="text-[14px] opacity-90">Username</div>
             <TooltipBtn :access="true" data="you need to fill username.">
               <div class="text text-red-500">*</div>
             </TooltipBtn>
@@ -73,7 +74,7 @@ async function sumbitHandler(e) {
         </div>
         <div>
           <div class="flex flex-row gap-[5px]">
-            <div>Password</div>
+            <div class="text-[14px] opacity-90">Password</div>
             <TooltipBtn :access="true" data="you need to fill password.">
               <div class="text text-red-500">*</div>
             </TooltipBtn>
@@ -100,7 +101,7 @@ async function sumbitHandler(e) {
       </div>
 
       <!-- ACTION BUTTON -->
-      <div class="flex flex-col mt-[20px] gap-[8px]">
+      <div class="flex flex-col mt-[10px] gap-[8px] mb-[10px]">
         <div>
           <button
             :disabled="!user.username || !user.password"
@@ -120,7 +121,6 @@ async function sumbitHandler(e) {
           <div
             class="flex flex-row justify-center items-center gap-[10px] cursor-pointer w-full h-[55px] border rounded-[50px] duration-150 hover:bg-gray-100"
           >
-            <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
             <svg width="35" height="35" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M44.522 44.5217H489.739V489.739H44.522V44.5217Z" fill="#F35325" />
               <path d="M534.261 44.5217H979.478V489.739H534.261V44.5217Z" fill="#81BC06" />
