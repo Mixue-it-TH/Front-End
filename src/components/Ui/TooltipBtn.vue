@@ -1,6 +1,6 @@
 <script setup>
-import {useAccount} from "@/store/account";
-import {computed} from "vue";
+import { useAccount } from "@/store/account";
+import { computed } from "vue";
 
 const props = defineProps({
   data: {

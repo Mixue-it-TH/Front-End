@@ -56,7 +56,9 @@ const color = randomColor();
         </div>
       </div>
       <div class="flex mt-auto">
-        <div v-if="board.ownerName" @click="$emit('leave', board)" class="cursor-pointer">Leave</div>
+        <div v-if="board.ownerName" @click="$emit('leave', board)" class="duration-200 hover:font-[500] cursor-pointer">
+          Leave
+        </div>
         <RouterLink class="ml-auto duration-200 hover:font-[500]" :to="{ name: 'boardTask', params: { id: board.id } }">
           <div>View board</div>
         </RouterLink>
@@ -67,13 +69,13 @@ const color = randomColor();
 
 <style scoped>
 .svg-container {
-  opacity: 0; /* Hide the SVG by default */
-  transform: translateY(10px); /* Slightly move down */
-  transition: opacity 0.3s ease, transform 0.3s ease; /* Transition effect */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .hover\:show-svg:hover .svg-container {
-  opacity: 1; /* Show the SVG on hover */
-  transform: translateY(0); /* Reset position */
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>
