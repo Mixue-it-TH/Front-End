@@ -46,11 +46,11 @@ function closeModal(isClose) {
 async function confirmHandeler(oid, board) {
   if (mode.value === "leave") {
     const response = await handleRequestWithTokenRefresh(removeCollaborator, board.id, accountStore.getData().oid);
-    if (response.access_right) {
+    if (response.accessRight) {
       collabStore.leaveBoard(board.id);
       showDeleteModal.value = false;
       boardDetail.value = {};
-      alertManagement.statusHandler("success", `You leave the ${board.name} board now XD`);
+      alertManagement.statusHandler("success", `You leave the ${board.name} board now`);
     } else {
       alertManagement.statusHandler("error", `There is a problem please try again later`);
     }

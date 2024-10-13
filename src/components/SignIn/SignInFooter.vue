@@ -2,7 +2,7 @@
 
 <template>
   <div class="mt-auto flex items-center gap-[10px]">
-    &copy; Made by SIT #28
+    &copy; Made by SY2 GROUP SIT#28
     <a href="https://github.com/Mixue-it-TH" target="_blank" rel="noopener noreferrer">
       <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 24 24">
         <path
