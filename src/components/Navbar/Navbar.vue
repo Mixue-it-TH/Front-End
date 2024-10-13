@@ -94,7 +94,7 @@ watch(
           accountStore.setVisibility(
             board[0]?.visibility === "PUBLIC" ? true : false,
             board[0]?.owner.oid,
-            access.access_right
+            access.accessRight
           );
         } else {
           accountStore.setVisibility(board[0]?.visibility === "PUBLIC" ? true : false, board[0]?.owner.oid);

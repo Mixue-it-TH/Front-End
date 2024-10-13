@@ -15,7 +15,7 @@ export const useAlert = defineStore("alertManager", () => {
     message.value = text;
     statusType.value = type;
     showAlertModal.value = true;
-    let seconds = 100;
+    let seconds = 10;
     let timer = setInterval(function () {
       seconds--;
       if (seconds < 0) {

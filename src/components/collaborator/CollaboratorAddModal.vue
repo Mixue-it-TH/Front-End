@@ -1,39 +1,35 @@
 <script setup>
-import { computed, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { useStatus } from "@/store/status.js"
-import { useAccount } from "@/store/account"
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStatus } from "@/store/status.js";
+import { useAccount } from "@/store/account";
 
-const access = ref("READ")
-const email = ref("")
-const accountStore = useAccount()
-const isDisable = ref(true)
-const isSameEmail = ref(false)
+const access = ref("READ");
+const email = ref("");
+const accountStore = useAccount();
+const isDisable = ref(true);
+const isSameEmail = ref(false);
 
 function handelValidEmail() {
   if (!email.value.includes("@")) {
-    isDisable.value = true
+    isDisable.value = true;
   } else if (accountStore.getData().email === email.value) {
-    isDisable.value = true
-    isSameEmail.value = true
+    isDisable.value = true;
+    isSameEmail.value = true;
   } else {
-    isDisable.value = false
-    isSameEmail.value = false
+    isDisable.value = false;
+    isSameEmail.value = false;
   }
 }
 </script>
 
 <template>
-  <div
-    class="bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] flex items-center justify-center font-noto"
-  >
+  <div class="bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] flex items-center justify-center font-noto">
     <div
       class="fade-up itbkk-modal-setting text-black flex flex-col w-[90%] min-w-[300px] max-w-[600px] rounded-lg bg-white shadow-lg overflow-hidden"
     >
       <div class="">
-        <div
-          class="border-b border-gray-500 px-[15px] py-[8px] mb-[15px] text-[30px] font-[500]"
-        >
+        <div class="border-b border-gray-500 px-[15px] py-[8px] mb-[15px] text-[30px] font-[500]">
           <h2 class="">Add Collaborator</h2>
         </div>
 
@@ -45,12 +41,9 @@ function handelValidEmail() {
               @input="handelValidEmail"
               v-model="email"
               placeholder="Enter Your E-mail"
-              class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+              class="w-full text-white border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-            <div
-              v-show="isSameEmail"
-              class="text-red-500 font-semibold text-xs"
-            >
+            <div v-show="isSameEmail" class="text-red-500 font-semibold text-xs">
               You can't add yourself to collaborator
             </div>
           </div>
@@ -59,7 +52,7 @@ function handelValidEmail() {
             <p>Access Right</p>
             <select
               v-model="access"
-              class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+              class="w-full text-white border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="READ">Read</option>
               <option value="WRITE">Write</option>
