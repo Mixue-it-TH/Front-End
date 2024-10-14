@@ -22,7 +22,7 @@ const boardDetail = ref({});
 const mode = ref("");
 
 onMounted(async () => {
-  const boards = await handleRequestWithTokenRefresh(getBoardIdByUserOIDs, accountStore.getData()?.oid);
+  const boards = await handleRequestWithTokenRefresh(getBoardIdByUserOIDs);
   if (boards.owners) {
     accountStore.setBoardList(boards.owners);
   }

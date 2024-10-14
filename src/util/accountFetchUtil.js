@@ -183,7 +183,7 @@ export async function changeAccessCollaborator(boardId, newCollab, collabId) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        access_right: newCollab.accessRight,
+        accessRight: newCollab.accessRight,
       }),
     });
     if (response.ok) {
