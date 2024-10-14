@@ -136,7 +136,7 @@ export async function addCollaborator(email, access, boardId) {
       },
       body: JSON.stringify({
         email: email,
-        access_right: access,
+        accessRight: access,
       }),
     });
     if (response.ok) {
