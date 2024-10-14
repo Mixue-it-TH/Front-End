@@ -11,7 +11,7 @@ async function getTaskList(paramId) {
   try {
     const token = getToken();
     const boardId = paramId;
-    const headers = token ? {Authorization: `Bearer ${token}`} : {};
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
     const response = await fetch(
       `
@@ -44,13 +44,10 @@ async function getTaskById(id, paramId) {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${id}`,
-      {
-        method: "GET",
-        headers: headers,
-      }
-    );
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${id}`, {
+      method: "GET",
+      headers: headers,
+    });
     if (response.ok) {
       const data = await response.json();
       return data;
@@ -67,22 +64,19 @@ async function addTask(task, paramId) {
     const token = getToken();
     const boardId = paramId;
 
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: task.title?.trim(),
-          description: task.description?.trim(),
-          assignees: task.assignees?.trim(),
-          status: task.status.id,
-        }),
-      }
-    );
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/tasks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: task.title?.trim(),
+        description: task.description?.trim(),
+        assignees: task.assignees?.trim(),
+        status: task.status.id,
+      }),
+    });
     if (response.ok) {
       const responseData = await response.json();
       return responseData;
@@ -99,23 +93,20 @@ async function editTask(task, paramId) {
     const token = getToken();
     const boardId = paramId;
 
-    const respone = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${task.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          id: task.id,
-          title: task.title?.trim(),
-          description: task.description?.trim(),
-          assignees: task.assignees?.trim(),
-          status: task.status.id,
-        }),
-      }
-    );
+    const respone = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${task.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: task.id,
+        title: task.title?.trim(),
+        description: task.description?.trim(),
+        assignees: task.assignees?.trim(),
+        status: task.status.id,
+      }),
+    });
     if (respone.ok) {
       const responseData = await respone.json();
       return responseData;
@@ -131,15 +122,12 @@ async function deleteTaskById(id, paramId) {
     const token = getToken();
     const boardId = paramId;
 
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (response.ok) {
       return response;
     } else return response;
@@ -153,13 +141,10 @@ async function getStatusList(paramId) {
   const boardId = paramId;
 
   try {
-    const headers = token ? {Authorization: `Bearer ${token}`} : {};
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}/statuses`,
-      {
-        headers,
-      }
-    );
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/statuses`, {
+      headers,
+    });
     if (response.ok) {
       const data = await response.json();
       return data;
@@ -174,14 +159,11 @@ async function getVisibility(paramId) {
     const token = getToken();
     const boardId = paramId;
 
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (response.ok) {
       const data = await response.json();
       return data;
@@ -218,13 +200,13 @@ async function getEnableLimit(id) {
   }
 }
 
-async function getBoardIdByUserOIDs(oid) {
+async function getBoardIdByUserOIDs() {
   try {
     const token = getToken();
 
     const data = await fetch(
       `
-      ${import.meta.env.VITE_BASE_URL}/user/${oid}`,
+      ${import.meta.env.VITE_BASE_URL}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -267,15 +249,12 @@ async function getBoardByBoardid(boardId) {
   try {
     const token = getToken();
 
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/${boardId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (response.ok) {
       const data = await response.json();
       return data;
