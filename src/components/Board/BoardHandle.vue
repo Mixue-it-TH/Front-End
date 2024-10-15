@@ -66,7 +66,8 @@ onMounted(async () => {
           <router-link :to="{ name: 'boardTask', params: { id: slotprop.job.id } }">
             <div>
               <span class="itbkk-board-name flex justify-center p-2 font-semibold text-lg">
-                {{ slotprop.key + 1 }}. {{ slotprop.job.name }}
+                {{ slotprop.key + 1 }}.
+                {{ slotprop.job.name }}
               </span>
 
               <div class="itbkk-board-visibility flex justify-start items-center my-2">

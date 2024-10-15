@@ -31,8 +31,6 @@ onMounted(async () => {
   }
 
   isLoading.value = true;
-
-  console.log(collabStore.getListCollabBoard().length);
 });
 
 function leaveHandler(board) {

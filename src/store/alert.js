@@ -1,5 +1,5 @@
-import {defineStore, acceptHMRUpdate} from "pinia";
-import {ref} from "vue";
+import { defineStore, acceptHMRUpdate } from "pinia";
+import { ref } from "vue";
 
 export const useAlert = defineStore("alertManager", () => {
   const message = ref("");
@@ -25,10 +25,10 @@ export const useAlert = defineStore("alertManager", () => {
     }, 500);
   }
   function getAlertData() {
-    return {message, statusType, showAlertModal};
+    return { message, statusType, showAlertModal };
   }
 
-  return {statusHandler, getAlertData, closeStatusModal};
+  return { statusHandler, getAlertData, closeStatusModal };
 });
 
 if (import.meta.hot) {
