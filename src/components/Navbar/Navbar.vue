@@ -51,6 +51,10 @@ onMounted(async () => {
         limitMaximux.value,
         route.params.id
       );
+      if (responese.status === 403) {
+        localStorage.setItem("isPrivate", true);
+        router.go(-1);
+      }
 
       if (isEnbleLimit.limitMaximumTask) limitManagement.addLimitReached(responese.statusList);
       taskManagement.setLimitMaximumTask(isEnbleLimit.limitMaximumTask, isEnbleLimit.noOfTasks);
