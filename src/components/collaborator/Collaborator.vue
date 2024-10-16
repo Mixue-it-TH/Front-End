@@ -124,7 +124,7 @@ function editModalHandler(collaboratorDetail) {
     <ToolTipOwnerBtn>
       <button
         :disabled="!permission_owner"
-        :class="!permission_owner ? 'disabled' : ''"
+        :class="!permission_owner ? 'disabled opacity-50' : ''"
         @click="showCollaboratorModal = !showCollaboratorModal"
         class="bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
       >

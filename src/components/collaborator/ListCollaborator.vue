@@ -81,7 +81,7 @@ function changeAccessRight(collabDetail) {
                   @change="changeAccessRight(slotprop.job)"
                   v-model="slotprop.job.accessRight"
                   :disabled="!permission_owner"
-                  :class="!permission_owner ? 'disabled' : ''"
+                  :class="!permission_owner ? 'disabled opacity-50' : ''"
                   class="border p-2 rounded text-center w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
                 >
                   <option :value="slotprop.job.accessRight">
@@ -100,7 +100,7 @@ function changeAccessRight(collabDetail) {
                   <button
                     @click="emit('delete', slotprop.job)"
                     :disabled="!permission_owner"
-                    :class="!permission_owner ? 'disabled' : ''"
+                    :class="!permission_owner ? 'disabled opacity-60' : ''"
                     class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-lg hover:scale-105 transition duration-200 ease-in-out border border-transparent"
                   >
                     Remove
