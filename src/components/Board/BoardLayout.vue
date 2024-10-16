@@ -77,7 +77,7 @@ async function confirmHandeler(oid, board) {
     </div>
 
     <!-- PERSONAL BOARD -->
-    <div v-if="accountStore.getBoardList().length !== 0">
+    <div>
       <div class="itbkk-personal-item text-center p-4">
         <p class="itbkk-personal-board text-3xl font-bold text-black drop-shadow-lg">Personal Boards</p>
       </div>

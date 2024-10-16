@@ -423,7 +423,7 @@ function collabPageHandle() {
                   :disabled="!permission_owner"
                   type="checkbox"
                   @click.prevent="openVisibilityModal"
-                  class="toggle bg bg-gray-200 checked:bg-blue-500"
+                  class="toggle bg bg-gray-200 checked:bg-blue-500 [--tglbg:white]"
                   :class="!permission_owner ? 'disabled' : ''"
                 />
               </label>
