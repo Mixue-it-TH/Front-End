@@ -77,17 +77,19 @@ async function confirmHandeler(oid, board) {
     </div>
 
     <!-- PERSONAL BOARD -->
-    <div class="itbkk-personal-item text-center p-4">
-      <p class="itbkk-personal-board text-3xl font-bold text-black drop-shadow-lg">Personal Boards</p>
+    <div v-if="accountStore.getBoardList().length !== 0">
+      <div class="itbkk-personal-item text-center p-4">
+        <p class="itbkk-personal-board text-3xl font-bold text-black drop-shadow-lg">Personal Boards</p>
+      </div>
+      <ListModel
+        class="grid grid-cols-[repeat(auto-fit,minmax(250px,330px))] gap-y-8 justify-evenly"
+        :jobs="accountStore.getBoardList()"
+      >
+        <template #default="slotprop">
+          <Board :board="slotprop.job" />
+        </template>
+      </ListModel>
     </div>
-    <ListModel
-      class="grid grid-cols-[repeat(auto-fit,minmax(250px,330px))] gap-y-8 justify-evenly"
-      :jobs="accountStore.getBoardList()"
-    >
-      <template #default="slotprop">
-        <Board :board="slotprop.job" />
-      </template>
-    </ListModel>
 
     <!-- COLAB BOARDS -->
 
