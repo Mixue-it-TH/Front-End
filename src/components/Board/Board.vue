@@ -74,7 +74,7 @@ const color = randomColor();
         </div>
       </div>
       <div class="flex mt-auto">
-        <div v-if="board.owner" @click="$emit('leave', board)" class="duration-200 hover:font-[500] cursor-pointer">
+        <div v-if="board.collab" @click="$emit('leave', board)" class="duration-200 hover:font-[500] cursor-pointer">
           Leave
         </div>
         <RouterLink
