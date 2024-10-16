@@ -418,7 +418,8 @@ function collabPageHandle() {
                 <span>{{ visibilityToggle === false ? "private" : "public" }}</span>
 
                 <input
-                  v-model="visibilityToggle"
+                  :checked="visibilityToggle"
+                  :v-model="visibilityToggle"
                   :disabled="!permission_owner"
                   type="checkbox"
                   @click.prevent="openVisibilityModal"
