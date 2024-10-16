@@ -84,7 +84,7 @@ watch(
 
         if (board.status === 403) {
           accountStore.setVisibility("PRIVATE");
-        } else if (board[0]?.owner.oid !== accountStore.getData().oid) {
+        } else if (board.owner.oid !== accountStore.getData().oid) {
           const access = await handleRequestWithTokenRefresh(
             getCollaboratorsByCollabId,
             route.params.id,
@@ -92,12 +92,12 @@ watch(
           );
 
           accountStore.setVisibility(
-            board[0]?.visibility === "PUBLIC" ? true : false,
-            board[0]?.owner.oid,
+            board?.visibility === "PUBLIC" ? true : false,
+            board?.owner.oid,
             access.accessRight
           );
         } else {
-          accountStore.setVisibility(board[0]?.visibility === "PUBLIC" ? true : false, board[0]?.owner.oid);
+          accountStore.setVisibility(board?.visibility === "PUBLIC" ? true : false, board?.owner.oid);
         }
       }
       ///// REFACTOR SOON ///////
@@ -105,7 +105,8 @@ watch(
       visibilityToggle.value = accountStore.getVisibility();
 
       const boardDetail = await getBoardByBoardid(route.params.id);
-      boardName.value = boardDetail[0].name;
+
+      boardName.value = boardDetail.name;
     }
   },
   { immediate: true }

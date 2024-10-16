@@ -1,9 +1,9 @@
 <script setup>
+import { ref } from "vue";
 import { RouterLink } from "vue-router";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import { getEnableLimit } from "@/util/fetchUtils";
 import { useTasks } from "@/store/task";
-import { useLimit } from "@/store/limitReached";
 import TooltipBtn from "../Ui/TooltipBtn.vue";
 import trimText from "@/compasable/trimText";
 import convertName from "@/compasable/convertName";
@@ -18,6 +18,11 @@ const props = defineProps({
 });
 
 const taskManagement = useTasks();
+const inputRef = ref(null);
+
+function triggerFileUpload() {
+  inputRef.value.click();
+}
 
 async function handleSelectBoard(boardId) {
   const isEnbleLimit = await handleRequestWithTokenRefresh(getEnableLimit, boardId);
@@ -34,6 +39,7 @@ const color = randomColor();
     <div
       class="flex flex-col px-[20px] pb-[10px] h-[50%] bg rounded-t-[10px] cursor-pointer hover:show-svg"
       :class="`${color.bg_color}`"
+      @click="triggerFileUpload"
     >
       <div v-if="board?.owner?.name" class="svg-container m-auto mt-[40px] duration-200">
         <svg
@@ -48,6 +54,7 @@ const color = randomColor();
             fill=""
           />
         </svg>
+        <input id="file-upload" ref="inputRef" type="file" class="hidden" />
       </div>
       <div
         class="itbkk-board-visibility itbkk-access-right mt-auto bg bg-red-200 rounded-[30px] overflow-hidden px-[8px] py-[3px] text-white w-fit"

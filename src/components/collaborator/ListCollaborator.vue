@@ -19,8 +19,9 @@ const permission_owner = computed(() => accountStore.isOwner);
 
 onMounted(async () => {
   const collaboratorList = await handleRequestWithTokenRefresh(getCollaborators, route.params.id);
-  if (collaboratorList) {
-    collabStore.setCollaborator(collaboratorList);
+
+  if (collaboratorList.collaborators) {
+    collabStore.setCollaborator(collaboratorList.collaborators);
   }
 });
 
