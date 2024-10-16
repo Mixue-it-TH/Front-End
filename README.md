@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Integrated-Frontend-Group-Mixue-it-TH(sy2) :icecream:
 ### Details 
 ##### This website project is ideal for individuals who want to manage and organize their tasks visually, rather than relying on memory for each task. Each task can be assigned a status indicator, allowing users to see at a glance how far along each task is in its progress.
