@@ -51,6 +51,10 @@ onMounted(async () => {
         limitMaximux.value,
         route.params.id
       );
+      if (responese.status === 403) {
+        localStorage.setItem("isPrivate", true);
+        router.go(-1);
+      }
 
       if (isEnbleLimit.limitMaximumTask) limitManagement.addLimitReached(responese.statusList);
       taskManagement.setLimitMaximumTask(isEnbleLimit.limitMaximumTask, isEnbleLimit.noOfTasks);
@@ -423,7 +427,7 @@ function collabPageHandle() {
                   :disabled="!permission_owner"
                   type="checkbox"
                   @click.prevent="openVisibilityModal"
-                  class="toggle bg bg-gray-200 checked:bg-blue-500"
+                  class="toggle bg bg-gray-200 checked:bg-blue-500 [--tglbg:white]"
                   :class="!permission_owner ? 'disabled' : ''"
                 />
               </label>
