@@ -59,7 +59,7 @@ function deleteModalHandler(collaboratorDetail) {
 }
 function closeModal(isClose) {
   if (mode.value === "edit") {
-    console.log("collab from edit", collabDetail.value);
+    console.log("detail", collabDetail.value);
     const oldAccess = collabDetail.value.accessRight === "READ" ? "WRITE" : "READ";
     collabStore.changeAccess(collabDetail.value.oid, oldAccess);
   }

@@ -30,9 +30,10 @@ export const useCollaborator = defineStore("collaborator", () => {
     if (index !== -1) {
       collabList.value[index] = {
         ...collabList.value[index],
-        access_right: newAccess,
+        accessRight: newAccess,
       };
     }
+    console.log("List", collabList.value);
   }
   function leaveBoard(boardId) {
     const delBoardCollab = listCollabBoard.value.findIndex((boardCollab) => boardCollab.id === boardId);
