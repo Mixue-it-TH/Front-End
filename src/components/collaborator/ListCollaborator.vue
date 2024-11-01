@@ -19,9 +19,9 @@ const permission_owner = computed(() => accountStore.isOwner);
 
 onMounted(async () => {
   const collaboratorList = await handleRequestWithTokenRefresh(getCollaborators, route.params.id);
-  console.log("permission", permission_owner.value);
-  if (collaboratorList) {
-    collabStore.setCollaborator(collaboratorList);
+
+  if (collaboratorList.collaborators) {
+    collabStore.setCollaborator(collaboratorList.collaborators);
   }
 });
 
@@ -76,16 +76,16 @@ function changeAccessRight(collabDetail) {
               <ToolTipOwnerBtn class="w-full">
                 <select
                   @change="changeAccessRight(slotprop.job)"
-                  v-model="slotprop.job.access_right"
+                  v-model="slotprop.job.accessRight"
                   :disabled="!permission_owner"
                   :class="!permission_owner ? 'disabled' : ''"
                   class="border p-2 rounded text-center w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
                 >
-                  <option :value="slotprop.job.access_right">
-                    {{ slotprop.job.access_right }}
+                  <option :value="slotprop.job.accessRight">
+                    {{ slotprop.job.accessRight }}
                   </option>
-                  <option :value="slotprop.job.access_right === 'WRITE' ? 'READ' : 'WRITE'">
-                    {{ slotprop.job.access_right === "WRITE" ? "READ" : "WRITE" }}
+                  <option :value="slotprop.job.accessRight === 'WRITE' ? 'READ' : 'WRITE'">
+                    {{ slotprop.job.accessRight === "WRITE" ? "READ" : "WRITE" }}
                   </option>
                 </select>
               </ToolTipOwnerBtn>

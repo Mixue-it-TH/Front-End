@@ -87,7 +87,7 @@ async function confirmHandeler(oid, collabDetail) {
       collabDetail.value = {};
       alertManagement.statusHandler("success", "Change access right successfully");
     } else if (response.status === 404) {
-      collabStore.changeAccess(oid, oldAccess); //ทำกันไว้กรณีที่ backend ทำไม่สำเร็จก็จะ set access เดิมกลับเข้าไป
+      collabStore.changeAccess(oid, oldAccess); //ทำกันไว้กรณีที่ backe end ทำไม่สำเร็จก็จะ set access เดิมกลับเข้าไป
       alertManagement.statusHandler("error", `${collabDetail.value.user.userName} is not a collaborator`);
       showDeleteModal.value = false;
       collabDetail.value = {};
