@@ -68,7 +68,7 @@ function closeModal(isClose) {
 }
 
 async function confirmHandeler(oid, collabDetail) {
-  if (mode.value === "delete") {
+  if (mode.value === "delete" || mode.value === "leave") {
     const response = await handleRequestWithTokenRefresh(removeCollaborator, route.params.id, oid);
     if (response.accessRight) {
       collabStore.deleteCollaborator(oid);
@@ -113,6 +113,11 @@ function editModalHandler(collaboratorDetail) {
   mode.value = "edit";
   showDeleteModal.value = true;
 }
+function leaveModalHandler(collaboratorDetail) {
+  collabDetail.value = collaboratorDetail;
+  mode.value = "leave";
+  showDeleteModal.value = true;
+}
 </script>
 
 <template>
@@ -138,7 +143,7 @@ function editModalHandler(collaboratorDetail) {
   </Teleport>
 
   <div>
-    <ListCollaborator @delete="deleteModalHandler" @edit="editModalHandler" />
+    <ListCollaborator @delete="deleteModalHandler" @edit="editModalHandler" @leave="leaveModalHandler" />
   </div>
 </template>
 
