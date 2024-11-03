@@ -8,15 +8,15 @@ export const useCollaborator = defineStore("collaborator", () => {
   function getListCollabBoard() {
     return listCollabBoard.value;
   }
-  function setListCollabBoard(list) {
-    listCollabBoard.value = list;
+  function setListCollabBoard(collaborator, invitation) {
+    listCollabBoard.value = [...invitation, ...collaborator];
   }
   function getCollaborator() {
     return collabList.value;
   }
 
-  function setCollaborator(collaborators) {
-    collabList.value = collaborators;
+  function setCollaborator(collaborators, invitations) {
+    collabList.value = [...collaborators, ...invitations];
   }
   function addNewCollaborator(newCollab) {
     collabList.value.push(newCollab);

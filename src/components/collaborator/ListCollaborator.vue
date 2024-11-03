@@ -22,8 +22,7 @@ const permission = computed(() => accountStore.permission);
 onMounted(async () => {
   const collaboratorList = await handleRequestWithTokenRefresh(getCollaborators, route.params.id);
   if (collaboratorList.collaborators) {
-    collabStore.setCollaborator(collaboratorList.collaborators);
-    console.log(collabStore.getListCollabBoard());
+    collabStore.setCollaborator(collaboratorList.collaborators, collaboratorList.invitations);
   }
   if (collaboratorList?.status === 403) {
     router.push("/board");
@@ -55,17 +54,17 @@ function collabUserHandler(userDetail) {
 // }
 
 // ใช้งานไม่ได้เกับปุ่ม remove ที่ login ไม่ใช่เจ้าของ board
-// function handlerToolTips() {
-//   const leaveAccess = collabStore.getCollaborator().find((collab) => collab.oid === accountStore.getData().oid);
-//   if (leaveAccess) {
-//     if (!permission.value) {
-//       accountStore.permission = true;
-//     }
-//     return false;
-//   } else {
-//     return true;
-//   }
-// }
+function handlerToolTips() {
+  const leaveAccess = collabStore.getCollaborator().find((collab) => collab.oid === accountStore.getData().oid);
+  if (leaveAccess) {
+    if (!permission.value) {
+      accountStore.permission = true;
+    }
+    return false;
+  } else {
+    return true;
+  }
+}
 </script>
 
 <template>
@@ -101,6 +100,7 @@ function collabUserHandler(userDetail) {
             <div class="w-[35%]">
               <p class="itbkk-status-name text-center">
                 {{ slotprop.job.name }}
+                <span v-if="slotprop.job?.status" class="text-red-500 font-[500]">(pending invite)</span>
               </p>
             </div>
 

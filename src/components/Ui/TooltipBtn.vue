@@ -16,8 +16,6 @@ const props = defineProps({
 const accountStore = useAccount();
 
 const permission = computed(() => accountStore.permission);
-console.log("access", props.access);
-console.log("permiss", permission.value);
 </script>
 
 <template>

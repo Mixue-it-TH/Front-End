@@ -54,7 +54,7 @@ onMounted(async () => {
           route.params.id
         );
         if (responese.status === 403) {
-          localStorage.setItem("isPrivate", true);
+          localStorage.setItem("isPrivate", "Access denied, you do not have permission to view this page.");
           router.go(-1);
         }
 

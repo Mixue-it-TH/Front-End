@@ -5,16 +5,12 @@ import ListCollaborator from "./ListCollaborator.vue";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import CollaboratorAddModal from "./CollaboratorAddModal.vue";
 import CollaboratorModal from "./CollaboratorModal.vue";
-import {
-  addCollaborator,
-  changeAccessCollaborator,
-  getCollaborators,
-  removeCollaborator,
-} from "@/util/accountFetchUtil";
+import { changeAccessCollaborator, removeCollaborator } from "@/util/accountFetchUtil";
 import { useCollaborator } from "@/store/collaborator";
 import { useAlert } from "@/store/alert";
 import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
 import { useAccount } from "@/store/account";
+import { addInvitation } from "@/util/inviteApi";
 
 const emit = defineEmits(["cancle", "save"]);
 const route = useRoute();
@@ -28,10 +24,12 @@ const accountStore = useAccount();
 const permission_owner = computed(() => accountStore.isOwner);
 
 async function addUserCollaborator(access, email) {
-  const response = await handleRequestWithTokenRefresh(addCollaborator, email, access, route.params.id);
+  const response = await handleRequestWithTokenRefresh(addInvitation, email, access, route.params.id);
+
   if (response.boardId) {
     const newCollab = {
       oid: response.oid,
+      status: response.status,
       accessRight: response.accessRight,
       email: response.collaboratorEmail,
       name: response.collaboratorName,

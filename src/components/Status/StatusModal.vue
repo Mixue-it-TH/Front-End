@@ -33,7 +33,7 @@ onMounted(async () => {
 
 	// Check user permission to view this modal
 	if (!permission.value && (data.includes("add") || data.includes("edit"))) {
-    localStorage.setItem("isPrivate", true);
+    localStorage.setItem("isPrivate", "Access denied, you do not have permission to view this page.");
     router.go(-1);
   }
 

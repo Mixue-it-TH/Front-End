@@ -1,7 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useStatus } from "@/store/status.js";
+import { ref } from "vue";
 import { useAccount } from "@/store/account";
 
 const access = ref("READ");
@@ -10,16 +8,12 @@ const accountStore = useAccount();
 const isDisable = ref(true);
 const isSameEmail = ref(false);
 
-function handelValidEmail() {
-  if (!email.value.includes("@")) {
-    isDisable.value = true;
-  } else if (accountStore.getData().email === email.value) {
-    isDisable.value = true;
-    isSameEmail.value = true;
-  } else {
-    isDisable.value = false;
-    isSameEmail.value = false;
-  }
+function handleValidEmail() {
+  const isInvalidEmail = !email.value.includes("@");
+  const isExistingEmail = accountStore.getData().email === email.value;
+
+  isDisable.value = isInvalidEmail || isExistingEmail;
+  isSameEmail.value = isExistingEmail;
 }
 </script>
 
@@ -38,7 +32,7 @@ function handelValidEmail() {
             <p>Collaborator Email</p>
             <input
               type="text"
-              @input="handelValidEmail"
+              @input="handleValidEmail"
               v-model="email"
               placeholder="Enter Your E-mail"
               class="w-full text-white border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"

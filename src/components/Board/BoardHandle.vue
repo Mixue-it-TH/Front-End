@@ -21,9 +21,6 @@ onMounted(async () => {
   if (boards.collabs) {
     collaboratorStore.setListCollabBoard(boards.collabs);
   }
-
-  console.log(boards.owners);
-  console.log(boards.collabs);
 });
 </script>
 
