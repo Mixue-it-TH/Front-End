@@ -51,6 +51,10 @@ onMounted(async () => {
         limitMaximux.value,
         route.params.id
       );
+      if (responese.status === 403) {
+        localStorage.setItem("isPrivate", true);
+        router.go(-1);
+      }
 
       if (isEnbleLimit.limitMaximumTask) limitManagement.addLimitReached(responese.statusList);
       taskManagement.setLimitMaximumTask(isEnbleLimit.limitMaximumTask, isEnbleLimit.noOfTasks);
@@ -84,7 +88,7 @@ watch(
 
         if (board.status === 403) {
           accountStore.setVisibility("PRIVATE");
-        } else if (board[0]?.owner.oid !== accountStore.getData().oid) {
+        } else if (board.owner.oid !== accountStore.getData().oid) {
           const access = await handleRequestWithTokenRefresh(
             getCollaboratorsByCollabId,
             route.params.id,
@@ -92,12 +96,12 @@ watch(
           );
 
           accountStore.setVisibility(
-            board[0]?.visibility === "PUBLIC" ? true : false,
-            board[0]?.owner.oid,
+            board?.visibility === "PUBLIC" ? true : false,
+            board?.owner.oid,
             access.accessRight
           );
         } else {
-          accountStore.setVisibility(board[0]?.visibility === "PUBLIC" ? true : false, board[0]?.owner.oid);
+          accountStore.setVisibility(board?.visibility === "PUBLIC" ? true : false, board?.owner.oid);
         }
       }
       ///// REFACTOR SOON ///////
@@ -105,7 +109,8 @@ watch(
       visibilityToggle.value = accountStore.getVisibility();
 
       const boardDetail = await getBoardByBoardid(route.params.id);
-      boardName.value = boardDetail[0].name;
+
+      boardName.value = boardDetail.name;
     }
   },
   { immediate: true }
@@ -417,11 +422,12 @@ function collabPageHandle() {
                 <span>{{ visibilityToggle === false ? "private" : "public" }}</span>
 
                 <input
-                  v-model="visibilityToggle"
+                  :checked="visibilityToggle"
+                  :v-model="visibilityToggle"
                   :disabled="!permission_owner"
                   type="checkbox"
                   @click.prevent="openVisibilityModal"
-                  class="toggle bg bg-gray-200 checked:bg-blue-500"
+                  class="toggle bg bg-gray-200 checked:bg-blue-500 [--tglbg:white]"
                   :class="!permission_owner ? 'disabled' : ''"
                 />
               </label>

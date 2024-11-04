@@ -3,7 +3,7 @@ import { useTasks } from "@/store/task";
 import Navbar from "../Navbar/Navbar.vue";
 import { useStatus } from "@/store/status";
 import { onMounted, ref } from "vue";
-import { getBoardByBoardid, getStatusList, getTaskList } from "@/util/fetchUtils";
+import { getStatusList, getTaskList } from "@/util/fetchUtils";
 import { useAccount } from "@/store/account";
 import { useRoute, useRouter } from "vue-router";
 import { useAlert } from "@/store/alert";

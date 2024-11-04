@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, onMounted } from "vue";
 import { getCollaborators } from "@/util/accountFetchUtil";
-import { RouterLink, RouterView, useRoute } from "vue-router";
+import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import { useStatus } from "@/store/status.js";
 import ListModel from "../Ui/ListModel.vue";
 import TooltipBtn from "../Ui/TooltipBtn.vue";
@@ -14,14 +14,17 @@ const emit = defineEmits(["delete", "edit"]);
 const accountStore = useAccount();
 const collabStore = useCollaborator();
 const route = useRoute();
+const router = useRouter();
 const access = ref(""); //ใส่เป็นค่า default ไปก่อนค่อยกลับมาแก้
 const permission_owner = computed(() => accountStore.isOwner);
 
 onMounted(async () => {
   const collaboratorList = await handleRequestWithTokenRefresh(getCollaborators, route.params.id);
-
   if (collaboratorList.collaborators) {
     collabStore.setCollaborator(collaboratorList.collaborators);
+  }
+  if (collaboratorList?.status === 403) {
+    router.push("/board");
   }
 });
 
@@ -97,7 +100,7 @@ function changeAccessRight(collabDetail) {
                   <button
                     @click="emit('delete', slotprop.job)"
                     :disabled="!permission_owner"
-                    :class="!permission_owner ? 'disabled' : ''"
+                    :class="!permission_owner ? 'disabled opacity-0' : ''"
                     class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-lg hover:scale-105 transition duration-200 ease-in-out border border-transparent"
                   >
                     Remove

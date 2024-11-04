@@ -22,7 +22,6 @@ function triggerFileUpload() {
 
 const color = randomColor();
 </script>
-
 <template>
   <div
     class="bg bg-white flex flex-col w-auto h-[225px] rounded-[10px] duration-300 transform hover:scale-[101%] hover:shadow-xl"
@@ -69,7 +68,7 @@ const color = randomColor();
         </div>
       </div>
       <div class="flex mt-auto">
-        <div v-if="board.ownerName" @click="$emit('leave', board)" class="duration-200 hover:font-[500] cursor-pointer">
+        <div v-if="board.collab" @click="$emit('leave', board)" class="duration-200 hover:font-[500] cursor-pointer">
           Leave
         </div>
         <RouterLink class="ml-auto duration-200 hover:font-[500]" :to="{ name: 'boardTask', params: { id: board.id } }">

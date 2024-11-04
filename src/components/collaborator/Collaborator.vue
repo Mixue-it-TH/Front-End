@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from "vue-router";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import ListCollaborator from "./ListCollaborator.vue";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import CollaboratorAddModal from "./CollaboratorAddModal.vue";
@@ -13,6 +13,8 @@ import {
 } from "@/util/accountFetchUtil";
 import { useCollaborator } from "@/store/collaborator";
 import { useAlert } from "@/store/alert";
+import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
+import { useAccount } from "@/store/account";
 
 const emit = defineEmits(["cancle", "save"]);
 const route = useRoute();
@@ -22,6 +24,8 @@ const showCollaboratorModal = ref(false);
 const showDeleteModal = ref(false);
 const collabDetail = ref({});
 const mode = ref("");
+const accountStore = useAccount();
+const permission_owner = computed(() => accountStore.isOwner);
 
 async function addUserCollaborator(access, email) {
   const response = await handleRequestWithTokenRefresh(addCollaborator, email, access, route.params.id);
@@ -114,12 +118,16 @@ function editModalHandler(collaboratorDetail) {
   </Teleport>
 
   <div class="pt-[20px] flex justify-end">
-    <button
-      @click="showCollaboratorModal = !showCollaboratorModal"
-      class="bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
-    >
-      Add Collaborator
-    </button>
+    <ToolTipOwnerBtn>
+      <button
+        :disabled="!permission_owner"
+        :class="!permission_owner ? 'disabled opacity-50' : ''"
+        @click="showCollaboratorModal = !showCollaboratorModal"
+        class="bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
+      >
+        Add Collaborator
+      </button>
+    </ToolTipOwnerBtn>
   </div>
 
   <Teleport to="body" v-if="showDeleteModal">
