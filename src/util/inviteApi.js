@@ -37,6 +37,7 @@ export async function addInvitation(email, access, boardId) {
         accessRight: access,
       }),
     });
+
     if (response.ok) {
       const responseData = await response.json();
       return responseData;

@@ -41,18 +41,6 @@ function collabUserHandler(userDetail) {
   }
 }
 
-// ใช้งานได้เมื่อไม่ใช่เจ้าของ board แต่เป็นเจ้าของละเจ๊ง
-// function handlerToolTips(userDetail) {
-//   if (accountStore.getData().oid === userDetail.oid) {
-//     if (!permission.value) {
-//       accountStore.permission = true;
-//     }
-//     return false;
-//   } else {
-//     return true;
-//   }
-// }
-
 // ใช้งานไม่ได้เกับปุ่ม remove ที่ login ไม่ใช่เจ้าของ board
 function handlerToolTips() {
   const leaveAccess = collabStore.getCollaborator().find((collab) => collab.oid === accountStore.getData().oid);
@@ -60,9 +48,9 @@ function handlerToolTips() {
     if (!permission.value) {
       accountStore.permission = true;
     }
-    return false;
+    return false; // ถ้าเป็นเจ้าของหรือผู้ร่วมงาน
   } else {
-    return true;
+    return true; // ถ้าไม่ได้ร่วมงานกับบอร์ดนี้
   }
 }
 </script>
@@ -130,19 +118,6 @@ function handlerToolTips() {
             </div>
 
             <div class="w-[10%] flex justify-center">
-              <!-- <ToolTipOwnerBtn v-if="!permission_owner">
-                <div class="flex gap-4 justify-center">
-                  <button
-                    @click="emit('delete', slotprop.job)"
-                    :disabled="!permission_owner"
-                    :class="!permission_owner ? 'disabled opacity-40' : ''"
-                    class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-lg hover:scale-105 transition duration-200 ease-in-out border border-transparent"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </ToolTipOwnerBtn> -->
-
               <TooltipBtn :access="handlerToolTips(slotprop.job)">
                 <div class="flex gap-4 justify-center">
                   <button

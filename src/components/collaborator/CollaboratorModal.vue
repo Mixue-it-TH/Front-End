@@ -8,6 +8,8 @@ const props = defineProps({
     type: String,
   },
 });
+// console.log(props.objectDetail.name);
+// console.log(props.objectDetail.oid);
 </script>
 
 <template>
