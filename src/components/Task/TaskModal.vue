@@ -8,6 +8,9 @@ import { convertUtils, convertStatus } from "@/util/formatUtils";
 import { useAlert } from "@/store/alert";
 import { useAccount } from "@/store/account";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import UploadBtn from "../Ui/UploadBtn.vue";
+import Spinner from "../Ui/Spinner.vue";
+import { uploadImage } from "@/util/fileApi";
 
 const alertManagement = useAlert();
 const taskManagement = useTasks();
@@ -31,8 +34,31 @@ const oldTask = ref({
 const isDisable = ref(true);
 const mode = ref("read");
 const dataLoaded = ref(false);
-
 const permission = computed(() => accountStore.permission);
+
+// UPLOAD BTN REF
+const files = ref([]);
+
+// UPLOAD BTN FUNC
+const handleFileUpload = (newFile) => {
+  files.value = [...files.value, ...newFile];
+};
+
+const removeFile = (index) => {
+  files.value.splice(index, 1);
+};
+
+const saveAttachments = async () => {
+  for (const file of files.value) {
+    const result = await uploadImage(file);
+    console.log(result);
+  }
+  alert("Attachments uploaded successfully!");
+};
+
+const openImageInNewTab = (url) => {
+  window.open(url, "_blank");
+};
 
 onMounted(async () => {
   if (statusManagement.getAllStatus().length === 0) {
@@ -53,6 +79,7 @@ onMounted(async () => {
   } else if (data.includes("add")) {
     actionHandler(null, "add");
   } else if (data.includes("edit")) {
+    mode.value = "edit";
     actionHandler(data[4], "edit");
   }
   dataLoaded.value = true;
@@ -77,11 +104,11 @@ async function actionHandler(id, action) {
   } else if (action === "edit") {
     const response = await handleRequestWithTokenRefresh(getTaskById, id, route.params.id);
     if (typeof response === "object") {
+      mode.value = "edit";
       taskDetails.value = response;
       taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn);
       taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn);
       oldTask.value = { ...taskDetails.value };
-      mode.value = "edit";
     } else if (response === 404) {
       alertManagement.statusHandler("error", "The requested task does not exist");
       router.push("/");
@@ -123,6 +150,10 @@ async function confirmHandeler() {
 }
 function saveBthHandler(isTrue = false) {
   taskMessage.value = statusManagement.getStatusById(taskDetails.value.status?.id);
+  if (files.value.length > 10) {
+    isDisable.value = true;
+    return;
+  }
   if (
     taskDetails.value.title?.length > 100 ||
     taskDetails.value.assignees?.length > 30 ||
@@ -155,6 +186,7 @@ function closeModal() {
 </script>
 
 <template>
+  <!-- <Spinner /> -->
   <div v-if="dataLoaded" class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
     <div class="fade-up flex justify-center items-center w-[100%] h-[100%] text-[#333333]">
       <div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-white">
@@ -185,11 +217,12 @@ function closeModal() {
           class="flex flex-row mobile-L:flex-col laptop:overflow-auto h-[80%] px-[4%]"
           :class="mode !== 'read' ? 'pt-[30px]' : ''"
         >
-          <div class="w-[70%] mobile-L:w-[100%] h-[100%] py-[10px]">
+          <!-- DESCRIPTION  -->
+          <div class="flex flex-col w-[70%] mobile-L:w-[100%] h-[100%] py-[10px]">
             <p class="font-[600]">Description</p>
             <textarea
               v-if="mode !== 'read'"
-              class="itbkk-description w-[95%] h-[80%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-white overflow-hidden"
+              class="itbkk-description w-[95%] h-[60%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-white overflow-hidden"
               v-model="taskDetails.description"
               @input="saveBthHandler"
             ></textarea>
@@ -203,13 +236,32 @@ function closeModal() {
 
             <div
               v-if="mode === 'read'"
-              class="itbkk-description w-[95%] h-[90%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
+              class="itbkk-description w-[95%] h-[60%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
               :class="{ 'italic text-gray-500': !taskDetails.description }"
             >
               {{ taskDetails.description ? taskDetails.description : "No Description Provided" }}
             </div>
+
+            <!-- ATTACHMENTS -->
+            <div class="mt-[15px]">
+              <p class="font-[600] mb-[5px]">
+                Attachments
+                <span :class="files.length >= 10 ? 'text-red-500' : ''" class="text-[14px] font-[400] text-[#AFAFAF]">
+                  {{ files.length }}/10 files
+                </span>
+              </p>
+              <UploadBtn
+                @upload="handleFileUpload"
+                @remove="removeFile"
+                @open="openImageInNewTab"
+                :files="files"
+                :mode="mode"
+              />
+            </div>
           </div>
+          <!-- RIGHT SECTION -->
           <div class="flex flex-col w-[30%] mobile-L:w-[100%] mobile-L:mt-[14px] h-[94%]">
+            <!-- ASSIGNEE -->
             <div class="flex flex-col h-[45%] py-[10px] mb-[10px]">
               <p class="font-[650]">Assignees</p>
               <textarea

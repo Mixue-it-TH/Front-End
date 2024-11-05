@@ -11,6 +11,7 @@ import CollaboratorModal from "../collaborator/CollaboratorModal.vue";
 import ListModel from "../Ui/ListModel.vue";
 import Board from "./Board.vue";
 import Spinner from "../Ui/Spinner.vue";
+import UploadBtn from "../Ui/UploadBtn.vue";
 
 const emit = defineEmits(["cancle", "save"]);
 const accountStore = useAccount();
