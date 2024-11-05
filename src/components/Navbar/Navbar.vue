@@ -45,19 +45,22 @@ onMounted(async () => {
 
       isLimit.value = isEnbleLimit.limitMaximumTask;
       limitMaximux.value = isEnbleLimit.noOfTasks;
-      const responese = await handleRequestWithTokenRefresh(
-        handelLimitMaximum,
-        isLimit.value,
-        limitMaximux.value,
-        route.params.id
-      );
-      if (responese.status === 403) {
-        localStorage.setItem("isPrivate", true);
-        router.go(-1);
-      }
 
-      if (isEnbleLimit.limitMaximumTask) limitManagement.addLimitReached(responese.statusList);
-      taskManagement.setLimitMaximumTask(isEnbleLimit.limitMaximumTask, isEnbleLimit.noOfTasks);
+      if (permission_owner.value) {
+        const responese = await handleRequestWithTokenRefresh(
+          handelLimitMaximum,
+          isLimit.value,
+          limitMaximux.value,
+          route.params.id
+        );
+        if (responese.status === 403) {
+          localStorage.setItem("isPrivate", "Access denied, you do not have permission to view this page.");
+          router.go(-1);
+        }
+
+        if (isEnbleLimit.limitMaximumTask) limitManagement.addLimitReached(responese.statusList);
+        taskManagement.setLimitMaximumTask(isEnbleLimit.limitMaximumTask, isEnbleLimit.noOfTasks);
+      }
     }
   }
 });
@@ -344,17 +347,17 @@ function collabPageHandle() {
             <img src="/image/z-a-blue.png" class="w-[30px] h-[30px]" />
           </div>
         </div>
-        <TooltipBtn>
+        <ToolTipOwnerBtn>
           <div
             v-show="isboardSelect"
-            @click="limitModalHandler(true)"
+            @click="permission_owner ? limitModalHandler(true) : ''"
             class="itbkk-status-setting flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-200 duration-100 w-[45px] min-w-[40px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
           >
             <div class="flex justify-center">
               <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
             </div>
           </div>
-        </TooltipBtn>
+        </ToolTipOwnerBtn>
       </div>
       <RouterLink v-if="!accountStore.getisLogin()" :to="{ name: 'login' }">
         <div class="flex btn btn-outline mt-[5px]">Login</div>

@@ -1,5 +1,4 @@
-import {useAccount} from "@/store/account";
-import getAccessToken from "./tokenUtil";
+import { useAccount } from "@/store/account";
 
 export async function handleRequestWithTokenRefresh(action, ...params) {
   const accountStore = useAccount();

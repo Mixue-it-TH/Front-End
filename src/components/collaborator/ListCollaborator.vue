@@ -10,18 +10,19 @@ import { useCollaborator } from "@/store/collaborator";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
 
-const emit = defineEmits(["delete", "edit"]);
+const emit = defineEmits(["delete", "edit", "leave"]);
 const accountStore = useAccount();
 const collabStore = useCollaborator();
 const route = useRoute();
 const router = useRouter();
 const access = ref(""); //ใส่เป็นค่า default ไปก่อนค่อยกลับมาแก้
 const permission_owner = computed(() => accountStore.isOwner);
+const permission = computed(() => accountStore.permission);
 
 onMounted(async () => {
   const collaboratorList = await handleRequestWithTokenRefresh(getCollaborators, route.params.id);
   if (collaboratorList.collaborators) {
-    collabStore.setCollaborator(collaboratorList.collaborators);
+    collabStore.setCollaborator(collaboratorList.collaborators, collaboratorList.invitations);
   }
   if (collaboratorList?.status === 403) {
     router.push("/board");
@@ -30,6 +31,27 @@ onMounted(async () => {
 
 function changeAccessRight(collabDetail) {
   emit("edit", collabDetail);
+}
+
+function collabUserHandler(userDetail) {
+  if (accountStore.getData().email === userDetail.email) {
+    emit("leave", userDetail);
+  } else {
+    emit("delete", userDetail);
+  }
+}
+
+// ใช้งานไม่ได้เกับปุ่ม remove ที่ login ไม่ใช่เจ้าของ board
+function handlerToolTips() {
+  const leaveAccess = collabStore.getCollaborator().find((collab) => collab.oid === accountStore.getData().oid);
+  if (leaveAccess) {
+    if (!permission.value) {
+      accountStore.permission = true;
+    }
+    return false; // ถ้าเป็นเจ้าของหรือผู้ร่วมงาน
+  } else {
+    return true; // ถ้าไม่ได้ร่วมงานกับบอร์ดนี้
+  }
 }
 </script>
 
@@ -66,6 +88,7 @@ function changeAccessRight(collabDetail) {
             <div class="w-[35%]">
               <p class="itbkk-status-name text-center">
                 {{ slotprop.job.name }}
+                <span v-if="slotprop.job?.status" class="text-red-500 font-[500]">(pending invite)</span>
               </p>
             </div>
 
@@ -95,18 +118,22 @@ function changeAccessRight(collabDetail) {
             </div>
 
             <div class="w-[10%] flex justify-center">
-              <ToolTipOwnerBtn>
+              <TooltipBtn :access="handlerToolTips(slotprop.job)">
                 <div class="flex gap-4 justify-center">
                   <button
-                    @click="emit('delete', slotprop.job)"
-                    :disabled="!permission_owner"
-                    :class="!permission_owner ? 'disabled opacity-0' : ''"
+                    @click="collabUserHandler(slotprop.job)"
+                    :disabled="!permission_owner && accountStore.getData().email !== slotprop.job.email"
+                    :class="
+                      !permission_owner && accountStore.getData().email !== slotprop.job.email
+                        ? 'disabled opacity-40'
+                        : ''
+                    "
                     class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-lg hover:scale-105 transition duration-200 ease-in-out border border-transparent"
                   >
-                    Remove
+                    {{ accountStore.getData().oid === slotprop.job.oid ? "Leave" : "Remove" }}
                   </button>
                 </div>
-              </ToolTipOwnerBtn>
+              </TooltipBtn>
             </div>
           </div>
         </template>

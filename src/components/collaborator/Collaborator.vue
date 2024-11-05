@@ -5,16 +5,12 @@ import ListCollaborator from "./ListCollaborator.vue";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import CollaboratorAddModal from "./CollaboratorAddModal.vue";
 import CollaboratorModal from "./CollaboratorModal.vue";
-import {
-  addCollaborator,
-  changeAccessCollaborator,
-  getCollaborators,
-  removeCollaborator,
-} from "@/util/accountFetchUtil";
+import { changeAccessCollaborator, removeCollaborator } from "@/util/accountFetchUtil";
 import { useCollaborator } from "@/store/collaborator";
 import { useAlert } from "@/store/alert";
 import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
 import { useAccount } from "@/store/account";
+import { addInvitation, declineInvitation } from "@/util/inviteApi";
 
 const emit = defineEmits(["cancle", "save"]);
 const route = useRoute();
@@ -28,23 +24,30 @@ const accountStore = useAccount();
 const permission_owner = computed(() => accountStore.isOwner);
 
 async function addUserCollaborator(access, email) {
-  const response = await handleRequestWithTokenRefresh(addCollaborator, email, access, route.params.id);
-  console.log(response);
-  if (response.user) {
-    // ที่ต้อง fresh ใหม่จุดนี้ก็เพื่อให้ข้อมูลมัน display ได้เพราะ body มันส่งไม่ตรงกันกับตัวปกติถ้า push ตัวใหม่ปกติมันจะอ่านค่าไม่เจอ
-    const refreshCollabs = await getCollaborators(route.params.id);
-    collabStore.setCollaborator(refreshCollabs);
+  const response = await handleRequestWithTokenRefresh(addInvitation, email, access, route.params.id);
+
+  if (response.boardId) {
+    const newCollab = {
+      oid: response.oid,
+      status: response.status,
+      accessRight: response.accessRight,
+      email: response.collaboratorEmail,
+      name: response.collaboratorName,
+    };
+    collabStore.addNewCollaborator(newCollab);
     closeAddModal();
     alertManagement.statusHandler("success", "You add new Collaborator successfull");
   } else if (response.status === 409) {
     alertManagement.statusHandler("error", "This user email already be collaborator");
   } else if (response.status === 404) {
-    alertManagement.statusHandler("error", "The user does not exit");
+    alertManagement.statusHandler("error", "The user does not exist");
   } else if (response.status === 403) {
     closeAddModal();
+
     alertManagement.statusHandler("error", "You don't have permission to add board collaborator");
   }
 }
+
 function closeAddModal(isClose) {
   showCollaboratorModal.value = isClose;
 }
@@ -56,8 +59,9 @@ function deleteModalHandler(collaboratorDetail) {
 }
 function closeModal(isClose) {
   if (mode.value === "edit") {
-    console.log("collab from edit", collabDetail.value);
-    const oldAccess = collabDetail.value.access_right === "READ" ? "WRITE" : "READ";
+    console.log("detail", collabDetail.value);
+
+    const oldAccess = collabDetail.value.accessRight === "READ" ? "WRITE" : "READ";
     collabStore.changeAccess(collabDetail.value.oid, oldAccess);
   }
   collabDetail.value = {};
@@ -65,49 +69,58 @@ function closeModal(isClose) {
 }
 
 async function confirmHandeler(oid, collabDetail) {
-  if (mode.value === "delete") {
-    const response = await handleRequestWithTokenRefresh(removeCollaborator, route.params.id, oid);
-    if (response.access_right) {
-      collabStore.deleteCollaborator(oid);
-      showDeleteModal.value = false;
-      collabDetail.value = {};
-      alertManagement.statusHandler("success", "remove the collaborator from the table");
+  let response;
+
+  if (mode.value === "delete" || mode.value === "leave") {
+    const isInvitation = collabDetail.status === "PENDING";
+
+    if (isInvitation) {
+      response = await handleRequestWithTokenRefresh(declineInvitation, route.params.id, oid);
+    } else {
+      response = await handleRequestWithTokenRefresh(removeCollaborator, route.params.id, oid);
+    }
+
+    if (response.ok) {
     } else if (response.status === 404) {
-      alertManagement.statusHandler("error", `${collabDetail.value.user.userName} is not a collaborator`);
+      alertManagement.statusHandler("error", `${collabDetail.user.userName} is not a collaborator`);
       showDeleteModal.value = false;
       collabDetail.value = {};
     } else if (response.status === 403) {
-      alertManagement.statusHandler("error", `You do not have permission to remove collaborator`);
-    } else {
-      alertManagement.statusHandler("error", `There is a problem please try again later`);
+      alertManagement.statusHandler("error", "You do not have permission to remove this collaborator");
     }
+    collabStore.deleteCollaborator(oid);
+    showDeleteModal.value = false;
+    collabDetail.value = {};
+    alertManagement.statusHandler("success", "Removed the collaborator from the table");
   } else {
     const oldAccess = collabDetail.access_right === "READ" ? "WRITE" : "READ";
-    const response = await handleRequestWithTokenRefresh(changeAccessCollaborator, route.params.id, collabDetail, oid);
-    if (response.access_right) {
+    response = await handleRequestWithTokenRefresh(changeAccessCollaborator, route.params.id, collabDetail, oid);
+
+    if (response.ok) {
       collabStore.changeAccess(oid, collabDetail.access_right);
-      console.log("collabList", collabStore.getCollaborator());
-      showDeleteModal.value = false;
       collabDetail.value = {};
-      alertManagement.statusHandler("success", "Change access right successfully");
     } else if (response.status === 404) {
-      collabStore.changeAccess(oid, oldAccess); //ทำกันไว้กรณีที่ backe end ทำไม่สำเร็จก็จะ set access เดิมกลับเข้าไป
-      alertManagement.statusHandler("error", `${collabDetail.value.user.userName} is not a collaborator`);
+      collabStore.changeAccess(oid, oldAccess);
+      alertManagement.statusHandler("error", `${collabDetail.user.userName} is not a collaborator`);
       showDeleteModal.value = false;
       collabDetail.value = {};
     } else if (response.status === 403) {
       collabStore.changeAccess(oid, oldAccess);
-      alertManagement.statusHandler("error", `You do not have permission to remove collaborator`);
-    } else {
-      collabStore.changeAccess(oid, oldAccess);
-      alertManagement.statusHandler("error", `There is a problem please try again later`);
+      alertManagement.statusHandler("error", "You do not have permission to change access rights");
     }
+    showDeleteModal.value = false;
+    alertManagement.statusHandler("success", "Changed access rights successfully");
   }
 }
 
 function editModalHandler(collaboratorDetail) {
   collabDetail.value = collaboratorDetail;
   mode.value = "edit";
+  showDeleteModal.value = true;
+}
+function leaveModalHandler(collaboratorDetail) {
+  collabDetail.value = collaboratorDetail;
+  mode.value = "leave";
   showDeleteModal.value = true;
 }
 </script>
@@ -125,7 +138,7 @@ function editModalHandler(collaboratorDetail) {
         @click="showCollaboratorModal = !showCollaboratorModal"
         class="bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
       >
-        Add Collaborator
+        Invite Collaborator
       </button>
     </ToolTipOwnerBtn>
   </div>
@@ -135,7 +148,7 @@ function editModalHandler(collaboratorDetail) {
   </Teleport>
 
   <div>
-    <ListCollaborator @delete="deleteModalHandler" @edit="editModalHandler" />
+    <ListCollaborator @delete="deleteModalHandler" @edit="editModalHandler" @leave="leaveModalHandler" />
   </div>
 </template>
 

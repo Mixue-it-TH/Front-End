@@ -10,6 +10,8 @@ import Statuses from "@/components/Status/Statuses.vue";
 import CreateBoardModal from "@/components/Board/CreateBoardModal.vue";
 import collaborator from "@/components/collaborator/Collaborator.vue";
 import SignInView from "@/views/SignInView.vue";
+import InviteView from "@/views/InviteView.vue";
+import { login } from "@/util/accountFetchUtil";
 const routes = [
   {
     path: "/",
@@ -74,6 +76,11 @@ const routes = [
     ],
   },
   {
+    path: "/board/:id/collab/invitations",
+    name: "invite",
+    component: InviteView,
+  },
+  {
     path: "/login",
     name: "login",
     component: SignInView,
@@ -89,27 +96,38 @@ const router = createRouter({
   routes,
 });
 
+// Helper functions
+function isLoginRoute(path) {
+  return path === "/login";
+}
+
+function isBoardsPath(path) {
+  const boardsPathPattern = /^\/(sy2\/)?board\/[a-zA-Z0-9\-_]+(\/(task(\/(\d+|add))?|status(\/(\d+|add))?)(\/edit)?)?$/;
+  return boardsPathPattern.test(path);
+}
+
+function redirectToLogin(next) {
+  next({ path: "/login" });
+}
+
+function proceedWithDecodedToken(token, accountStore, next) {
+  accountStore.decodedToken(token);
+  next();
+}
+
 // Global Navigation Guard
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
   const accountStore = useAccount();
-  const boardsPathPattern = /^\/(sy2\/)?board\/[a-zA-Z0-9\-_]+(\/(task(\/(\d+|add))?|status(\/(\d+|add))?)(\/edit)?)?$/;
 
-  if (to.path !== "/login") {
-    if (!token) {
-      if (boardsPathPattern.test(to.path)) {
-        next();
-      } else {
-        next({
-          path: "/login",
-        });
-      }
-    } else {
-      accountStore.decodedToken(token);
-      next();
-    }
-  } else {
+  if (isLoginRoute(to.path)) {
     next();
+  } else if (to.path.includes("invitations")) {
+    next();
+  } else if (!token) {
+    isBoardsPath(to.path) ? next() : redirectToLogin(next);
+  } else {
+    proceedWithDecodedToken(token, accountStore, next);
   }
 });
 

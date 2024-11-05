@@ -8,15 +8,15 @@ export const useCollaborator = defineStore("collaborator", () => {
   function getListCollabBoard() {
     return listCollabBoard.value;
   }
-  function setListCollabBoard(list) {
-    listCollabBoard.value = list;
+  function setListCollabBoard(collaborator, invitation) {
+    listCollabBoard.value = [...invitation, ...collaborator];
   }
   function getCollaborator() {
     return collabList.value;
   }
 
-  function setCollaborator(collaborators) {
-    collabList.value = collaborators;
+  function setCollaborator(collaborators, invitations) {
+    collabList.value = [...collaborators, ...invitations];
   }
   function addNewCollaborator(newCollab) {
     collabList.value.push(newCollab);
@@ -30,9 +30,10 @@ export const useCollaborator = defineStore("collaborator", () => {
     if (index !== -1) {
       collabList.value[index] = {
         ...collabList.value[index],
-        access_right: newAccess,
+        accessRight: newAccess,
       };
     }
+    console.log("List", collabList.value);
   }
   function leaveBoard(boardId) {
     const delBoardCollab = listCollabBoard.value.findIndex((boardCollab) => boardCollab.id === boardId);

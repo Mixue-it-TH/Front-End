@@ -23,11 +23,13 @@ const mode = ref("");
 
 onMounted(async () => {
   const boards = await handleRequestWithTokenRefresh(getBoardIdByUserOIDs);
+  console.log(boards);
+
   if (boards.owners) {
     accountStore.setBoardList(boards.owners);
   }
-  if (boards.collabs) {
-    collabStore.setListCollabBoard(boards.collabs);
+  if (boards.collabs || boards.invitations) {
+    collabStore.setListCollabBoard(boards.collabs, boards.invitations);
   }
 
   isLoading.value = true;

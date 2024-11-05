@@ -60,19 +60,34 @@ const color = randomColor();
     <div class="flex flex-col h-[50%] px-[15px] py-[10px] pb-[20px]">
       <div>
         <TooltipBtn :data="board?.name" :access="true">
-          <div class="itbkk-board-name font-bold mb-[5px] text-nowrap">{{ trimText(board?.name, 30) }}</div>
+          <div class="itbkk-board-name font-bold mb-[5px] text-nowrap">
+            {{ trimText(board?.name, 30) }}
+            <span v-if="board?.status" class="text-red-500">(pending invite)</span>
+          </div>
         </TooltipBtn>
         <div class="itbkk-owner-name text-[14px]">
-          {{ board.ownerName ? "Owner:" : "Create by:" }}
-          <span class="font-400">{{ convertName(board?.owner?.name ? board.owner.name : board.ownerName) }}</span>
+          {{ board?.owner?.oid ? "Craete by:" : "Owner:" }}
+          <span class="font-400">{{ convertName(board?.owner?.name ? board.owner.name : board.owner) }}</span>
         </div>
       </div>
       <div class="flex mt-auto">
         <div v-if="board.collab" @click="$emit('leave', board)" class="duration-200 hover:font-[500] cursor-pointer">
           Leave
         </div>
-        <RouterLink class="ml-auto duration-200 hover:font-[500]" :to="{ name: 'boardTask', params: { id: board.id } }">
+        <RouterLink
+          v-if="!board?.status"
+          @click="handleSelectBoard(board.id)"
+          class="ml-auto duration-200 hover:font-[500]"
+          :to="{ name: 'boardTask', params: { id: board.id } }"
+        >
           <div>View board</div>
+        </RouterLink>
+        <RouterLink
+          v-else
+          class="ml-auto duration-200 hover:font-[500]"
+          :to="{ name: 'invite', params: { id: board.id } }"
+        >
+          Accept/Decline
         </RouterLink>
       </div>
     </div>
