@@ -66,3 +66,37 @@ export async function declineInvitation(boardId, oid) {
     console.log(`error: ${e}`);
   }
 }
+
+export async function changeAccessInvitation(boardId, oid, newAccessRight) {
+  const token = getToken();
+
+  // ตรวจสอบว่าค่า newAccessRight เป็น "WRITE" หรือ "READ" เท่านั้น
+  if (newAccessRight !== "WRITE" && newAccessRight !== "READ") {
+    console.error("Invalid access right. It must be 'WRITE' or 'READ'.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/collabs/invitations/${oid}`, {
+      // ใช้ oid ที่ถูกต้อง
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accessRight: newAccessRight, // ส่งค่า accessRight
+      }),
+    });
+
+    if (!response.ok) {
+      console.log("Error Response:", response);
+      return response;
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (e) {
+    console.log(`error: ${e}`);
+  }
+}

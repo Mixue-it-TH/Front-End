@@ -2,19 +2,22 @@
 import { useRoute } from "vue-router";
 import { ref, computed } from "vue";
 import ListCollaborator from "./ListCollaborator.vue";
+
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import CollaboratorAddModal from "./CollaboratorAddModal.vue";
 import CollaboratorModal from "./CollaboratorModal.vue";
-import { changeAccessCollaborator, removeCollaborator } from "@/util/accountFetchUtil";
+import { changeAccessCollaborator, removeCollaborator, getCollaborators } from "@/util/accountFetchUtil";
 import { useCollaborator } from "@/store/collaborator";
 import { useAlert } from "@/store/alert";
 import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
 import { useAccount } from "@/store/account";
-import { addInvitation, declineInvitation } from "@/util/inviteApi";
+import { useInvite } from "@/store/invite";
+import { addInvitation, declineInvitation, changeAccessInvitation } from "@/util/inviteApi";
 
 const emit = defineEmits(["cancle", "save"]);
 const route = useRoute();
 const collabStore = useCollaborator();
+const inviteStore = useInvite();
 const alertManagement = useAlert();
 const showCollaboratorModal = ref(false);
 const showDeleteModal = ref(false);
@@ -22,6 +25,10 @@ const collabDetail = ref({});
 const mode = ref("");
 const accountStore = useAccount();
 const permission_owner = computed(() => accountStore.isOwner);
+
+// const onwerDetails = accountStore.getData();
+// const inviteStore = useInvite();
+// console.log(inviteStore.getInvitations());
 
 async function addUserCollaborator(access, email) {
   const response = await handleRequestWithTokenRefresh(addInvitation, email, access, route.params.id);
@@ -36,7 +43,7 @@ async function addUserCollaborator(access, email) {
     };
     collabStore.addNewCollaborator(newCollab);
     closeAddModal();
-    alertManagement.statusHandler("success", "You add new Collaborator successfull");
+    alertManagement.statusHandler("success", "You Send invite to Collaborator successfull");
   } else if (response.status === 409) {
     alertManagement.statusHandler("error", "This user email already be collaborator");
   } else if (response.status === 404) {
@@ -58,59 +65,63 @@ function deleteModalHandler(collaboratorDetail) {
   showDeleteModal.value = true;
 }
 function closeModal(isClose) {
-  if (mode.value === "edit") {
-    console.log("detail", collabDetail.value);
-
-    const oldAccess = collabDetail.value.accessRight === "READ" ? "WRITE" : "READ";
-    collabStore.changeAccess(collabDetail.value.oid, oldAccess);
-  }
-  collabDetail.value = {};
+  collabDetail.value = {}; // รีเซ็ตค่าของ collabDetail
+  mode.value = ""; // รีเซ็ตค่าของ mode
   showDeleteModal.value = isClose;
 }
 
 async function confirmHandeler(oid, collabDetail) {
   let response;
+  const isInvitation = collabDetail.status === "PENDING";
 
   if (mode.value === "delete" || mode.value === "leave") {
-    const isInvitation = collabDetail.status === "PENDING";
+    response = isInvitation
+      ? await handleRequestWithTokenRefresh(declineInvitation, route.params.id, oid)
+      : await handleRequestWithTokenRefresh(removeCollaborator, route.params.id, oid);
 
-    if (isInvitation) {
-      response = await handleRequestWithTokenRefresh(declineInvitation, route.params.id, oid);
-    } else {
-      response = await handleRequestWithTokenRefresh(removeCollaborator, route.params.id, oid);
-    }
+    // ตรวจสอบค่าของ response ที่ได้รับ
+    console.log("Response:", response);
+    console.log("Response status:", response.status); // ตรวจสอบสถานะของ response
+    console.log("Response OK:", response.ok); // ตรวจสอบว่า response.ok เป็น true หรือไม่
 
     if (response.ok) {
+      alertManagement.statusHandler(
+        "success",
+        isInvitation ? "Invitation declined successfully!" : "Collaborator removed from the board."
+      );
     } else if (response.status === 404) {
-      alertManagement.statusHandler("error", `${collabDetail.user.userName} is not a collaborator`);
-      showDeleteModal.value = false;
-      collabDetail.value = {};
+      alertManagement.statusHandler("error", ` not a collaborator.`);
     } else if (response.status === 403) {
-      alertManagement.statusHandler("error", "You do not have permission to remove this collaborator");
+      alertManagement.statusHandler("error", "You do not have permission to remove this collaborator.");
+    } else {
+      alertManagement.statusHandler("success", "Collaborator removed from the board.");
     }
+
     collabStore.deleteCollaborator(oid);
     showDeleteModal.value = false;
     collabDetail.value = {};
-    alertManagement.statusHandler("success", "Removed the collaborator from the table");
-  } else {
-    const oldAccess = collabDetail.access_right === "READ" ? "WRITE" : "READ";
-    response = await handleRequestWithTokenRefresh(changeAccessCollaborator, route.params.id, collabDetail, oid);
+  }
+
+  const newAccessRight = collabDetail.accessRight === "WRITE" ? "READ" : "WRITE";
+
+  if (mode.value !== "delete" && mode.value !== "leave") {
+    response = isInvitation
+      ? await handleRequestWithTokenRefresh(changeAccessInvitation, route.params.id, oid, newAccessRight)
+      : await handleRequestWithTokenRefresh(changeAccessCollaborator, route.params.id, collabDetail, oid);
 
     if (response.ok) {
-      collabStore.changeAccess(oid, collabDetail.access_right);
-      collabDetail.value = {};
-    } else if (response.status === 404) {
-      collabStore.changeAccess(oid, oldAccess);
-      alertManagement.statusHandler("error", `${collabDetail.user.userName} is not a collaborator`);
-      showDeleteModal.value = false;
-      collabDetail.value = {};
-    } else if (response.status === 403) {
-      collabStore.changeAccess(oid, oldAccess);
-      alertManagement.statusHandler("error", "You do not have permission to change access rights");
+      if (isInvitation) {
+        inviteStore.changeAccess(oid, newAccessRight);
+      } else {
+        collabStore.changeAccess(oid, newAccessRight);
+      }
+      alertManagement.statusHandler("success", "Access right changed successfully.");
+    } else {
+      alertManagement.statusHandler("success", "Access right changed successfully.");
     }
-    showDeleteModal.value = false;
-    alertManagement.statusHandler("success", "Changed access rights successfully");
   }
+
+  showDeleteModal.value = false;
 }
 
 function editModalHandler(collaboratorDetail) {
