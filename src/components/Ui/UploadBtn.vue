@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import formatFileSize from "@/compasable/formatFileSize";
 import trimText from "@/compasable/trimText";
+import TooltipBtn from "./TooltipBtn.vue";
 
 const emit = defineEmits(["upload", "remove", "open"]);
 
@@ -14,6 +15,8 @@ const props = defineProps({
     type: String,
   },
 });
+
+console.log(props.files);
 
 const MAX_FILES = 10;
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -31,35 +34,31 @@ function handleFileUpload(event) {
     maxSize: [],
     duplicateNames: [],
   };
-  console.log(selectedFiles);
 
   selectedFiles.forEach((file) => {
-    // เช็คจำนวนไฟล์สูงสุด
     if (props.files.length + newFiles.length >= MAX_FILES) {
-      errors.maxFiles.push(file.name); // บันทึกชื่อไฟล์ที่เกินจำนวน
+      errors.maxFiles.push(file.name);
       return;
     }
 
-    // เช็คขนาดไฟล์
     if (file.size > MAX_FILE_SIZE) {
       errors.maxSize.push(file.name);
       return;
     }
 
-    // เช็คชื่อไฟล์ซ้ำ
-    const isDuplicate =
-      props.files.some((f) => f.file.name === file.name) || newFiles.some((f) => f.file.name === file.name);
+    const isDuplicate = props.files.some((f) => f.name === file.name) || newFiles.some((f) => f.name === file.name);
     if (isDuplicate) {
       errors.duplicateNames.push(file.name);
-      return; // ข้ามไฟล์ที่ซ้ำ
+      return;
     }
 
-    // สร้าง preview URL สำหรับไฟล์ที่เป็นรูปภาพ
     const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : null;
-    newFiles.push({ file, previewUrl });
+
+    file.previewUrl = previewUrl;
+
+    newFiles.push(file);
   });
 
-  // ถ้ามีข้อผิดพลาด แสดงข้อความเตือน
   if (errors.maxFiles.length > 0 || errors.maxSize.length > 0 || errors.duplicateNames.length > 0) {
     let errorMessage = "";
     if (errors.maxFiles.length > 0) {
@@ -81,12 +80,10 @@ function handleFileUpload(event) {
     alert(errorMessage);
   }
 
-  // ส่งไฟล์ที่ผ่านการตรวจสอบแล้วกลับไปยัง parent component
   if (newFiles.length > 0) {
     emit("upload", newFiles);
   }
 
-  // รีเซ็ต input file เพื่อให้เลือกไฟล์เดิมได้อีกครั้ง
   event.target.value = "";
 }
 </script>
@@ -121,22 +118,33 @@ function handleFileUpload(event) {
       <ul class="flex flex-row overflow-x-auto space-x-4">
         <li
           v-for="(file, index) in files"
-          :key="file.file.name + file.lastModified"
+          :key="file.name + file.lastModified"
           class="flex flex-row border border-gray-300 px-2 py-1 rounded-[5px]"
         >
           <div
-            @click="emit('open', file.previewUrl)"
+            @click="emit('open', file.previewUrl ? file.previewUrl : file.url)"
             class="text-nowrap flex flex-row justify-center items-center cursor-pointer"
           >
-            <img v-if="file.previewUrl" :src="file.previewUrl" class="w-[40px] h-[25px] object-cover mr-2" />
-            <span v-if="!file.previewUrl" class="mr-2">📎</span>
-            <span class="text-[14px]">{{ trimText(file.file.name, 20) }} ({{ formatFileSize(file.file.size) }})</span>
+            <div class="w-[35px] h-[25px] overflow-hidden mr-2">
+              <img
+                v-if="file.previewUrl || file.url"
+                :src="file.previewUrl ? file.previewUrl : file.url"
+                class="w-full h-full object-cover mr-2"
+              />
+            </div>
+            <span v-if="!file.previewUrl && !file.url" class="mr-2">📎</span>
+            <span class="text-[14px]">{{ trimText(file.name, 20) }} ({{ formatFileSize(file.size) }})</span>
           </div>
-          <button @click="emit('remove', index)" class="text-red-500 hover:text-red-700 ml-4">✖</button>
+          <button
+            @click="mode === 'edit' && emit('remove', index)"
+            :class="mode !== 'edit' ? 'opacity-50 cursor-not-allowed' : ''"
+            class="text-red-500 hover:text-red-700 ml-4"
+          >
+            ✖
+          </button>
         </li>
       </ul>
     </ul>
-    <!-- <button @click="saveAttachments" class="mt-4 p-2 bg-blue-500 text-white rounded">Save Attachments</button> -->
   </div>
 </template>
 

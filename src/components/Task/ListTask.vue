@@ -45,13 +45,16 @@ const props = defineProps({
       <div class="w-[10%] mobile-L:w-[5%]">
         <p>No</p>
       </div>
-      <div class="w-[45%] px-[15px]">
+      <div class="w-[37%] px-[15px]">
         <p>Title</p>
       </div>
       <div class="w-[14%] tablet:mr-[40px]">
         <p>Status</p>
       </div>
-      <div class="w-[35%]">
+      <div class="w-[13%]">
+        <p>Attachments</p>
+      </div>
+      <div class="w-[28%]">
         <p class="">Assignees</p>
       </div>
     </div>
@@ -86,7 +89,7 @@ const props = defineProps({
                   {{ slotprop.key + 1 }}
                 </p>
               </div>
-              <div class="w-[45%]">
+              <div class="w-[37%]">
                 <div class="itbkk-title px-[15px] font-[430]">
                   {{ slotprop.job.title }}
                 </div>
@@ -102,6 +105,9 @@ const props = defineProps({
                     {{ slotprop.job.status.name }}
                   </p>
                 </div>
+              </div>
+              <div class="w-[13%]">
+                <p class="text-center">{{ slotprop.job.files?.length ? slotprop.job.files.length : "-" }}</p>
               </div>
               <div class="ml-[20px] w-[25%] font-[350] tablet:pl-[15px]">
                 <p

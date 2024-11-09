@@ -4,13 +4,13 @@ import { useRoute, useRouter } from "vue-router";
 import { useTasks } from "@/store/task.js";
 import { useStatus } from "@/store/status.js";
 import { getTaskById, addTask, editTask } from "@/util/fetchUtils";
-import { convertUtils, convertStatus } from "@/util/formatUtils";
+import { convertUtils } from "@/util/formatUtils";
 import { useAlert } from "@/store/alert";
 import { useAccount } from "@/store/account";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import UploadBtn from "../Ui/UploadBtn.vue";
 import Spinner from "../Ui/Spinner.vue";
-import { uploadImage } from "@/util/fileApi";
+import BtnSpinner from "../Ui/BtnSpinner.vue";
 
 const alertManagement = useAlert();
 const taskManagement = useTasks();
@@ -24,41 +24,21 @@ const taskDetails = ref({
   assignees: "",
   description: "",
   status: { id: statusManagement.getAllStatus()[0].id },
+  files: [],
 });
 const oldTask = ref({
   title: "",
   assignees: "",
   description: "",
   status: { id: statusManagement.getAllStatus()[0].id },
+  files: [],
 });
 const isDisable = ref(true);
 const mode = ref("read");
 const dataLoaded = ref(false);
 const permission = computed(() => accountStore.permission);
-
-// UPLOAD BTN REF
-const files = ref([]);
-
-// UPLOAD BTN FUNC
-const handleFileUpload = (newFile) => {
-  files.value = [...files.value, ...newFile];
-};
-
-const removeFile = (index) => {
-  files.value.splice(index, 1);
-};
-
-const saveAttachments = async () => {
-  for (const file of files.value) {
-    const result = await uploadImage(file);
-    console.log(result);
-  }
-  alert("Attachments uploaded successfully!");
-};
-
-const openImageInNewTab = (url) => {
-  window.open(url, "_blank");
-};
+const arrayDelete = ref([]);
+const isLoading = ref(false);
 
 onMounted(async () => {
   if (statusManagement.getAllStatus().length === 0) {
@@ -84,6 +64,22 @@ onMounted(async () => {
   }
   dataLoaded.value = true;
 });
+
+// UPLOAD BTN FUNC
+function handleFileUpload(newFile) {
+  taskDetails.value.files = [...taskDetails.value.files, ...newFile];
+  saveBthHandler(true);
+}
+
+function removeFile(index) {
+  let file = taskDetails.value.files.splice(index, 1);
+  arrayDelete.value.push(file[0].id);
+  saveBthHandler(true);
+}
+
+const openImageInNewTab = (url) => {
+  window.open(url, "_blank");
+};
 
 async function actionHandler(id, action) {
   if (action === "read") {
@@ -133,9 +129,15 @@ async function confirmHandeler() {
     return;
   }
   if (mode.value === "edit") {
-    const response = await handleRequestWithTokenRefresh(editTask, taskDetails.value, route.params.id);
+    isLoading.value = true;
+    const response = await handleRequestWithTokenRefresh(
+      editTask,
+      taskDetails.value,
+      route.params.id,
+      arrayDelete.value
+    );
 
-    if (response?.id) {
+    if (response.id) {
       alertManagement.statusHandler("success", "The task has been updated successfully");
       taskManagement.editTask(taskDetails.value.id, response);
       taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
@@ -150,7 +152,7 @@ async function confirmHandeler() {
 }
 function saveBthHandler(isTrue = false) {
   taskMessage.value = statusManagement.getStatusById(taskDetails.value.status?.id);
-  if (files.value.length > 10) {
+  if (taskDetails.value.files.length > 10) {
     isDisable.value = true;
     return;
   }
@@ -186,7 +188,7 @@ function closeModal() {
 </script>
 
 <template>
-  <!-- <Spinner /> -->
+  <Spinner v-if="isLoading" />
   <div v-if="dataLoaded" class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
     <div class="fade-up flex justify-center items-center w-[100%] h-[100%] text-[#333333]">
       <div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-white">
@@ -246,15 +248,18 @@ function closeModal() {
             <div class="mt-[15px]">
               <p class="font-[600] mb-[5px]">
                 Attachments
-                <span :class="files.length >= 10 ? 'text-red-500' : ''" class="text-[14px] font-[400] text-[#AFAFAF]">
-                  {{ files.length }}/10 files
+                <span
+                  :class="taskDetails?.files?.length >= 10 ? 'text-red-500' : ''"
+                  class="text-[14px] font-[400] text-[#AFAFAF]"
+                >
+                  {{ taskDetails.files?.length }}/10 files
                 </span>
               </p>
               <UploadBtn
                 @upload="handleFileUpload"
                 @remove="removeFile"
                 @open="openImageInNewTab"
-                :files="files"
+                :files="taskDetails?.files"
                 :mode="mode"
               />
             </div>
@@ -338,12 +343,13 @@ function closeModal() {
               class="itbkk-button itbkk-button-confirm flex w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-600"
               :class="isDisable ? 'opacity-50' : ''"
               @click="confirmHandeler"
-              :disabled="isDisable"
+              :disabled="isDisable || isLoading"
               v-show="mode !== 'read'"
             >
-              <div class="m-[auto] disabled">
+              <div v-if="!isLoading" class="m-[auto] disabled">
                 {{ mode !== "read" ? "Save" : "Ok" }}
               </div>
+              <BtnSpinner v-else class="m-[auto]" />
             </button>
             <div
               class="itbkk-button itbkk-button-cancel flex w-[80px] h-[40px] font-[600] text-gary-800 bg bg-gray-200 hover:bg-gray-300"

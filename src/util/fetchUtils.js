@@ -88,35 +88,110 @@ async function addTask(task, paramId) {
   }
 }
 
-async function editTask(task, paramId) {
+// async function editTask(task, paramId) {
+//   console.log(task);
+
+//   try {
+//     const token = getToken();
+//     const boardId = paramId;
+
+//     const respone = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${task.id}`, {
+//       method: "PUT",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: JSON.stringify({
+//         id: task.id,
+//         title: task.title?.trim(),
+//         description: task.description?.trim(),
+//         assignees: task.assignees?.trim(),
+//         status: task.status.id,
+//         files: task.files,
+//       }),
+//     });
+//     if (respone.ok) {
+//       const responseData = await respone.json();
+//       return responseData;
+//     } else {
+//       return respone;
+//     }
+//   } catch (e) {
+//     console.log(`error: ${e}`);
+//   }
+// }
+
+// async function editTask(task, paramId) {
+//   try {
+//     const token = getToken();
+//     const boardId = paramId;
+
+//     const respone = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${task.id}`, {
+//       method: "PUT",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: JSON.stringify({
+//         id: task.id,
+//         title: task.title?.trim(),
+//         description: task.description?.trim(),
+//         assignees: task.assignees?.trim(),
+//         status: task.status.id,
+//         fileList: task.files,
+//       }),
+//     });
+//     if (respone.ok) {
+//       const responseData = await respone.json();
+//       return responseData;
+//     } else {
+//       return respone;
+//     }
+//   } catch (e) {
+//     console.log(`error: ${e}`);
+//   }
+// }
+async function editTask(task, paramId, arrayDelete) {
   try {
     const token = getToken();
     const boardId = paramId;
 
-    const respone = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${task.id}`, {
+    const formData = new FormData();
+    const editedTask = {
+      id: task.id,
+      title: task.title?.trim(),
+      description: task.description?.trim(),
+      assignees: task.assignees?.trim(),
+      status: task.status.id,
+      arrayDelete: arrayDelete,
+    };
+    formData.append("editedTask", JSON.stringify(editedTask));
+
+    if (task.files && task.files.length > 0) {
+      task.files.forEach((file) => {
+        formData.append("attachments", file);
+      });
+    }
+
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/tasks/${task.id}`, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        id: task.id,
-        title: task.title?.trim(),
-        description: task.description?.trim(),
-        assignees: task.assignees?.trim(),
-        status: task.status.id,
-      }),
+      body: formData,
     });
-    if (respone.ok) {
-      const responseData = await respone.json();
+
+    if (response.ok) {
+      const responseData = await response.json();
       return responseData;
     } else {
-      return respone;
+      return response;
     }
   } catch (e) {
     console.log(`error: ${e}`);
   }
 }
+
 async function deleteTaskById(id, paramId) {
   try {
     const token = getToken();

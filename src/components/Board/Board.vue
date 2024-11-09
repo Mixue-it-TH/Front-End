@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from "vue";
 import { RouterLink } from "vue-router";
+import { useTasks } from "@/store/task";
+import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import { getEnableLimit } from "@/util/fetchUtils";
 import TooltipBtn from "../Ui/TooltipBtn.vue";
 import trimText from "@/compasable/trimText";
 import convertName from "@/compasable/convertName";
@@ -13,11 +16,16 @@ const props = defineProps({
     type: Object,
   },
 });
-
+const taskManagement = useTasks();
 const inputRef = ref(null);
 
 function triggerFileUpload() {
   inputRef.value.click();
+}
+
+async function handleSelectBoard(boardId) {
+  const isEnbleLimit = await handleRequestWithTokenRefresh(getEnableLimit, boardId);
+  taskManagement.setLimitMaximumTask(isEnbleLimit.limitMaximumTask, isEnbleLimit.noOfTasks);
 }
 
 const color = randomColor();

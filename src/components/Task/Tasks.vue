@@ -23,6 +23,7 @@ const route = useRoute();
 const statusManagement = useStatus();
 const permission = computed(() => accountStore.permission);
 const isLoadaed = ref(false);
+const isFetching = ref(false);
 
 onMounted(async () => {
   ////// REFACTOR SOON จุดนี้ก็ต้อง handle  ///////
@@ -75,6 +76,7 @@ function closeDeleteModal(isClose) {
 }
 
 async function confirmDelete(id) {
+  isFetching.value = true;
   const response = await handleRequestWithTokenRefresh(deleteTaskById, id, route.params.id);
   if (response.ok) {
     taskManagement.deleteTask(id);
@@ -87,6 +89,7 @@ async function confirmDelete(id) {
     showDeleteModal.value = false;
     taskDetails.value = {};
   }
+  isFetching.value = false;
 }
 </script>
 
@@ -97,6 +100,7 @@ async function confirmDelete(id) {
       @confirm="confirmDelete"
       :taskDetails="taskDetails"
       :taskNumber="taskNumber"
+      :isLoading="isFetching"
     />
   </Teleport>
 
