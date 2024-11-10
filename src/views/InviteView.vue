@@ -3,16 +3,11 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import Spinner from "@/components/Ui/Spinner.vue";
-import { useAlert } from "@/store/alert";
 import { addCollaborator } from "@/util/accountFetchUtil";
 import { declineInvitation, getInvitationByBoardId } from "@/util/inviteApi";
-import { useCollaborator } from "@/store/collaborator";
 
 const route = useRoute();
 const router = useRouter();
-
-const alertManagement = useAlert();
-const collaboratorManagemant = useCollaborator();
 const invitation = ref();
 const isLoading = ref(true);
 
