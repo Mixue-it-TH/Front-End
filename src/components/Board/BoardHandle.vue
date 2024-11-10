@@ -50,7 +50,9 @@ onMounted(async () => {
       </button>
     </router-link>
   </div>
-
+  <img src="/image/zip-icon.png" />
+  <img src="/image/fileicon.png" />
+  <img src="/image/pdf-icon.png" />
   <div v-if="accountStore.getBoardList().length !== 0" class="gap-2 p-3">
     <div class="itbkk-personal-item text-center p-4">
       <p class="itbkk-personal-board text-3xl font-bold text-black drop-shadow-lg">Personal Boards</p>
