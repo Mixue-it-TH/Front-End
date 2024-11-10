@@ -24,7 +24,6 @@ const mode = ref("");
 
 onMounted(async () => {
   const boards = await handleRequestWithTokenRefresh(getBoardIdByUserOIDs);
-  console.log(boards);
 
   if (boards.owners) {
     accountStore.setBoardList(boards.owners);
