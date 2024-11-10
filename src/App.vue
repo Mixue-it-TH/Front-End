@@ -1,18 +1,16 @@
 <script setup>
-import {RouterView} from "vue-router";
+import { RouterView } from "vue-router";
 import AlertMessage from "./components/Ui/AlertMessage.vue";
-import {useAlert} from "./store/alert";
-import {onBeforeMount, onMounted} from "vue";
+import { useAlert } from "./store/alert";
+import { onBeforeMount, onMounted } from "vue";
 
 const alertManagement = useAlert();
-const {showAlertModal, message, statusType} = alertManagement.getAlertData();
+const { showAlertModal, message, statusType } = alertManagement.getAlertData();
 
 const checkLocalStorage = () => {
-  if (localStorage.getItem("isPrivate")) {
-    alertManagement.statusHandler(
-      "error",
-      "Access denied, you do not have permission to view this page."
-    );
+  const isPrivate = localStorage.getItem("isPrivate");
+  if (isPrivate) {
+    alertManagement.statusHandler("error", isPrivate);
     localStorage.removeItem("isPrivate");
   }
 };
@@ -36,9 +34,7 @@ onBeforeMount(() => {
       :message="message"
       :type="statusType"
     />
-    <div
-      class="w-full h-[auto] bg-[#F4F4F4] text-gray-700 px-[2%] py-[25px] font-nonto"
-    >
+    <div class="w-full h-[auto] bg-[#F4F4F4] text-gray-700 px-[2%] py-[25px] font-nonto">
       <RouterView />
     </div>
   </div>

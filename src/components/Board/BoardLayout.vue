@@ -11,6 +11,7 @@ import CollaboratorModal from "../collaborator/CollaboratorModal.vue";
 import ListModel from "../Ui/ListModel.vue";
 import Board from "./Board.vue";
 import Spinner from "../Ui/Spinner.vue";
+import UploadBtn from "../Ui/UploadBtn.vue";
 
 const emit = defineEmits(["cancle", "save"]);
 const accountStore = useAccount();
@@ -23,11 +24,12 @@ const mode = ref("");
 
 onMounted(async () => {
   const boards = await handleRequestWithTokenRefresh(getBoardIdByUserOIDs);
+
   if (boards.owners) {
     accountStore.setBoardList(boards.owners);
   }
-  if (boards.collabs) {
-    collabStore.setListCollabBoard(boards.collabs);
+  if (boards.collabs || boards.invitations) {
+    collabStore.setListCollabBoard(boards.collabs, boards.invitations);
   }
 
   isLoading.value = true;
@@ -77,7 +79,7 @@ async function confirmHandeler(oid, board) {
     </div>
 
     <!-- PERSONAL BOARD -->
-    <div v-if="accountStore.getBoardList().length !== 0">
+    <div>
       <div class="itbkk-personal-item text-center p-4">
         <p class="itbkk-personal-board text-3xl font-bold text-black drop-shadow-lg">Personal Boards</p>
       </div>

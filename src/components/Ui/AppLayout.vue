@@ -32,7 +32,7 @@ onMounted(async () => {
     if (listTasks.status === 401) {
       router.push("/login");
     } else if (listStatuses.status === 403) {
-      localStorage.setItem("isPrivate", true);
+      localStorage.setItem("isPrivate", "Access denied, you do not have permission to view this page.");
       router.go(-1);
     }
 

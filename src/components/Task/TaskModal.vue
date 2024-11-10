@@ -4,10 +4,13 @@ import { useRoute, useRouter } from "vue-router";
 import { useTasks } from "@/store/task.js";
 import { useStatus } from "@/store/status.js";
 import { getTaskById, addTask, editTask } from "@/util/fetchUtils";
-import { convertUtils, convertStatus } from "@/util/formatUtils";
+import { convertUtils } from "@/util/formatUtils";
 import { useAlert } from "@/store/alert";
 import { useAccount } from "@/store/account";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import UploadBtn from "../Ui/UploadBtn.vue";
+import Spinner from "../Ui/Spinner.vue";
+import BtnSpinner from "../Ui/BtnSpinner.vue";
 
 const alertManagement = useAlert();
 const taskManagement = useTasks();
@@ -21,18 +24,21 @@ const taskDetails = ref({
   assignees: "",
   description: "",
   status: { id: statusManagement.getAllStatus()[0].id },
+  files: [],
 });
 const oldTask = ref({
   title: "",
   assignees: "",
   description: "",
   status: { id: statusManagement.getAllStatus()[0].id },
+  files: [],
 });
 const isDisable = ref(true);
 const mode = ref("read");
 const dataLoaded = ref(false);
-
 const permission = computed(() => accountStore.permission);
+const arrayDelete = ref([]);
+const isLoading = ref(false);
 
 onMounted(async () => {
   if (statusManagement.getAllStatus().length === 0) {
@@ -44,7 +50,7 @@ onMounted(async () => {
 
   //Check user permission to view this modal
   if (!permission.value && (data.includes("add") || data.includes("edit"))) {
-    localStorage.setItem("isPrivate", true);
+    localStorage.setItem("isPrivate", "Access denied, you do not have permission to view this page.");
     router.go(-1);
   }
 
@@ -53,10 +59,27 @@ onMounted(async () => {
   } else if (data.includes("add")) {
     actionHandler(null, "add");
   } else if (data.includes("edit")) {
+    mode.value = "edit";
     actionHandler(data[4], "edit");
   }
   dataLoaded.value = true;
 });
+
+// UPLOAD BTN FUNC
+function handleFileUpload(newFile) {
+  taskDetails.value.files = [...taskDetails.value.files, ...newFile];
+  saveBthHandler(true);
+}
+
+function removeFile(index) {
+  let file = taskDetails.value.files.splice(index, 1);
+  arrayDelete.value.push(file[0].id);
+  saveBthHandler(true);
+}
+
+const openImageInNewTab = (url) => {
+  window.open(url, "_blank");
+};
 
 async function actionHandler(id, action) {
   if (action === "read") {
@@ -77,11 +100,11 @@ async function actionHandler(id, action) {
   } else if (action === "edit") {
     const response = await handleRequestWithTokenRefresh(getTaskById, id, route.params.id);
     if (typeof response === "object") {
+      mode.value = "edit";
       taskDetails.value = response;
       taskDetails.value.createdOn = convertUtils(taskDetails.value.createdOn);
       taskDetails.value.updatedOn = convertUtils(taskDetails.value.updatedOn);
       oldTask.value = { ...taskDetails.value };
-      mode.value = "edit";
     } else if (response === 404) {
       alertManagement.statusHandler("error", "The requested task does not exist");
       router.push("/");
@@ -106,9 +129,15 @@ async function confirmHandeler() {
     return;
   }
   if (mode.value === "edit") {
-    const response = await handleRequestWithTokenRefresh(editTask, taskDetails.value, route.params.id);
+    isLoading.value = true;
+    const response = await handleRequestWithTokenRefresh(
+      editTask,
+      taskDetails.value,
+      route.params.id,
+      arrayDelete.value
+    );
 
-    if (response?.id) {
+    if (response.id) {
       alertManagement.statusHandler("success", "The task has been updated successfully");
       taskManagement.editTask(taskDetails.value.id, response);
       taskManagement.sortTaskByStatusName(taskManagement.getCurrentState());
@@ -118,11 +147,16 @@ async function confirmHandeler() {
       alertManagement.statusHandler("error", "The requested task does not exist");
     }
     closeModal();
+    isLoading.value = false;
     return;
   }
 }
 function saveBthHandler(isTrue = false) {
   taskMessage.value = statusManagement.getStatusById(taskDetails.value.status?.id);
+  if (taskDetails.value.files.length > 10) {
+    isDisable.value = true;
+    return;
+  }
   if (
     taskDetails.value.title?.length > 100 ||
     taskDetails.value.assignees?.length > 30 ||
@@ -155,6 +189,7 @@ function closeModal() {
 </script>
 
 <template>
+  <Spinner v-if="isLoading" />
   <div v-if="dataLoaded" class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
     <div class="fade-up flex justify-center items-center w-[100%] h-[100%] text-[#333333]">
       <div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-white">
@@ -185,11 +220,12 @@ function closeModal() {
           class="flex flex-row mobile-L:flex-col laptop:overflow-auto h-[80%] px-[4%]"
           :class="mode !== 'read' ? 'pt-[30px]' : ''"
         >
-          <div class="w-[70%] mobile-L:w-[100%] h-[100%] py-[10px]">
+          <!-- DESCRIPTION  -->
+          <div class="flex flex-col w-[70%] mobile-L:w-[100%] h-[100%] py-[10px]">
             <p class="font-[600]">Description</p>
             <textarea
               v-if="mode !== 'read'"
-              class="itbkk-description w-[95%] h-[80%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-white overflow-hidden"
+              class="itbkk-description w-[95%] h-[60%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-white overflow-hidden"
               v-model="taskDetails.description"
               @input="saveBthHandler"
             ></textarea>
@@ -203,13 +239,35 @@ function closeModal() {
 
             <div
               v-if="mode === 'read'"
-              class="itbkk-description w-[95%] h-[90%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
+              class="itbkk-description w-[95%] h-[60%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
               :class="{ 'italic text-gray-500': !taskDetails.description }"
             >
               {{ taskDetails.description ? taskDetails.description : "No Description Provided" }}
             </div>
+
+            <!-- ATTACHMENTS -->
+            <div class="mt-[15px]">
+              <p class="font-[600] mb-[5px]">
+                Attachments
+                <span
+                  :class="taskDetails?.files?.length >= 10 ? 'text-red-500' : ''"
+                  class="text-[14px] font-[400] text-[#AFAFAF]"
+                >
+                  {{ taskDetails.files?.length }}/10 files
+                </span>
+              </p>
+              <UploadBtn
+                @upload="handleFileUpload"
+                @remove="removeFile"
+                @open="openImageInNewTab"
+                :files="taskDetails?.files"
+                :mode="mode"
+              />
+            </div>
           </div>
+          <!-- RIGHT SECTION -->
           <div class="flex flex-col w-[30%] mobile-L:w-[100%] mobile-L:mt-[14px] h-[94%]">
+            <!-- ASSIGNEE -->
             <div class="flex flex-col h-[45%] py-[10px] mb-[10px]">
               <p class="font-[650]">Assignees</p>
               <textarea
@@ -286,12 +344,13 @@ function closeModal() {
               class="itbkk-button itbkk-button-confirm flex w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-600"
               :class="isDisable ? 'opacity-50' : ''"
               @click="confirmHandeler"
-              :disabled="isDisable"
+              :disabled="isDisable || isLoading"
               v-show="mode !== 'read'"
             >
-              <div class="m-[auto] disabled">
+              <div v-if="!isLoading" class="m-[auto] disabled">
                 {{ mode !== "read" ? "Save" : "Ok" }}
               </div>
+              <BtnSpinner v-else class="m-[auto]" />
             </button>
             <div
               class="itbkk-button itbkk-button-cancel flex w-[80px] h-[40px] font-[600] text-gary-800 bg bg-gray-200 hover:bg-gray-300"

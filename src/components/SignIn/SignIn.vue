@@ -24,7 +24,7 @@ onMounted(() => {
   statusManagement.clearAllStatus();
 });
 
-async function sumbitHandler(e) {
+async function signInHandler(e) {
   e.preventDefault();
   //CHECK
 
@@ -36,7 +36,14 @@ async function sumbitHandler(e) {
     accountStore.setToken(response.access_token, response.refresh_token);
     accountStore.setisLogin(true);
 
-    router.push("/board");
+    const invitationLogIn = localStorage.getItem("invitationLogIn");
+
+    if (invitationLogIn) {
+      router.push(invitationLogIn);
+      localStorage.removeItem("invitationLogIn");
+    } else {
+      router.push("/board");
+    }
   } else {
     alertManagement.statusHandler("error", "An error has occurred, Username or Password is incorrect");
     user.value.password = "";
@@ -55,7 +62,7 @@ async function sumbitHandler(e) {
     </div>
 
     <!-- FORM INPUT USERNAME & PASSWORD -->
-    <form class="flex flex-col gap-[15px] mt-auto h-full" :onsubmit="sumbitHandler">
+    <form class="flex flex-col gap-[15px] mt-auto h-full" :onsubmit="signInHandler">
       <div class="flex flex-col gap-[20px] mt-[20px]">
         <div class="w-auto h-[50px] rounded-lg mb-[15px]">
           <div class="flex gap-[5px]">

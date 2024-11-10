@@ -2,23 +2,23 @@
 import { useRoute } from "vue-router";
 import { ref, computed } from "vue";
 import ListCollaborator from "./ListCollaborator.vue";
+
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import CollaboratorAddModal from "./CollaboratorAddModal.vue";
 import CollaboratorModal from "./CollaboratorModal.vue";
-import {
-  addCollaborator,
-  changeAccessCollaborator,
-  getCollaborators,
-  removeCollaborator,
-} from "@/util/accountFetchUtil";
+import { changeAccessCollaborator, removeCollaborator, getCollaborators } from "@/util/accountFetchUtil";
 import { useCollaborator } from "@/store/collaborator";
 import { useAlert } from "@/store/alert";
 import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
 import { useAccount } from "@/store/account";
+import { useInvite } from "@/store/invite";
+import { addInvitation, declineInvitation, changeAccessInvitation } from "@/util/inviteApi";
+import Spinner from "../Ui/Spinner.vue";
 
 const emit = defineEmits(["cancle", "save"]);
 const route = useRoute();
 const collabStore = useCollaborator();
+const inviteStore = useInvite();
 const alertManagement = useAlert();
 const showCollaboratorModal = ref(false);
 const showDeleteModal = ref(false);
@@ -26,28 +26,35 @@ const collabDetail = ref({});
 const mode = ref("");
 const accountStore = useAccount();
 const permission_owner = computed(() => accountStore.isOwner);
+const isLoading = ref(false);
 
 async function addUserCollaborator(access, email) {
-  const response = await handleRequestWithTokenRefresh(addCollaborator, email, access, route.params.id);
+  isLoading.value = true;
+  const response = await handleRequestWithTokenRefresh(addInvitation, email, access, route.params.id);
+
   if (response.boardId) {
     const newCollab = {
       oid: response.oid,
+      status: response.status,
       accessRight: response.accessRight,
       email: response.collaboratorEmail,
       name: response.collaboratorName,
     };
     collabStore.addNewCollaborator(newCollab);
     closeAddModal();
-    alertManagement.statusHandler("success", "You add new Collaborator successfull");
+    alertManagement.statusHandler("success", "You Send invite to Collaborator successfull");
   } else if (response.status === 409) {
     alertManagement.statusHandler("error", "This user email already be collaborator");
   } else if (response.status === 404) {
-    alertManagement.statusHandler("error", "The user does not exit");
+    alertManagement.statusHandler("error", "The user does not exist");
   } else if (response.status === 403) {
     closeAddModal();
+
     alertManagement.statusHandler("error", "You don't have permission to add board collaborator");
   }
+  isLoading.value = false;
 }
+
 function closeAddModal(isClose) {
   showCollaboratorModal.value = isClose;
 }
@@ -57,55 +64,63 @@ function deleteModalHandler(collaboratorDetail) {
   mode.value = "delete";
   showDeleteModal.value = true;
 }
-function closeModal(isClose) {
-  if (mode.value === "edit") {
-    console.log("collab from edit", collabDetail.value);
-    const oldAccess = collabDetail.value.accessRight === "READ" ? "WRITE" : "READ";
-    collabStore.changeAccess(collabDetail.value.oid, oldAccess);
-  }
+function closeModal(isClose, oid, collabDetail) {
   collabDetail.value = {};
+  mode.value = "";
   showDeleteModal.value = isClose;
+
+  const accessRight = collabDetail.accessRight === "WRITE" ? "READ" : "WRITE";
+  collabStore.changeAccess(oid, accessRight);
 }
 
 async function confirmHandeler(oid, collabDetail) {
-  if (mode.value === "delete") {
-    const response = await handleRequestWithTokenRefresh(removeCollaborator, route.params.id, oid);
-    if (response.accessRight) {
-      collabStore.deleteCollaborator(oid);
-      showDeleteModal.value = false;
-      collabDetail.value = {};
-      alertManagement.statusHandler("success", "remove the collaborator from the table");
+  let response;
+  const isInvitation = collabDetail.status === "PENDING";
+
+  if (mode.value === "delete" || mode.value === "leave") {
+    response = isInvitation
+      ? await handleRequestWithTokenRefresh(declineInvitation, route.params.id, oid)
+      : await handleRequestWithTokenRefresh(removeCollaborator, route.params.id, oid);
+
+    if (response.ok) {
+      alertManagement.statusHandler(
+        "success",
+        isInvitation ? "Invitation declined successfully!" : "Collaborator removed from the board."
+      );
     } else if (response.status === 404) {
-      alertManagement.statusHandler("error", `${collabDetail.value.collaboratorName} is not a collaborator`);
-      showDeleteModal.value = false;
-      collabDetail.value = {};
+      alertManagement.statusHandler("error", ` not a collaborator.`);
     } else if (response.status === 403) {
-      alertManagement.statusHandler("error", `You do not have permission to remove collaborator`);
+      alertManagement.statusHandler("error", "You do not have permission to remove this collaborator.");
     } else {
-      alertManagement.statusHandler("error", `There is a problem please try again later`);
+      alertManagement.statusHandler("success", "Collaborator removed from the board.");
     }
-  } else {
-    const oldAccess = collabDetail.accessRight === "READ" ? "WRITE" : "READ";
-    const response = await handleRequestWithTokenRefresh(changeAccessCollaborator, route.params.id, collabDetail, oid);
+
+    collabStore.deleteCollaborator(oid);
+    showDeleteModal.value = false;
+    collabDetail.value = {};
+  }
+
+  const newAccessRight = collabDetail.accessRight === "WRITE" ? "WRITE" : "READ";
+
+  if (mode.value !== "delete" && mode.value !== "leave") {
+    response = isInvitation
+      ? await handleRequestWithTokenRefresh(changeAccessInvitation, route.params.id, oid, newAccessRight)
+      : await handleRequestWithTokenRefresh(changeAccessCollaborator, route.params.id, collabDetail, oid);
+
     if (response.accessRight) {
-      collabStore.changeAccess(oid, collabDetail.accessRight);
-      console.log("collabList", collabStore.getCollaborator());
-      showDeleteModal.value = false;
-      collabDetail.value = {};
-      alertManagement.statusHandler("success", "Change access right successfully");
-    } else if (response.status === 404) {
-      collabStore.changeAccess(oid, oldAccess); //ทำกันไว้กรณีที่ backe end ทำไม่สำเร็จก็จะ set access เดิมกลับเข้าไป
-      alertManagement.statusHandler("error", `${collabDetail.value.collaboratorName} is not a collaborator`);
-      showDeleteModal.value = false;
-      collabDetail.value = {};
+      if (isInvitation) {
+        inviteStore.changeAccess(oid, "WRITE");
+      } else {
+        collabStore.changeAccess(oid, newAccessRight);
+      }
+
+      alertManagement.statusHandler("success", "Access right changed successfully.");
     } else if (response.status === 403) {
-      collabStore.changeAccess(oid, oldAccess);
-      alertManagement.statusHandler("error", `You do not have permission to remove collaborator`);
-    } else {
-      collabStore.changeAccess(oid, oldAccess);
-      alertManagement.statusHandler("error", `There is a problem please try again later`);
+      alertManagement.statusHandler("error", "Access denined you don't have permission to do this.");
     }
   }
+
+  showDeleteModal.value = false;
 }
 
 function editModalHandler(collaboratorDetail) {
@@ -113,9 +128,15 @@ function editModalHandler(collaboratorDetail) {
   mode.value = "edit";
   showDeleteModal.value = true;
 }
+function leaveModalHandler(collaboratorDetail) {
+  collabDetail.value = collaboratorDetail;
+  mode.value = "leave";
+  showDeleteModal.value = true;
+}
 </script>
 
 <template>
+  <Spinner v-if="isLoading" />
   <Teleport to="body" v-if="showCollaboratorModal">
     <CollaboratorAddModal @cancle="closeAddModal" @save="addUserCollaborator" />
   </Teleport>
@@ -124,11 +145,11 @@ function editModalHandler(collaboratorDetail) {
     <ToolTipOwnerBtn>
       <button
         :disabled="!permission_owner"
-        :class="!permission_owner ? 'disabled' : ''"
+        :class="!permission_owner ? 'disabled opacity-50' : ''"
         @click="showCollaboratorModal = !showCollaboratorModal"
         class="bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
       >
-        Add Collaborator
+        Invite Collaborator
       </button>
     </ToolTipOwnerBtn>
   </div>
@@ -138,7 +159,7 @@ function editModalHandler(collaboratorDetail) {
   </Teleport>
 
   <div>
-    <ListCollaborator @delete="deleteModalHandler" @edit="editModalHandler" />
+    <ListCollaborator @delete="deleteModalHandler" @edit="editModalHandler" @leave="leaveModalHandler" />
   </div>
 </template>
 

@@ -124,7 +124,7 @@ export async function getCollaboratorsByCollabId(boardId, collabId) {
   }
 }
 
-export async function addCollaborator(email, access, boardId) {
+export async function addCollaborator(boardId) {
   const token = getToken();
 
   try {
@@ -134,10 +134,6 @@ export async function addCollaborator(email, access, boardId) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email: email,
-        accessRight: access,
-      }),
     });
     if (response.ok) {
       const responseData = await response.json();

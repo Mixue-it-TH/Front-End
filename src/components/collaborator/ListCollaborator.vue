@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import { getCollaborators } from "@/util/accountFetchUtil";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import { useStatus } from "@/store/status.js";
@@ -10,26 +10,50 @@ import { useCollaborator } from "@/store/collaborator";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
 
-const emit = defineEmits(["delete", "edit"]);
+const emit = defineEmits(["delete", "edit", "leave"]);
 const accountStore = useAccount();
 const collabStore = useCollaborator();
 const route = useRoute();
 const router = useRouter();
-const access = ref(""); //ใส่เป็นค่า default ไปก่อนค่อยกลับมาแก้
+const access = ref("");
 const permission_owner = computed(() => accountStore.isOwner);
+const permission = computed(() => accountStore.permission);
 
 onMounted(async () => {
   const collaboratorList = await handleRequestWithTokenRefresh(getCollaborators, route.params.id);
+
   if (collaboratorList.collaborators) {
-    collabStore.setCollaborator(collaboratorList.collaborators);
+    collabStore.setCollaborator(collaboratorList.collaborators, collaboratorList.invitations);
   }
+
   if (collaboratorList?.status === 403) {
     router.push("/board");
   }
 });
 
 function changeAccessRight(collabDetail) {
+  collabStore.changeAccess(collabDetail.oid, collabDetail.accessRight);
   emit("edit", collabDetail);
+}
+
+function collabUserHandler(userDetail) {
+  if (accountStore.getData().email === userDetail.email) {
+    emit("leave", userDetail);
+  } else {
+    emit("delete", userDetail);
+  }
+}
+
+function handlerToolTips() {
+  const leaveAccess = collabStore.getCollaborator().find((collab) => collab.oid === accountStore.getData().oid);
+  if (leaveAccess) {
+    if (!permission.value) {
+      accountStore.permission = true;
+    }
+    return false;
+  } else {
+    return true;
+  }
 }
 </script>
 
@@ -66,6 +90,7 @@ function changeAccessRight(collabDetail) {
             <div class="w-[35%]">
               <p class="itbkk-status-name text-center">
                 {{ slotprop.job.name }}
+                <span v-if="slotprop.job?.status" class="text-red-500 font-[500]">(pending invite)</span>
               </p>
             </div>
 
@@ -76,41 +101,41 @@ function changeAccessRight(collabDetail) {
             </div>
 
             <div class="w-[20%] text-center">
-              <ToolTipOwnerBtn class="w-full">
+              <TooltipBtn :access="!permission_owner && accountStore.getData().email !== slotprop.job.email">
                 <select
-                  @change="changeAccessRight(slotprop.job)"
                   v-model="slotprop.job.accessRight"
-                  :disabled="!permission_owner"
-                  :class="!permission_owner ? 'disabled' : ''"
-                  class="border p-2 rounded text-center w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                  @change="changeAccessRight(slotprop.job)"
+                  :disabled="!permission_owner && accountStore.getData().email !== slotprop.job.email"
+                  class="w-full text-white bg-black border-2 border-gray-300 rounded-lg px-4 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
                 >
-                  <option :value="slotprop.job.accessRight">
-                    {{ slotprop.job.accessRight }}
-                  </option>
-                  <option :value="slotprop.job.accessRight === 'WRITE' ? 'READ' : 'WRITE'">
-                    {{ slotprop.job.accessRight === "WRITE" ? "READ" : "WRITE" }}
-                  </option>
+                  <option :value="'WRITE'">WRITE</option>
+                  <option :value="'READ'">READ</option>
                 </select>
-              </ToolTipOwnerBtn>
+              </TooltipBtn>
             </div>
 
             <div class="w-[10%] flex justify-center">
-              <ToolTipOwnerBtn>
+              <TooltipBtn :access="!permission_owner && accountStore.getData().email !== slotprop.job.email">
                 <div class="flex gap-4 justify-center">
                   <button
-                    @click="emit('delete', slotprop.job)"
-                    :disabled="!permission_owner"
-                    :class="!permission_owner ? 'disabled' : ''"
+                    @click="collabUserHandler(slotprop.job)"
+                    :disabled="!permission_owner && accountStore.getData().email !== slotprop.job.email"
+                    :class="
+                      !permission_owner && accountStore.getData().email !== slotprop.job.email
+                        ? 'disabled opacity-40'
+                        : ''
+                    "
                     class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-lg hover:scale-105 transition duration-200 ease-in-out border border-transparent"
                   >
-                    Remove
+                    {{ accountStore.getData().oid === slotprop.job.oid ? "Leave" : "Remove" }}
                   </button>
                 </div>
-              </ToolTipOwnerBtn>
+              </TooltipBtn>
             </div>
           </div>
         </template>
       </ListModel>
+
       <div
         v-else
         class="w-[100%] border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] min-h-[45px] flex items-center justify-center"
@@ -121,5 +146,3 @@ function changeAccessRight(collabDetail) {
   </div>
   <RouterView />
 </template>
-
-<style scoped></style>
