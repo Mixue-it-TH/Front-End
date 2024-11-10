@@ -62,13 +62,14 @@ export const useTasks = defineStore("taskmanager", () => {
     const index = tasks.value.findIndex((e) => e.id === taskId);
     const currentTask = tasks.value[index];
 
-    if (updateTask.deleteFiles && Array.isArray(currentTask.files)) {
-      currentTask.files.splice(0, updateTask.deleteFiles.length);
+    if (updateTask.deleteFiles && Array.isArray(currentTask?.files)) {
+      currentTask.files.splice(0, updateTask.deleteTask?.length);
     }
 
     if (updateTask.newFiles) {
       currentTask.files = [...currentTask.files, ...updateTask.newFiles];
     }
+
     tasks.value[index] = { ...currentTask, ...updateTask };
 
     const originalIndex = originalTasks.value.findIndex((e) => e.id === taskId);
@@ -77,12 +78,12 @@ export const useTasks = defineStore("taskmanager", () => {
         originalTasks.value[originalIndex].files.splice(0, updateTask.deleteFiles.length);
       }
 
-      if (updateTask.newFiles) {
-        originalTasks.value[originalIndex].files = [
-          ...originalTasks.value[originalIndex].files,
-          ...updateTask.newFiles,
-        ];
-      }
+      // if (updateTask.newFiles) {
+      //   originalTasks.value[originalIndex].files = [
+      //     ...originalTasks.value[originalIndex].files,
+      //     ...updateTask.newFiles,
+      //   ];
+      // }
 
       originalTasks.value[originalIndex] = {
         ...originalTasks.value[originalIndex],

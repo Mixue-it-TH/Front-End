@@ -147,6 +147,7 @@ async function confirmHandeler() {
       alertManagement.statusHandler("error", "The requested task does not exist");
     }
     closeModal();
+    isLoading.value = false;
     return;
   }
 }

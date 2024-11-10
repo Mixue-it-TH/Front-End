@@ -13,6 +13,7 @@ import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
 import { useAccount } from "@/store/account";
 import { useInvite } from "@/store/invite";
 import { addInvitation, declineInvitation, changeAccessInvitation } from "@/util/inviteApi";
+import Spinner from "../Ui/Spinner.vue";
 
 const emit = defineEmits(["cancle", "save"]);
 const route = useRoute();
@@ -25,12 +26,10 @@ const collabDetail = ref({});
 const mode = ref("");
 const accountStore = useAccount();
 const permission_owner = computed(() => accountStore.isOwner);
-
-// const onwerDetails = accountStore.getData();
-// const inviteStore = useInvite();
-// console.log(inviteStore.getInvitations());
+const isLoading = ref(false);
 
 async function addUserCollaborator(access, email) {
+  isLoading.value = true;
   const response = await handleRequestWithTokenRefresh(addInvitation, email, access, route.params.id);
 
   if (response.boardId) {
@@ -53,6 +52,7 @@ async function addUserCollaborator(access, email) {
 
     alertManagement.statusHandler("error", "You don't have permission to add board collaborator");
   }
+  isLoading.value = false;
 }
 
 function closeAddModal(isClose) {
@@ -64,10 +64,13 @@ function deleteModalHandler(collaboratorDetail) {
   mode.value = "delete";
   showDeleteModal.value = true;
 }
-function closeModal(isClose) {
-  collabDetail.value = {}; // รีเซ็ตค่าของ collabDetail
-  mode.value = ""; // รีเซ็ตค่าของ mode
+function closeModal(isClose, oid, collabDetail) {
+  collabDetail.value = {};
+  mode.value = "";
   showDeleteModal.value = isClose;
+
+  const accessRight = collabDetail.accessRight === "WRITE" ? "READ" : "WRITE";
+  collabStore.changeAccess(oid, accessRight);
 }
 
 async function confirmHandeler(oid, collabDetail) {
@@ -78,11 +81,6 @@ async function confirmHandeler(oid, collabDetail) {
     response = isInvitation
       ? await handleRequestWithTokenRefresh(declineInvitation, route.params.id, oid)
       : await handleRequestWithTokenRefresh(removeCollaborator, route.params.id, oid);
-
-    // ตรวจสอบค่าของ response ที่ได้รับ
-    console.log("Response:", response);
-    console.log("Response status:", response.status); // ตรวจสอบสถานะของ response
-    console.log("Response OK:", response.ok); // ตรวจสอบว่า response.ok เป็น true หรือไม่
 
     if (response.ok) {
       alertManagement.statusHandler(
@@ -102,22 +100,23 @@ async function confirmHandeler(oid, collabDetail) {
     collabDetail.value = {};
   }
 
-  const newAccessRight = collabDetail.accessRight === "WRITE" ? "READ" : "WRITE";
+  const newAccessRight = collabDetail.accessRight === "WRITE" ? "WRITE" : "READ";
 
   if (mode.value !== "delete" && mode.value !== "leave") {
     response = isInvitation
       ? await handleRequestWithTokenRefresh(changeAccessInvitation, route.params.id, oid, newAccessRight)
       : await handleRequestWithTokenRefresh(changeAccessCollaborator, route.params.id, collabDetail, oid);
 
-    if (response.ok) {
+    if (response.accessRight) {
       if (isInvitation) {
-        inviteStore.changeAccess(oid, newAccessRight);
+        inviteStore.changeAccess(oid, "WRITE");
       } else {
         collabStore.changeAccess(oid, newAccessRight);
       }
+
       alertManagement.statusHandler("success", "Access right changed successfully.");
-    } else {
-      alertManagement.statusHandler("success", "Access right changed successfully.");
+    } else if (response.status === 403) {
+      alertManagement.statusHandler("error", "Access denined you don't have permission to do this.");
     }
   }
 
@@ -137,6 +136,7 @@ function leaveModalHandler(collaboratorDetail) {
 </script>
 
 <template>
+  <Spinner v-if="isLoading" />
   <Teleport to="body" v-if="showCollaboratorModal">
     <CollaboratorAddModal @cancle="closeAddModal" @save="addUserCollaborator" />
   </Teleport>

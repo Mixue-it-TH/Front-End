@@ -101,18 +101,21 @@ function handlerToolTips() {
             </div>
 
             <div class="w-[20%] text-center">
-              <select
-                v-model="slotprop.job.accessRight"
-                @change="changeAccessRight(slotprop.job)"
-                class="w-[80%] text-white bg-black border-2 border-gray-300 rounded-lg px-4 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-              >
-                <option :value="'WRITE'">WRITE</option>
-                <option :value="'READ'">READ</option>
-              </select>
+              <TooltipBtn :access="!permission_owner && accountStore.getData().email !== slotprop.job.email">
+                <select
+                  v-model="slotprop.job.accessRight"
+                  @change="changeAccessRight(slotprop.job)"
+                  :disabled="!permission_owner && accountStore.getData().email !== slotprop.job.email"
+                  class="w-full text-white bg-black border-2 border-gray-300 rounded-lg px-4 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                >
+                  <option :value="'WRITE'">WRITE</option>
+                  <option :value="'READ'">READ</option>
+                </select>
+              </TooltipBtn>
             </div>
 
             <div class="w-[10%] flex justify-center">
-              <TooltipBtn :access="handlerToolTips(slotprop.job)">
+              <TooltipBtn :access="!permission_owner && accountStore.getData().email !== slotprop.job.email">
                 <div class="flex gap-4 justify-center">
                   <button
                     @click="collabUserHandler(slotprop.job)"

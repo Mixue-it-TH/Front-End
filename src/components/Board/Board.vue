@@ -68,7 +68,7 @@ const color = randomColor();
     <div class="flex flex-col h-[50%] px-[15px] py-[10px] pb-[20px]">
       <div>
         <TooltipBtn :data="board?.name" :access="true">
-          <div class="itbkk-board-name font-bold mb-[5px] text-nowrap">
+          <div class="itbkk-board-name font-bold mb-[5px] text-nowrap text-left">
             {{ trimText(board?.name, 30) }}
             <span v-if="board?.status" class="text-red-500">(pending invite)</span>
           </div>

@@ -15,8 +15,6 @@ const props = defineProps({
     default: false,
   },
 });
-
-console.log(props.isLoading);
 </script>
 
 <template>

@@ -8,8 +8,6 @@ const props = defineProps({
     type: String,
   },
 });
-// console.log(props.objectDetail.name);
-// console.log(props.objectDetail.oid);
 </script>
 
 <template>
@@ -31,7 +29,7 @@ const props = defineProps({
           class="itbkk-message border border-gray-300 min-h-[120px] px-[15px] py-[10px] break-all"
         >
           Do you want to change access right of "{{ objectDetail.name }}" to
-          {{ objectDetail.access_right === "READ" ? "READ" : "WRITE" }}
+          {{ objectDetail.accessRight === "READ" ? "READ" : "WRITE" }}
         </div>
 
         <div v-else class="itbkk-message border border-gray-300 min-h-[120px] px-[15px] py-[10px] break-all">
@@ -48,7 +46,7 @@ const props = defineProps({
           </div>
           <div
             class="itbkk-button-cancel flex items-center justify-center h-[50px] w-[100px] text-white bg-red-500 rounded-[5px]"
-            @click="$emit('cancel', false)"
+            @click="$emit('cancel', false, objectDetail.oid, objectDetail)"
           >
             <button class="w-full h-full">Cancel</button>
           </div>

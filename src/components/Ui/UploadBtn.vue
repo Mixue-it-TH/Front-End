@@ -2,7 +2,8 @@
 import { ref } from "vue";
 import formatFileSize from "@/compasable/formatFileSize";
 import trimText from "@/compasable/trimText";
-import TooltipBtn from "./TooltipBtn.vue";
+import isImageFile from "@/compasable/isImageFile";
+import getFileType from "@/compasable/getFileType";
 
 const emit = defineEmits(["upload", "remove", "open"]);
 
@@ -15,8 +16,6 @@ const props = defineProps({
     type: String,
   },
 });
-
-console.log(props.files);
 
 const MAX_FILES = 10;
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -128,11 +127,11 @@ function handleFileUpload(event) {
             <div class="w-[35px] h-[25px] overflow-hidden mr-2">
               <img
                 v-if="file.previewUrl || file.url"
-                :src="file.previewUrl ? file.previewUrl : file.url"
+                :src="isImageFile(file.name) ? (file.previewUrl ? file.previewUrl : file.url) : getFileType(file.name)"
                 class="w-full h-full object-cover mr-2"
               />
+              <img v-else="!file.previewUrl" :src="getFileType(file.name)" class="w-full h-full object-cover mr-2" />
             </div>
-            <span v-if="!file.previewUrl && !file.url" class="mr-2">📎</span>
             <span class="text-[14px]">{{ trimText(file.name, 20) }} ({{ formatFileSize(file.size) }})</span>
           </div>
           <button
