@@ -19,7 +19,7 @@ const permission = computed(() => accountStore.permission);
 </script>
 
 <template>
-  <div v-if="!permission || access" class="tooltip w-full" :data-tip="data">
+  <div v-if="!permission || access" class="tooltip" :data-tip="data">
     <slot></slot>
   </div>
 

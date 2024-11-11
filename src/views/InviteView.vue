@@ -22,7 +22,7 @@ onMounted(async () => {
   const boardId = route.params.id;
   const data = await handleRequestWithTokenRefresh(getInvitationByBoardId, boardId);
 
-  if (data.status === 404) {
+  if (data.status === 404 || data.status === 403) {
     if (token) router.push("/board");
     if (!token) router.go(-1);
     localStorage.setItem("isPrivate", "Sorry, we couldn't find the invitation to this board.");

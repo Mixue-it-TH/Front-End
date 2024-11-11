@@ -61,6 +61,7 @@ export const useTasks = defineStore("taskmanager", () => {
   function editTask(taskId, updateTask) {
     const index = tasks.value.findIndex((e) => e.id === taskId);
     const currentTask = tasks.value[index];
+    if (currentTask.files === undefined) currentTask.files = [];
 
     if (updateTask.deleteFiles && Array.isArray(currentTask?.files)) {
       currentTask.files.splice(0, updateTask.deleteTask?.length);

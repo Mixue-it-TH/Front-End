@@ -91,9 +91,10 @@ function handleFileUpload(event) {
   <div class="flex flex-col">
     <input type="file" multiple @change="handleFileUpload" ref="fileInput" class="hidden" />
     <button
+      v-if="mode === 'edit'"
       @click="triggerFileUpload"
-      :class="mode !== 'edit' ? 'opacity-50 cursor-not-allowed' : ''"
-      :disabled="mode !== 'edit'"
+      :class="mode !== 'edit' ? 'opacity-50 cursor-not-allowed ' : ''"
+      :disabled="mode !== 'edit' || files.length === 10"
       class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center justify-center w-[150px] h-[30px]"
     >
       <svg
