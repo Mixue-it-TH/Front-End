@@ -51,7 +51,7 @@ async function declineHandler() {
     <p class="text-md mb-6">
       to collaborate with
       <strong class="text-red-500">{{ invitation.accessRight }}</strong>
-      access on the
+      access right on
       <strong>{{ invitation.boardName }}</strong>
       board.
     </p>
