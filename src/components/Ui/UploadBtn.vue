@@ -112,7 +112,9 @@ function handleFileUpload(event) {
       </svg>
       <div>Attach</div>
     </button>
-    <p v-if="files.length >= MAX_FILES" class="text-red-500 mt-2">You have reached the maximum file limit.</p>
+    <p v-if="files.length >= MAX_FILES && mode !== 'read'" class="text-red-500 mt-2">
+      You have reached the maximum file limit.
+    </p>
 
     <ul v-if="files.length" class="mt-4 w-[95%]">
       <ul class="flex flex-row overflow-x-auto space-x-4">
