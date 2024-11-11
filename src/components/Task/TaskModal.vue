@@ -250,6 +250,7 @@ function closeModal() {
               <p class="font-[600] mb-[5px]">
                 Attachments
                 <span
+                  v-if="mode !== 'read'"
                   :class="taskDetails?.files?.length >= 10 ? 'text-red-500' : ''"
                   class="text-[14px] font-[400] text-[#AFAFAF]"
                 >
