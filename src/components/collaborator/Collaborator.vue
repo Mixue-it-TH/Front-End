@@ -85,14 +85,16 @@ async function confirmHandeler(oid, collabDetail) {
     if (response.ok) {
       alertManagement.statusHandler(
         "success",
-        isInvitation ? "Invitation declined successfully!" : "Collaborator removed from the board."
+        isInvitation
+          ? `${collabDetail.name} is removed from the collaborator table`
+          : "Collaborator removed from the board."
       );
     } else if (response.status === 404) {
-      alertManagement.statusHandler("error", ` not a collaborator.`);
+      alertManagement.statusHandler("error", "Not a collaborator.");
     } else if (response.status === 403) {
       alertManagement.statusHandler("error", "You do not have permission to remove this collaborator.");
     } else {
-      alertManagement.statusHandler("success", "Collaborator removed from the board.");
+      alertManagement.statusHandler("error", "An error occurred. Please try again.");
     }
 
     collabStore.deleteCollaborator(oid);
@@ -107,7 +109,7 @@ async function confirmHandeler(oid, collabDetail) {
       ? await handleRequestWithTokenRefresh(changeAccessInvitation, route.params.id, oid, newAccessRight)
       : await handleRequestWithTokenRefresh(changeAccessCollaborator, route.params.id, collabDetail, oid);
 
-    if (response.accessRight) {
+    if (response && response.accessRight) {
       if (isInvitation) {
         inviteStore.changeAccess(oid, "WRITE");
       } else {
@@ -115,8 +117,8 @@ async function confirmHandeler(oid, collabDetail) {
       }
 
       alertManagement.statusHandler("success", "Access right changed successfully.");
-    } else if (response.status === 403) {
-      alertManagement.statusHandler("error", "Access denined you don't have permission to do this.");
+    } else if (response && response.status === 403) {
+      alertManagement.statusHandler("error", "Access denied. You don't have permission to do this.");
     }
   }
 
