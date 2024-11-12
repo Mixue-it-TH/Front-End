@@ -29,6 +29,9 @@ onMounted(async () => {
   if (collaboratorList?.status === 403) {
     router.push("/board");
   }
+
+  console.log(accountStore.getData());
+  console.log(collaboratorList.collaborators);
 });
 
 function changeAccessRight(collabDetail) {
@@ -106,7 +109,7 @@ function handlerToolTips() {
                   v-model="slotprop.job.accessRight"
                   @change="changeAccessRight(slotprop.job)"
                   :disabled="!permission_owner && accountStore.getData().email !== slotprop.job.email"
-                  class="w-full text-white bg-black border-2 border-gray-300 rounded-lg px-4 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  class="text-white bg-black border-2 border-gray-300 rounded-lg px-4 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
                 >
                   <option :value="'WRITE'">WRITE</option>
                   <option :value="'READ'">READ</option>
@@ -127,7 +130,8 @@ function handlerToolTips() {
                     "
                     class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-lg hover:scale-105 transition duration-200 ease-in-out border border-transparent"
                   >
-                    {{ accountStore.getData().oid === slotprop.job.oid ? "Leave" : "Cancel" }}
+                    {{ slotprop.job.status === "PENDING" ? "Cancel" : "Leave" }}
+                    <!-- {{ accountStore.getData().oid === slotprop.job.oid ? "Leave" : "Cancel" }} -->
                   </button>
                 </div>
               </TooltipBtn>
