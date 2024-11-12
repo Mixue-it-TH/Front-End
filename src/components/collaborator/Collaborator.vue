@@ -94,7 +94,7 @@ async function confirmHandeler(oid, collabDetail) {
     } else if (response.status === 403) {
       alertManagement.statusHandler("error", "You do not have permission to remove this collaborator.");
     } else {
-      alertManagement.statusHandler("error", "An error occurred. Please try again.");
+      alertManagement.statusHandler("success", `${collabDetail.name} is removed from the collaborator table`);
     }
 
     collabStore.deleteCollaborator(oid);

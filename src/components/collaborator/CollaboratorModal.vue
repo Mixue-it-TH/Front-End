@@ -15,13 +15,15 @@ const props = defineProps({
     <div class="flex justify-center items-center w-screen h-screen">
       <div class="fade-up flex flex-col bg bg-white w-[45%] min-w-[300px] min-h-[250px] rounded-[7px]">
         <div class="text-[28px] font-[600] h-[40%] px-[15px] py-[10px]">
-          {{ mode === "delete" ? "Cancel Collaborator" : mode === "edit" ? "Change Access Right" : "Leave Board" }}
+          {{ mode === "delete" ? "Remove Collaborator" : mode === "edit" ? "Change Access Right" : "Leave Board" }}
         </div>
         <div
           v-if="mode === 'delete'"
           class="itbkk-message border border-gray-300 min-h-[120px] px-[15px] py-[10px] break-all"
         >
-          Do you want to cancel invitation to "{{ objectDetail.name }}"
+          Do you want to
+          <span>{{ objectDetail.status ? "cancel" : "remove" }}</span>
+          invitation to "{{ objectDetail.name }}"
         </div>
 
         <div
