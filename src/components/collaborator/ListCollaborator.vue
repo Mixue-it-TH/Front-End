@@ -1,21 +1,18 @@
 <script setup>
 import { computed, ref, onMounted, watch } from "vue";
 import { getCollaborators } from "@/util/accountFetchUtil";
-import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
-import { useStatus } from "@/store/status.js";
+import { RouterView, useRoute, useRouter } from "vue-router";
 import ListModel from "../Ui/ListModel.vue";
 import TooltipBtn from "../Ui/TooltipBtn.vue";
 import { useAccount } from "@/store/account";
 import { useCollaborator } from "@/store/collaborator";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
-import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
 
 const emit = defineEmits(["delete", "edit", "leave"]);
 const accountStore = useAccount();
 const collabStore = useCollaborator();
 const route = useRoute();
 const router = useRouter();
-const access = ref("");
 const permission_owner = computed(() => accountStore.isOwner);
 const permission = computed(() => accountStore.permission);
 
@@ -29,9 +26,6 @@ onMounted(async () => {
   if (collaboratorList?.status === 403) {
     router.push("/board");
   }
-
-  console.log(accountStore.getData());
-  console.log(collaboratorList.collaborators);
 });
 
 function changeAccessRight(collabDetail) {
@@ -44,18 +38,6 @@ function collabUserHandler(userDetail) {
     emit("leave", userDetail);
   } else {
     emit("delete", userDetail);
-  }
-}
-
-function handlerToolTips() {
-  const leaveAccess = collabStore.getCollaborator().find((collab) => collab.oid === accountStore.getData().oid);
-  if (leaveAccess) {
-    if (!permission.value) {
-      accountStore.permission = true;
-    }
-    return false;
-  } else {
-    return true;
   }
 }
 </script>

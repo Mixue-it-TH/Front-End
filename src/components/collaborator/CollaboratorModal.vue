@@ -21,7 +21,9 @@ const props = defineProps({
           v-if="mode === 'delete'"
           class="itbkk-message border border-gray-300 min-h-[120px] px-[15px] py-[10px] break-all"
         >
-          Do you want to cancel invitation to "{{ objectDetail.name }}"
+          Do you want to
+          <span>{{ objectDetail.status ? "cancel" : "remove" }}</span>
+          invitation to "{{ objectDetail.name }}"
         </div>
 
         <div
