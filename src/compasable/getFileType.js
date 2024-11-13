@@ -3,10 +3,10 @@ export default function getFileType(fileName) {
 
   switch (extension) {
     case "pdf":
-      return "/image/pdf-icon.png";
+      return "https://intregatedproj-sy2.s3.ap-southeast-2.amazonaws.com/pdf_icon.png";
     case "zip":
-      return "/image/zip-icon.png";
+      return "https://intregatedproj-sy2.s3.ap-southeast-2.amazonaws.com/zip_icon.png";
     default:
-      return "/image/fileicon.png";
+      return "https://intregatedproj-sy2.s3.ap-southeast-2.amazonaws.com/file_icon.png";
   }
 }
