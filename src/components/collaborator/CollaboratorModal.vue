@@ -48,7 +48,7 @@ const props = defineProps({
           </div>
           <div
             class="itbkk-button-cancel flex items-center justify-center h-[50px] w-[100px] text-white bg-red-500 rounded-[5px]"
-            @click="$emit('cancel', false, objectDetail.oid, objectDetail)"
+            @click="$emit('cancel', false, objectDetail.oid, objectDetail, mode)"
           >
             <button class="w-full h-full">Cancel</button>
           </div>
