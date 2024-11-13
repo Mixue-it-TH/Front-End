@@ -64,13 +64,14 @@ function deleteModalHandler(collaboratorDetail) {
   mode.value = "delete";
   showDeleteModal.value = true;
 }
-function closeModal(isClose, oid, collabDetail) {
+function closeModal(isClose, oid, collabDetail, mode_pram) {
+  if (mode_pram === "edit") {
+    const accessRight = collabDetail.accessRight === "WRITE" ? "READ" : "WRITE";
+    collabStore.changeAccess(oid, accessRight);
+  }
   collabDetail.value = {};
   mode.value = "";
   showDeleteModal.value = isClose;
-
-  const accessRight = collabDetail.accessRight === "WRITE" ? "READ" : "WRITE";
-  collabStore.changeAccess(oid, accessRight);
 }
 
 async function confirmHandeler(oid, collabDetail) {
