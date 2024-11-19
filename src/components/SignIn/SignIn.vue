@@ -8,7 +8,8 @@ import { useAlert } from "@/store/alert";
 import { login } from "@/util/accountFetchUtil";
 import toggleIconShowHidePassword from "@/compasable/toggleIconShowHidePassword";
 import TooltipBtn from "../Ui/TooltipBtn.vue";
-
+import { msalService } from "@/ms-config/useAuth";
+import { state } from "@/ms-config/msal";
 const taskManagement = useTasks();
 const statusManagement = useStatus();
 const accountStore = useAccount();
@@ -16,12 +17,39 @@ const alertManagement = useAlert();
 const user = ref({ username: "itbkk.olarn", password: "ip23/OLA" });
 const isInvalid = ref();
 const passwordField = ref(null);
+const msal = msalService();
+let isInitialized = false;
 
-onMounted(() => {
+const initialize = async () => {
+  if (isInitialized) return; // ป้องกันการเรียกซ้ำ
+  try {
+    await msal.initialize();
+    isInitialized = true;
+    // console.log("MSAL initialized successfully.");
+  } catch (error) {
+    console.error("MSAL initialization error:", error);
+  }
+};
+
+const loginPopup = async (e) => {
+  try {
+    await msal.login(); // ทำการล็อกอินผ่าน popup
+    alertManagement.statusHandler("success", "Login successful!");
+  } catch (error) {
+    console.error("Login popup error:", error);
+    alertManagement.statusHandler("error", "An error occurred during login.");
+  }
+};
+
+onMounted(async () => {
   localStorage.removeItem("token");
   localStorage.removeItem("refreshToken");
   taskManagement.clearAllTask();
   statusManagement.clearAllStatus();
+  await initialize();
+  await msal.handleRedirect();
+  // const msToken = await msal.getToken();
+  // accountStore.setToken(msToken, null);
 });
 
 async function signInHandler(e) {
@@ -126,6 +154,7 @@ async function signInHandler(e) {
 
         <div>
           <div
+            @click="loginPopup"
             class="flex flex-row justify-center items-center gap-[10px] cursor-pointer w-full h-[55px] border rounded-[50px] duration-150 hover:bg-gray-100"
           >
             <svg width="35" height="35" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
