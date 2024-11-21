@@ -28,6 +28,7 @@ export async function addInvitation(email, access, boardId) {
   try {
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/collabs/invitations`, {
       method: "Post",
+      credentials: "include",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

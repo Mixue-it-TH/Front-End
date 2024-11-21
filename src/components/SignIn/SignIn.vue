@@ -8,8 +8,6 @@ import { useAlert } from "@/store/alert";
 import { login } from "@/util/accountFetchUtil";
 import toggleIconShowHidePassword from "@/compasable/toggleIconShowHidePassword";
 import TooltipBtn from "../Ui/TooltipBtn.vue";
-import { msalService } from "@/ms-config/useAuth";
-import { state } from "@/ms-config/msal";
 const taskManagement = useTasks();
 const statusManagement = useStatus();
 const accountStore = useAccount();
@@ -17,39 +15,23 @@ const alertManagement = useAlert();
 const user = ref({ username: "itbkk.olarn", password: "ip23/OLA" });
 const isInvalid = ref();
 const passwordField = ref(null);
-const msal = msalService();
-let isInitialized = false;
 
-const initialize = async () => {
-  if (isInitialized) return; // ป้องกันการเรียกซ้ำ
-  try {
-    await msal.initialize();
-    isInitialized = true;
-    // console.log("MSAL initialized successfully.");
-  } catch (error) {
-    console.error("MSAL initialization error:", error);
-  }
-};
-
-const loginPopup = async (e) => {
-  try {
-    await msal.login(); // ทำการล็อกอินผ่าน popup
-    alertManagement.statusHandler("success", "Login successful!");
-  } catch (error) {
-    console.error("Login popup error:", error);
-    alertManagement.statusHandler("error", "An error occurred during login.");
-  }
-};
+function loginPopup() {
+  localStorage.setItem("msal_Login", true);
+  const redirectAfterLogin = encodeURIComponent(window.location.origin + "/login");
+  window.location.href = `${import.meta.env.VITE_LOGIN_URL}/login?redirect=${redirectAfterLogin}`;
+}
 
 onMounted(async () => {
   localStorage.removeItem("token");
   localStorage.removeItem("refreshToken");
   taskManagement.clearAllTask();
   statusManagement.clearAllStatus();
-  await initialize();
-  await msal.handleRedirect();
-  // const msToken = await msal.getToken();
-  // accountStore.setToken(msToken, null);
+  if (localStorage.getItem("msal_logout")) {
+    localStorage.removeItem("msal_logout");
+    const redirectAfterLogin = encodeURIComponent(window.location.origin + "/login");
+    window.location.href = `${import.meta.env.VITE_LOGIN_URL}/login?redirect=${redirectAfterLogin}`;
+  }
 });
 
 async function signInHandler(e) {

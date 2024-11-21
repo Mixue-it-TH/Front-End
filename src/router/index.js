@@ -65,13 +65,6 @@ const routes = [
         path: "/board/:id/collab",
         name: "collaborator",
         component: collaborator,
-        children: [
-          // {
-          //   path: ":collabId",
-          //   name: "collaboratorDetail",
-          //   component: collaboratorModal,
-          // },
-        ],
       },
     ],
   },
