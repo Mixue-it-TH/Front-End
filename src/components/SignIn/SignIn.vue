@@ -8,7 +8,6 @@ import { useAlert } from "@/store/alert";
 import { login } from "@/util/accountFetchUtil";
 import toggleIconShowHidePassword from "@/compasable/toggleIconShowHidePassword";
 import TooltipBtn from "../Ui/TooltipBtn.vue";
-
 const taskManagement = useTasks();
 const statusManagement = useStatus();
 const accountStore = useAccount();
@@ -17,11 +16,22 @@ const user = ref({ username: "itbkk.olarn", password: "ip23/OLA" });
 const isInvalid = ref();
 const passwordField = ref(null);
 
-onMounted(() => {
+function loginPopup() {
+  localStorage.setItem("msal_Login", true);
+  const redirectAfterLogin = encodeURIComponent(window.location.origin + "/login");
+  window.location.href = `${import.meta.env.VITE_LOGIN_URL}/login?redirect=${redirectAfterLogin}`;
+}
+
+onMounted(async () => {
   localStorage.removeItem("token");
   localStorage.removeItem("refreshToken");
   taskManagement.clearAllTask();
   statusManagement.clearAllStatus();
+  if (localStorage.getItem("msal_logout")) {
+    localStorage.removeItem("msal_logout");
+    const redirectAfterLogin = encodeURIComponent(window.location.origin + "/login");
+    window.location.href = `${import.meta.env.VITE_LOGIN_URL}/login?redirect=${redirectAfterLogin}`;
+  }
 });
 
 async function signInHandler(e) {
@@ -126,6 +136,7 @@ async function signInHandler(e) {
 
         <div>
           <div
+            @click="loginPopup"
             class="flex flex-row justify-center items-center gap-[10px] cursor-pointer w-full h-[55px] border rounded-[50px] duration-150 hover:bg-gray-100"
           >
             <svg width="35" height="35" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">

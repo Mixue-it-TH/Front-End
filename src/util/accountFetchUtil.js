@@ -31,6 +31,19 @@ export async function login(userName, password) {
   }
 }
 
+export async function getTokenByMicrosoftAuthen() {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_LOGIN_URL}/login/get-token`, {
+      method: "GET",
+      credentials: "include",
+    });
+    if (response.ok) {
+      const token = await response.json();
+      return token;
+    } else return response;
+  } catch (error) {}
+}
+
 export async function getTokenByRefreshToken() {
   try {
     const refreshToken = localStorage.getItem("refreshToken");
