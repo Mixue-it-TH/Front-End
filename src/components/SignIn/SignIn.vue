@@ -18,7 +18,11 @@ const passwordField = ref(null);
 
 function loginPopup() {
   localStorage.setItem("msal_Login", true);
-  const redirectAfterLogin = encodeURIComponent(window.location.origin + "/login");
+  const redirectAfterLogin = encodeURIComponent(
+    window.location.origin +
+      `${import.meta.env.VITE_GROUP_CODE !== undefined ? import.meta.env.VITE_GROUP_CODE : ""}/login`
+  );
+
   window.location.href = `${import.meta.env.VITE_LOGIN_URL}/login?redirect=${redirectAfterLogin}`;
 }
 
