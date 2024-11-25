@@ -196,7 +196,9 @@ function handleLogout(login) {
     // CHECK LOGOUT TYPE BETWEEN MICROSOFT || TRADITIONAL SYSTEM
     if (localStorage.getItem("msal_logout")) {
       localStorage.removeItem("msal_logout");
-      window.location.href = `${import.meta.env.VITE_LOGIN_URL}/logout?${window.location.origin + "/login"}`;
+      window.location.href = `${import.meta.env.VITE_LOGIN_URL}/logout?${window.location.origin}${
+        import.meta.env.VITE_GROUP_CODE !== undefined ? import.meta.env.VITE_GROUP_CODE : ""
+      }/login`;
     } else router.push("/login");
   }
 }
