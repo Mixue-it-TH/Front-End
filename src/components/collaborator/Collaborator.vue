@@ -143,7 +143,7 @@ function leaveModalHandler(collaboratorDetail) {
     <CollaboratorAddModal @cancle="closeAddModal" @save="addUserCollaborator" />
   </Teleport>
 
-  <div class="pt-[20px] flex justify-end">
+  <div class="pt-[20px] flex justify-end mobile:pt-0">
     <ToolTipOwnerBtn>
       <button
         :disabled="!permission_owner"

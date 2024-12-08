@@ -260,19 +260,19 @@ function collabPageHandle() {
   </Teleport>
   <div class="flex flex-row justify-between tablet:h-[auto] tablet:flex-col w-[100%] h-[75px] mb-[15px]0">
     <div class="flex h-[85%]">
-      <img class="mr-[10px] tablet:w-[15%] laptop:w-[100px] mobile:w-[5%] mobile-M:hidden" src="/image/SIT-logo.png" />
+      <img class="mr-[10px] tablet:w-[15%] laptop:w-[100px] mobile:w-[5%]" src="/image/SIT-logo.png" />
 
       <h1 class="text-[22px] text-gray-700 font-[800] mt-[10px]">IT-Bangmod Kradan Kanban</h1>
     </div>
-    <div class="flex mobile:flex-col tablet:justify-between gap-[15px] h-[75%]">
-      <div class="flex mobile:items-center mobile-L:flex-col">
+    <div class="flex mobile:flex-col tablet:justify-between gap-[15px] h-[75%] mobile-L:flex-col">
+      <div class="flex mobile-L:items-center mobile-L:flex-col">
         <div
           v-show="isboardSelect"
           class="itbkk-manage-status itbkk-button-home mobile-L:w-[235px] cursor-pointer hover:bg-gray-200 duration-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px] w-[200px] h-[45px] m-[7px] py-[7px] px-[5px] text-center"
           @click="toggleMode"
         >
           <div v-if="toggleManage === 'Home'" class="flex items-center justify-center gap-[10px]">
-            <h1>
+            <h1 class="">
               {{ toggleManage }}
             </h1>
             <img src="/image/home-icon.png" width="30px" />
@@ -331,11 +331,11 @@ function collabPageHandle() {
           </div>
         </div>
       </div>
-      <div class="flex items-center mobile:flex-row l gap-[10px]">
+      <div class="flex items-center gap-[10px] mobile-L:gap-56 mobile:pt-2">
         <div
           v-show="isboardSelect"
           @click="sortTask"
-          class="itbkk-status-sort bg-[#F9F9F9] hover:bg-gray-200 w-[45px] min-w-[px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px] duration-100"
+          class="itbkk-status-sort bg-[#F9F9F9] hover:bg-gray-200 w-[45px] min-w-[40px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px] duration-100"
         >
           <div v-if="sortState === 0" class="flex justify-center mt-[5px]">
             <img src="/image/up-and-down-icon.png" class="w-[30px] h-[30px]" />
@@ -351,7 +351,7 @@ function collabPageHandle() {
           <div
             v-show="isboardSelect"
             @click="permission_owner ? limitModalHandler(true) : ''"
-            class="itbkk-status-setting flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-200 duration-100 w-[45px] min-w-[40px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
+            class="itbkk-status-setting flex justify-center mobile-L:mr-7 items-center bg-[#F9F9F9] hover:bg-gray-200 duration-100 w-[45px] min-w-[40px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
           >
             <div class="flex justify-center">
               <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
@@ -359,6 +359,7 @@ function collabPageHandle() {
           </div>
         </ToolTipOwnerBtn>
       </div>
+
       <RouterLink v-if="!accountStore.getisLogin()" :to="{ name: 'login' }">
         <div class="flex btn btn-outline mt-[5px]">Login</div>
       </RouterLink>
@@ -366,7 +367,7 @@ function collabPageHandle() {
         <div
           tabindex="0"
           role="button"
-          class="btn btn-ghost btn-circle avatar flex items-center w-auto"
+          class="btn btn-ghost btn-circle avatar flex items-center w-auto mobile-L:ml-20"
           style="min-width: 170px; padding: 0 10px"
         >
           <div class="flex-shrink-0 w-[50px] h-[50px] mb-auto rounded-full overflow-hidden">
@@ -376,7 +377,7 @@ function collabPageHandle() {
               class="w-full h-full object-cover"
             />
           </div>
-          <div class="ml-2 font-inter flex-1 flex flex-col justify-center h-[50px] w-[125px]">
+          <div class="ml-2 font-inter flex-1 flex flex-col justify-center h-[50px] w-[125px] mobile:text-md">
             <div class="itbkk-fullname mt-2">
               {{ accountStore.getData()?.name }}
             </div>
@@ -399,8 +400,11 @@ function collabPageHandle() {
       </div>
     </div>
   </div>
-  <div v-if="isboardSelect" class="breadcrumbs flex justify-between text-sm overflow-visible">
-    <ul class="w-[50%]">
+  <div
+    v-if="isboardSelect"
+    class="breadcrumbs flex justify-between text-sm overflow-visible mobile:flex-wrap mobile:mt-5 mobile-M:flex-wrap mobile-M:mt-5 mobile-L:flex-wrap mobile-L:mt-5"
+  >
+    <ul class="w-[50%] mobile-L:pl-36">
       <li @click="backToPrevious"><a>HOME</a></li>
       <li>
         {{ boardName }}
@@ -408,7 +412,7 @@ function collabPageHandle() {
     </ul>
 
     <ul>
-      <div class="flex gap-[15px]">
+      <div class="flex gap-[15px] mobile-L:py-6 mobile-L:ml-6">
         <div>
           <button
             v-if="route.params.id"
@@ -421,7 +425,7 @@ function collabPageHandle() {
         <ToolTipOwnerBtn>
           <li class="border">
             <div class="itbkk-board-visibility form-control w-[120px]">
-              <label class="label cursor-pointer">
+              <label class="label cursor-pointer mobile:text-base">
                 <span>{{ visibilityToggle === false ? "private" : "public" }}</span>
 
                 <input

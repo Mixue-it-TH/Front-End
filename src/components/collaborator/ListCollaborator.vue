@@ -62,12 +62,14 @@ function handlerToolTips() {
 
 <template>
   <div>
-    <div class="mt-[20px] text-gray-700 min-w-[740px]">
-      <div class="flex justify-between items-center w-full px-5 min-h-[45px] font-medium">
+    <div class="mt-[20px] text-gray-700">
+      <div
+        class="flex justify-between items-center w-full px-5 mobile:text-sm min-h-[45px] font-medium w-[100%] mobile:px-3 mobile:gap-2"
+      >
         <div class="w-[10%] text-center">
           <p>No</p>
         </div>
-        <div class="w-[35%] text-center">
+        <div class="w-[35%] text-center mobile:w-[15%]">
           <p>Name</p>
         </div>
         <div class="w-[25%] text-center">
@@ -84,32 +86,32 @@ function handlerToolTips() {
       <ListModel :jobs="collabStore.getCollaborator()" v-if="collabStore.getCollaborator().length !== 0">
         <template #default="slotprop">
           <div
-            class="transition itbkk-item flex justify-between w-full min-h-[55px] px-[20px] py-[10px] mb-[3px] border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
+            class="transition itbkk-item w-[100%] flex justify-between w-full min-h-[55px] px-[20px] py-[10px] mb-[3px] border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl gap-1 mobile:text-xs mobile:gap-4 mobile:justify-start"
           >
-            <div class="w-[10%] text-center">
+            <div class="w-[10%] text-center mobile:w-[5%] border">
               <p>{{ slotprop.key + 1 }}</p>
             </div>
 
-            <div class="w-[35%]">
+            <div class="w-[40%] mobile:w-[20%] border border-red-500 break-words">
               <p class="itbkk-status-name text-center">
                 {{ slotprop.job.name }}
                 <span v-if="slotprop.job?.status" class="text-red-500 font-[500]">(pending invite)</span>
               </p>
             </div>
 
-            <div class="w-[25%]">
+            <div class="w-[25%] mobile:w-[20%] break-words border border-green-500">
               <p class="itbkk-status-email text-center">
                 {{ slotprop.job.email }}
               </p>
             </div>
 
-            <div class="w-[20%] text-center">
+            <div class="w-[20%] text-center border border-yellow-500">
               <TooltipBtn :access="!permission_owner && accountStore.getData().email !== slotprop.job.email">
                 <select
                   v-model="slotprop.job.accessRight"
                   @change="changeAccessRight(slotprop.job)"
                   :disabled="!permission_owner && accountStore.getData().email !== slotprop.job.email"
-                  class="text-white bg-black border-2 border-gray-300 rounded-lg px-4 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  class="mobile:w-full mobile-M:w-full mobile-L:w-full mobile:text-xs mobile-M:text-xs mobile-L:text-xs mobile:py-2 mobile-M:py-2 mobile-L:py-2 mobile:px-2 mobile-M:px-2 mobile-L:px-2 text-white bg-black border-2 border-gray-300 rounded-lg px-4 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
                 >
                   <option :value="'WRITE'">WRITE</option>
                   <option :value="'READ'">READ</option>
@@ -117,9 +119,11 @@ function handlerToolTips() {
               </TooltipBtn>
             </div>
 
-            <div class="w-[10%] flex justify-center">
+            <div class="w-[8%] flex justify-center border border-blue-500">
               <TooltipBtn :access="!permission_owner && accountStore.getData().email !== slotprop.job.email">
-                <div class="flex gap-4 justify-center">
+                <div
+                  class="flex gap-2 justify-center mobile:w-[100%] mobile:py-0 mobile:px-4 mobile-L:break-all mobile:pl-10 mobile-L:pl-10"
+                >
                   <button
                     @click="collabUserHandler(slotprop.job)"
                     :disabled="!permission_owner && accountStore.getData().email !== slotprop.job.email"
@@ -128,9 +132,15 @@ function handlerToolTips() {
                         ? 'disabled opacity-40'
                         : ''
                     "
-                    class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-lg hover:scale-105 transition duration-200 ease-in-out border border-transparent"
+                    class="bg-red-500 text-white font-medium px-2 py-1 rounded-md text-sm hover:bg-red-600 hover:shadow-md hover:scale-105 transition duration-200 ease-in-out border border-transparent"
                   >
-                    {{ slotprop.job.status === "PENDING" ? "Cancel" : "Leave" }}
+                    {{
+                      slotprop.job.status === "PENDING"
+                        ? "Cancel"
+                        : accountStore.getData().oid === slotprop.job.oid
+                        ? "Leave"
+                        : "Remove"
+                    }}
                     <!-- {{ accountStore.getData().oid === slotprop.job.oid ? "Leave" : "Cancel" }} -->
                   </button>
                 </div>

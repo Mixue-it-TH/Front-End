@@ -40,21 +40,23 @@ const props = defineProps({
     </div>
   </router-link>
 
-  <div class="mt-[20px] text-gray-700 min-w-[740px]">
-    <div class="flex justify-between items-center w-[100%] px-[20px] min-h-[45px] font-[550]">
+  <div class="mt-[20px] text-gray-700">
+    <div
+      class="flex justify-between mobile-L:px-2 mobile-L:text-xs items-center w-[100%] px-[20px] min-h-[45px] font-[550]"
+    >
       <div class="w-[10%] mobile-L:w-[5%]">
         <p>No</p>
       </div>
-      <div class="w-[37%] px-[15px]">
+      <div class="w-[37%] px-[15px] mobile-L:w-[10%]">
         <p>Title</p>
       </div>
-      <div class="w-[14%] tablet:mr-[40px]">
+      <div class="w-[14%] tablet:mr-[40px] mobile-L:w-[7%] mobile-L:pl-4">
         <p>Status</p>
       </div>
-      <div class="w-[13%]">
+      <div class="w-[13%] tablet:w-[20%]">
         <p>Attachments</p>
       </div>
-      <div class="w-[28%]">
+      <div class="w-[28%] mobile-L:pl-7">
         <p class="">Assignees</p>
       </div>
     </div>
@@ -80,36 +82,42 @@ const props = defineProps({
     <Listmodel :jobs="listTasks" v-if="listTasks.length != 0">
       <template #default="slotprop">
         <div
-          class="itbkk-item transition flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
+          class="itbkk-item transition flex justify-between w-[100%] min-h-[55px] px-[28px] mobile-L:px-4 py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
         >
           <router-link :to="{ name: 'taskDetail', params: { taskId: slotprop.job.id } }" class="w-full h-full">
             <div class="flex w-full min-h-[55px]">
-              <div class="w-[10%] mobile-L:w-[3%] font-[350]">
+              <div class="w-[10%] mobile-L:w-[3%] font-[350] mobile-L:w-[4%]">
                 <p class="m-[auto]">
                   {{ slotprop.key + 1 }}
                 </p>
               </div>
-              <div class="w-[37%]">
-                <div class="itbkk-title px-[15px] font-[430]">
+              <div class="w-[37%] mobile-L:w-[45%] mobile-L:pl-9">
+                <div class="itbkk-title font-[430]">
                   {{ slotprop.job.title }}
                 </div>
               </div>
-              <div class="w-[13%] transition-icon duration-100">
+              <div
+                class="w-[13%] mobile-L:w-[30%] mobile-L:min-w-[100px] mobile-L:ml-1 mobile-L:mb-10 mobile-L:py-1 tablet:w-[20%] flex items-center transition-icon duration-100"
+              >
                 <div
-                  class="min-w-[95px] max-w-[120px] w-[90%] rounded-[5px] py-[3px] flex items-center justify-center"
+                  class="min-w-[50px] max-w-[100px] w-[auto] rounded-[4px] py-[4px] laptop-L:py-1 laptop-L:px-2 flex items-center justify-center"
                   :style="{
                     backgroundColor: slotprop.job.status.statusColor,
                   }"
                 >
-                  <p class="itbkk-status text-white">
+                  <p class="itbkk-status text-white mobile-L:text-[10px]">
                     {{ slotprop.job.status.name }}
                   </p>
                 </div>
               </div>
-              <div class="w-[13%]">
+
+              <div class="w-[13%] b mobile-L:w-[30%] mobile-L:-auto">
                 <p class="text-center">{{ slotprop.job.files?.length ? slotprop.job.files.length : "-" }}</p>
               </div>
-              <div class="ml-[20px] w-[25%] font-[350] tablet:pl-[15px]">
+
+              <div
+                class="ml-[20px] w-[25%] font-[350] tablet:pl-[15px] mobile-L:w-[50%] mobile-L:pl-15 mobile-L:text-xs"
+              >
                 <p
                   class="itbkk-assignees"
                   :class="{
@@ -122,7 +130,7 @@ const props = defineProps({
             </div>
           </router-link>
 
-          <div class="itbkk-button-action dropdown dropdown-end dropdown-hover z-[1]">
+          <div class="itbkk-button-action dropdown dropdown-end dropdown-hover z-[1] mobile-L:w-[5%]">
             <div
               tabindex="0"
               role="button"
