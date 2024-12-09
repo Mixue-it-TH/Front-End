@@ -341,6 +341,30 @@ async function getBoardByBoardid(boardId) {
   }
 }
 
+// เล้งเพิ่ม
+async function editTheme(boardId, newTheme) {
+  const token = getToken();
+  try {
+    const respone = await fetch(`${import.meta.env.VITE_BASE_URL}/${boardId}/theme`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+
+      body: JSON.stringify({
+        theme: newTheme?.trim(),
+      }),
+    });
+
+    if (respone.ok) {
+      const data = await respone.json();
+      return data;
+    } else {
+      return respone;
+    }
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
 export {
   getTaskList,
   getTaskById,
@@ -353,4 +377,5 @@ export {
   createBoard,
   getVisibility,
   getBoardByBoardid,
+  editTheme,
 };

@@ -24,6 +24,7 @@ function triggerFileUpload() {
 }
 
 async function handleSelectBoard(boardId) {
+  const boardSelected = props.board.id === boardId;
   const isEnbleLimit = await handleRequestWithTokenRefresh(getEnableLimit, boardId);
   taskManagement.setLimitMaximumTask(isEnbleLimit.limitMaximumTask, isEnbleLimit.noOfTasks);
 }

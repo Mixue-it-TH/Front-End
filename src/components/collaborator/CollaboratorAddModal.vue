@@ -20,14 +20,14 @@ function handleValidEmail() {
 <template>
   <div class="bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] flex items-center justify-center font-noto">
     <div
-      class="fade-up itbkk-modal-setting text-black flex flex-col w-[90%] min-w-[300px] max-w-[600px] rounded-lg bg-white shadow-lg overflow-hidden"
+      class="fade-up itbkk-modal-setting text-black flex flex-col w-[90%] min-w-[300px] max-w-[600px] rounded-lg bg-primary shadow-lg overflow-hidden"
     >
       <div class="">
-        <div class="border-b border-gray-500 px-[15px] py-[8px] mb-[15px] text-[30px] font-[500]">
+        <div class="border-b border-gray-500 px-[15px] py-[8px] mb-[15px] text-[30px] font-[500] text-secondary">
           <h2 class="">Add Collaborator</h2>
         </div>
 
-        <div class="flex px-4 space-x-4">
+        <div class="flex px-4 space-x-4 text-secondary">
           <div class="flex-1">
             <p>Collaborator Email</p>
             <input
