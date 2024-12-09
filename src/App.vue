@@ -27,14 +27,14 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="w-[auto] h-screen overflow-auto bg bg-[#F4F4F4]">
+  <div class="w-[auto] h-screen overflow-auto bg bg-primary">
     <AlertMessage
       v-if="showAlertModal"
       @close="alertManagement.closeStatusModal"
       :message="message"
       :type="statusType"
     />
-    <div class="w-full h-[auto] bg-[#F4F4F4] text-gray-700 px-[2%] py-[25px] font-nonto">
+    <div class="w-full h-[auto] bg-primary text-secondary px-[2%] py-[25px] font-nonto">
       <RouterView />
     </div>
   </div>

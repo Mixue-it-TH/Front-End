@@ -40,7 +40,7 @@ const props = defineProps({
     </div>
   </router-link>
 
-  <div class="mt-[20px] text-gray-700 min-w-[740px]">
+  <div class="mt-[20px] text-secondary min-w-[740px]">
     <div class="flex justify-between items-center w-[100%] px-[20px] min-h-[45px] font-[550]">
       <div class="w-[10%] mobile-L:w-[5%]">
         <p>No</p>
@@ -62,7 +62,7 @@ const props = defineProps({
     <TooltipBtn>
       <router-link :to="{ name: 'taskAdd' }" class="mobile-L:hidden" :class="!permission ? 'pointer-events-none' : ''">
         <div
-          class="transition itbkk-button-add disabled flex items-center min-h-[55px] mb-[5px] px-[15px] w-[95vw] border-dashed border-[3px] hover:bg-white border-[#FFCB45] rounded-[8px]"
+          class="transition itbkk-button-add disabled flex items-center min-h-[55px] mb-[5px] px-[15px] w-[95vw] border-dashed border-[3px] hover:bg-gray-300 border-[#FFCB45] rounded-[8px]"
           :class="!permission ? 'opacity-50' : ''"
         >
           <div class="flex flex-row w-[50%]">
@@ -80,7 +80,7 @@ const props = defineProps({
     <Listmodel :jobs="listTasks" v-if="listTasks.length != 0">
       <template #default="slotprop">
         <div
-          class="itbkk-item transition flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
+          class="itbkk-item transition flex justify-between w-[100%] min-h-[55px] px-[28px] py-[10px] mb-[3px] break-all border border-[#DDDDDD] rounded-[10px] bg-accent hover:drop-shadow-2xl"
         >
           <router-link :to="{ name: 'taskDetail', params: { taskId: slotprop.job.id } }" class="w-full h-full">
             <div class="flex w-full min-h-[55px]">
@@ -126,7 +126,7 @@ const props = defineProps({
             <div
               tabindex="0"
               role="button"
-              class="btn m-1 z-[1] bg bg-white border border-white hover:bg-gray-100 hover:border-gray-200"
+              class="btn m-1 z-[1] bg bg-primary border border-white hover:bg-gray-100 hover:border-gray-200"
             >
               <svg width="7" height="30" viewBox="0 0 7 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="3.5" cy="3.5" r="3.5" fill="#969696" />
@@ -149,7 +149,7 @@ const props = defineProps({
                     class="itbkk-button-edit flex flex-row"
                     :class="!permission ? 'opacity-50 pointer-events-none disabled' : ''"
                   >
-                    <a class="px-5">
+                    <a class="px-5 text-black">
                       Edit
                       <img class="px-0" src="/image/edit-icon.png" width="25px" />
                     </a>
@@ -178,7 +178,7 @@ const props = defineProps({
     </Listmodel>
     <div
       v-else
-      class="w-[100%] border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] min-h-[45px] flex items-center justify-center"
+      class="w-[100%] border border-[#DDDDDD] rounded-[10px] bg-accent min-h-[45px] flex items-center justify-center"
     >
       <div class="m-[auto]">NO TASK LIST</div>
     </div>

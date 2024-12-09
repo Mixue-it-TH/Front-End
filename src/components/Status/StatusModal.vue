@@ -170,16 +170,16 @@ function closeModal() {
 		class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed flex justify-center items-center top-0 left-0 z-[10] font-nonto">
 		<div
 			class="fade-up itbkk-modal-status mobile-L:mb-[30px] mobile-L:h-[90%]  flex flex-col w-[full] h-[60%] min-h-[500px] min-w-[300px] rounded-[15px] bg bg-[#F8F8F8] text-[#333333]">
-			<header class="flex items-center h-[15%] px-[14px] bg bg-[#F8F8F8]  rounded-t-[7px] border-b-2 border">
+			<header class="flex items-center h-[15%] px-[14px] bg bg-primary text-secondary rounded-t-[7px] border-b-2 border">
 				<p class="text-[20px] font-[600]">{{ mode === 'read' ? 'Status Details' : (mode === 'add' ? 'Add Status'
 		: 'Edit Status') }}
 				</p>
 			</header>
-			<main class="flex flex-col h-full">
+			<main class="flex flex-col h-full bg-primary text-secondary">
 				<div class="mobile-L:mt-[0px] mt-[30px]  px-[14px]">
-					<p class="text-[17px] font-[550] mb-[10px]">Name</p>
+					<p class="text-[17px] font-[550] mb-[10px] ">Name</p>
 					<textarea
-						class="itbkk-status-name bg-white w-[400px] mobile-M:w-[300px] h-[40px] px-[5px] border-gray-400 border-2 text-black rounded-[5px] disabled:text-black disabled:opacity-100"
+						class="itbkk-status-name bg-accent w-[400px] mobile-M:w-[300px] h-[40px] px-[5px] border-gray-400 border-2 text-black rounded-[5px] disabled:text-black disabled:opacity-100"
 						v-model="statusDetails.name" :disabled="mode === 'read'" @input="saveBthHandler"></textarea>
 					<p v-if="mode !== 'read'" class="text-[15px]"
 						:class="statusDetails.name.length > 50 ? 'text-red-500' : 'text-[#AFAFAF]'">
@@ -191,7 +191,7 @@ function closeModal() {
 					<div class="">
 						<p class="text-[17px] font-[550] mb-[10px]">Description</p>
 						<textarea
-							class="itbkk-status-description w-[400px] mobile-M:w-[300px] h-[120px] px-[5px] bg-white border-gray-400 border-2 rounded-[5px] disabled:text-black disabled:opacity-100"
+							class="itbkk-status-description w-[400px] mobile-M:w-[300px] h-[120px] px-[5px] bg-accent border-gray-400 border-2 rounded-[5px] disabled:text-black disabled:opacity-100"
 							v-model="statusDetails.description" :disabled="mode === 'read'"
 							@input="saveBthHandler"></textarea>
 						<p v-if="mode !== 'read'" class="text-[15px]"
@@ -202,7 +202,7 @@ function closeModal() {
 						<p class="text-[17px] font-[550] mb-[10px]">Color</p>
 						<div class="flex mobile-L:flex-row flex-col gap-[10px] ">
 							<input type="text" v-model="statusDetails.statusColor" :disabled="mode === 'read'"
-								class="bg-white mobile-M:w-[135px] disabled:text-black disabled:opacity-100"></input>
+								class="bg-accent mobile-M:w-[135px] disabled:text-black disabled:opacity-100"></input>
 							<input type="color"
 								class="w-[150px] h-[75px] rounded-[5px] cursor-pointer focus:ring-2 focus:ring-blue-500"
 								v-model="statusDetails.statusColor" :disabled="mode === 'read'"
@@ -234,7 +234,7 @@ function closeModal() {
 
 
 			</main>
-			<footer class="flex justify-end mt-[auto] h-[17%] gap-5 items-center border-t-2">
+			<footer class="flex justify-end mt-[auto] h-[17%] gap-5 items-center border-t-2 bg-primary">
 				<button
 					class="itbkk-button itbkk-button-confirm disabled flex w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-600 rounded-lg"
 					:class="isDisable ? 'opacity-50' : ''" v-show="mode !== 'read'" @click="confirmHandeler()"

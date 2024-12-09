@@ -11,6 +11,7 @@ import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
 import { useAccount } from "@/store/account";
 import getAccessToken from "@/util/tokenUtil";
 import { getCollaboratorsByCollabId } from "@/util/accountFetchUtil";
+import { useThemeStore } from "@/store/theme";
 
 const accountStore = useAccount();
 const alertManagement = useAlert();
@@ -24,6 +25,7 @@ const statusManagement = useStatus();
 const permission = computed(() => accountStore.permission);
 const isLoadaed = ref(false);
 const isFetching = ref(false);
+const themeStore = useThemeStore();
 
 onMounted(async () => {
   ////// REFACTOR SOON จุดนี้ก็ต้อง handle  ///////
@@ -36,6 +38,8 @@ onMounted(async () => {
       accountStore.setVisibility("PRIVATE");
     } else {
       accountStore.setVisibility(board[0]?.visibility === "PUBLIC" ? true : false, board[0]?.owner.oid);
+      themeStore.setTheme(board.theme);
+      localStorage.setItem("theme", board.theme);
     }
   }
 
@@ -44,6 +48,7 @@ onMounted(async () => {
   const listTasks = await handleRequestWithTokenRefresh(getTaskList, route.params.id);
 
   const listStatuses = await handleRequestWithTokenRefresh(getStatusList, route.params.id);
+
   if (listTasks.status === 404) {
     router.push("/board");
   } else if (listTasks.status === 401) {

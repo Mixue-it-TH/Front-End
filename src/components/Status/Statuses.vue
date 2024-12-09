@@ -12,6 +12,7 @@ import { useAlert } from "@/store/alert";
 import { useRoute, useRouter } from "vue-router";
 import { useAccount } from "@/store/account";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import { useThemeStore } from "@/store/theme";
 
 const accountStore = useAccount();
 const alertManagement = useAlert();
@@ -28,6 +29,9 @@ const router = useRouter();
 const route = useRoute();
 const isLoaded = ref();
 
+// เล้งเพิ่ม
+const themeManagement = useThemeStore();
+
 onMounted(async () => {
   const listStatuses = await handleRequestWithTokenRefresh(getStatusList, route.params.id);
 
@@ -37,6 +41,10 @@ onMounted(async () => {
   if (statusManagement.getAllStatus().length === 0) {
     statusManagement.addStatuses(listStatuses);
   }
+  const theme = localStorage.getItem("theme");
+
+  // เล้งเพิ่ม
+  themeManagement.setTheme(theme);
   isLoaded.value = true;
 });
 

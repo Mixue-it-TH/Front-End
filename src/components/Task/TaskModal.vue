@@ -191,9 +191,9 @@ function closeModal() {
 <template>
   <Spinner v-if="isLoading" />
   <div v-if="dataLoaded" class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[30] font-nonto">
-    <div class="fade-up flex justify-center items-center w-[100%] h-[100%] text-[#333333]">
-      <div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-white">
-        <header class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-[#F8F8F8] border-b-2 rounded-t-[2px]">
+    <div class="fade-up flex justify-center items-center w-[100%] h-[100%] text-secondary">
+      <div class="itbkk-modal-task w-[75%] min-w-[300px] h-[90%] rounded-[15px] bg bg-primary">
+        <header class="h-[10%] px-[25px] mb-[10px] pt-[10px] bg bg-primary border-b-2 rounded-t-[2px]">
           <div class="flex gap-[10px]" v-show="mode !== 'read'">
             <div>
               {{ mode === "add" ? "New Task" : "Edit Task" }}
@@ -201,14 +201,14 @@ function closeModal() {
             <p
               v-if="mode !== 'read'"
               class="text-[15px]"
-              :class="taskDetails.title.length > 100 ? 'text-red-500' : 'text-[#AFAFAF]'"
+              :class="taskDetails.title.length > 100 ? 'text-red-500' : 'text-secondary'"
             >
               {{ taskDetails.title.length }}/100 characters
             </p>
           </div>
 
           <textarea
-            class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all bg-white disabled:text-black disabled:opacity-100"
+            class="itbkk-title h-[40px] w-[100%] text-[22px] font-[500] break-all bg-accent disabled:text-secondary disabled:opacity-100"
             :disabled="mode === 'read'"
             placeholder="input some title"
             v-model="taskDetails.title"
@@ -225,7 +225,7 @@ function closeModal() {
             <p class="font-[600]">Description</p>
             <textarea
               v-if="mode !== 'read'"
-              class="itbkk-description w-[95%] h-[60%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-white overflow-hidden"
+              class="itbkk-description w-[95%] h-[60%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-accent overflow-hidden"
               v-model="taskDetails.description"
               @input="saveBthHandler"
             ></textarea>
@@ -273,7 +273,7 @@ function closeModal() {
               <p class="font-[650]">Assignees</p>
               <textarea
                 v-if="mode !== 'read'"
-                class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all bg-white"
+                class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all bg-accent"
                 v-model="taskDetails.assignees"
                 @input="saveBthHandler"
               ></textarea>
@@ -303,7 +303,7 @@ function closeModal() {
                 <div class="border border-gray-300 min-h-[50px] rounded-[5px]">
                   <select
                     name="status"
-                    class="itbkk-status w-full h-full min-h-[50px] px-[15px] bg-white"
+                    class="itbkk-status w-full h-full min-h-[50px] px-[15px] bg-accent"
                     v-model="taskDetails.status.id"
                     @change="saveBthHandler(true)"
                     :required="true"
@@ -313,7 +313,7 @@ function closeModal() {
                       v-for="(status, index) in statusManagement.getAllStatus()"
                       :key="index"
                       :value="status.id"
-                      class="bg-white"
+                      class="bg-accent"
                     >
                       {{ status.name }}
                     </option>
@@ -339,7 +339,7 @@ function closeModal() {
             </div>
           </div>
         </main>
-        <footer class="h-[10%] px-[25px] border-t-2 border-gray-300 bg bg-[#F8F8F8] rounded-b-[7px]">
+        <footer class="h-[10%] px-[25px] border-t-2 border-gray-300 bg bg-accent rounded-b-[7px]">
           <div class="flex flex-row justify-end items-center gap-[15px] mt-[10px]">
             <button
               class="itbkk-button itbkk-button-confirm flex w-[65px] h-[40px] font-[600] text-white bg bg-green-500 hover:bg-green-600"
@@ -354,7 +354,7 @@ function closeModal() {
               <BtnSpinner v-else class="m-[auto]" />
             </button>
             <div
-              class="itbkk-button itbkk-button-cancel flex w-[80px] h-[40px] font-[600] text-gary-800 bg bg-gray-200 hover:bg-gray-300"
+              class="itbkk-button itbkk-button-cancel flex w-[80px] h-[40px] font-[600] text-white bg bg-gray-200 hover:bg-gray-300"
               @click="closeModal"
             >
               <button class="m-[auto]">Cancel</button>

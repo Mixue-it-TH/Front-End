@@ -7,6 +7,7 @@ import TooltipBtn from "../Ui/TooltipBtn.vue";
 import { useAccount } from "@/store/account";
 import { useCollaborator } from "@/store/collaborator";
 import { handleRequestWithTokenRefresh } from "@/util/handleRequest";
+import { useThemeStore } from "@/store/theme";
 
 const emit = defineEmits(["delete", "edit", "leave"]);
 const accountStore = useAccount();
@@ -16,11 +17,17 @@ const router = useRouter();
 const permission_owner = computed(() => accountStore.isOwner);
 const permission = computed(() => accountStore.permission);
 
+// เล้งเพิ่ม
+const themeManagement = useThemeStore();
+
 onMounted(async () => {
   const collaboratorList = await handleRequestWithTokenRefresh(getCollaborators, route.params.id);
 
   if (collaboratorList.collaborators) {
     collabStore.setCollaborator(collaboratorList.collaborators, collaboratorList.invitations);
+    const theme = localStorage.getItem("theme");
+
+    themeManagement.setTheme(theme);
   }
 
   if (collaboratorList?.status === 403) {
@@ -44,7 +51,7 @@ function collabUserHandler(userDetail) {
 
 <template>
   <div>
-    <div class="mt-[20px] text-gray-700 min-w-[740px]">
+    <div class="mt-[20px] text-secondary min-w-[740px]">
       <div class="flex justify-between items-center w-full px-5 min-h-[45px] font-medium">
         <div class="w-[10%] text-center">
           <p>No</p>
@@ -66,7 +73,7 @@ function collabUserHandler(userDetail) {
       <ListModel :jobs="collabStore.getCollaborator()" v-if="collabStore.getCollaborator().length !== 0">
         <template #default="slotprop">
           <div
-            class="transition itbkk-item flex justify-between w-full min-h-[55px] px-[20px] py-[10px] mb-[3px] border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] hover:drop-shadow-2xl"
+            class="transition itbkk-item flex justify-between w-full min-h-[55px] px-[20px] py-[10px] mb-[3px] border border-[#DDDDDD] rounded-[10px] bg-accent hover:drop-shadow-2xl"
           >
             <div class="w-[10%] text-center">
               <p>{{ slotprop.key + 1 }}</p>
@@ -130,7 +137,7 @@ function collabUserHandler(userDetail) {
 
       <div
         v-else
-        class="w-[100%] border border-[#DDDDDD] rounded-[10px] bg-[#F9F9F9] min-h-[45px] flex items-center justify-center"
+        class="w-[100%] border border-[#DDDDDD] rounded-[10px] bg-accent min-h-[45px] flex items-center justify-center textarea-secondary"
       >
         <div class="m-[auto]">NO Collaborator</div>
       </div>

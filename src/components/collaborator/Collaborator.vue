@@ -14,6 +14,7 @@ import { useAccount } from "@/store/account";
 import { useInvite } from "@/store/invite";
 import { addInvitation, declineInvitation, changeAccessInvitation } from "@/util/inviteApi";
 import Spinner from "../Ui/Spinner.vue";
+import router from "@/router";
 
 const emit = defineEmits(["cancle", "save"]);
 const route = useRoute();
@@ -150,7 +151,7 @@ function leaveModalHandler(collaboratorDetail) {
         :disabled="!permission_owner"
         :class="!permission_owner ? 'disabled opacity-50' : ''"
         @click="showCollaboratorModal = !showCollaboratorModal"
-        class="bg-white text-black font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
+        class="bg-accent text-secondary font-semibold px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
       >
         Invite Collaborator
       </button>

@@ -4,7 +4,7 @@ import { handelLimitMaximum } from "@/util/statusFetchUtils";
 import { useStatus } from "@/store/status";
 import { useTasks } from "@/store/task";
 import { computed, onMounted, ref, watch } from "vue";
-import { getEnableLimit, getBoardIdByUserOIDs, getBoardByBoardid } from "@/util/fetchUtils";
+import { getEnableLimit, getBoardIdByUserOIDs, getBoardByBoardid, editTheme } from "@/util/fetchUtils";
 import { useAlert } from "@/store/alert";
 import { useAccount } from "@/store/account";
 import { useLimit } from "@/store/limitReached";
@@ -17,6 +17,7 @@ import getAccessToken from "@/util/tokenUtil";
 import TooltipBtn from "../Ui/TooltipBtn.vue";
 import ToolTipOwnerBtn from "../Ui/ToolTipOwnerBtn.vue";
 import { getCollaboratorsByCollabId } from "@/util/accountFetchUtil";
+import { useThemeStore } from "@/store/theme";
 
 const alertManagement = useAlert();
 const statusManagement = useStatus();
@@ -37,6 +38,9 @@ const visibilityToggle = ref(false);
 const showVisibilityModal = ref(false);
 const permission = computed(() => accountStore.permission);
 const permission_owner = computed(() => accountStore.isOwner);
+
+// เล้งเพิ่ม
+const themeManagement = useThemeStore();
 
 onMounted(async () => {
   if (getAccessToken()) {
@@ -69,6 +73,7 @@ watch(
   () => route.fullPath,
   async (newPath) => {
     if (newPath === "/board" || newPath === "/board/add") {
+      themeManagement.setTheme("default");
       isboardSelect.value = false;
 
       toggleManage.value = " Manage Status";
@@ -256,6 +261,15 @@ function collabPageHandle() {
     router.go(-1);
   }
 }
+
+// เล้งเพิ่ม
+async function setTheme(theme) {
+  const newTheme = await handleRequestWithTokenRefresh(editTheme, route.params.id, theme);
+  if (newTheme.theme) {
+    themeManagement.setTheme(newTheme.theme);
+    localStorage.setItem("theme", newTheme.theme);
+  }
+}
 </script>
 
 <template>
@@ -269,13 +283,13 @@ function collabPageHandle() {
     <div class="flex h-[85%]">
       <img class="mr-[10px] tablet:w-[15%] laptop:w-[100px] mobile:w-[5%] mobile-M:hidden" src="/image/SIT-logo.png" />
 
-      <h1 class="text-[22px] text-gray-700 font-[800] mt-[10px]">IT-Bangmod Kradan Kanban</h1>
+      <h1 class="text-[22px] text-secondary font-[800] mt-[10px]">IT-Bangmod Kradan Kanban</h1>
     </div>
     <div class="flex mobile:flex-col tablet:justify-between gap-[15px] h-[75%]">
       <div class="flex mobile:items-center mobile-L:flex-col">
         <div
           v-show="isboardSelect"
-          class="itbkk-manage-status itbkk-button-home mobile-L:w-[235px] cursor-pointer hover:bg-gray-200 duration-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px] w-[200px] h-[45px] m-[7px] py-[7px] px-[5px] text-center"
+          class="itbkk-manage-status itbkk-button-home mobile-L:w-[235px] cursor-pointer hover:bg-gray-300 hover:text-black duration-100 bg-accent border border-[#BDBDBD] rounded-[4px] w-[200px] h-[45px] m-[7px] py-[7px] px-[5px] text-center"
           @click="toggleMode"
         >
           <div v-if="toggleManage === 'Home'" class="flex items-center justify-center gap-[10px]">
@@ -292,7 +306,7 @@ function collabPageHandle() {
         </div>
         <div
           v-show="isboardSelect"
-          class="itbkk-status-filter flex justify-between w-[202px] mobile-L:w-[235px] h-[45px] px-[10px] m-[auto] hover:bg-gray-200 duration-100 bg-[#F9F9F9] border border-[#BDBDBD] rounded-[4px]"
+          class="itbkk-status-filter flex justify-between w-[202px] mobile-L:w-[235px] h-[45px] px-[10px] m-[auto] hover:bg-gray-300 hover:text-black duration-100 bg-accent border border-[#BDBDBD] rounded-[4px]"
         >
           <div class="dropdown dropdown-bottom text-xs font-medium cursor-pointer">
             <div tabindex="0" role="">
@@ -310,7 +324,7 @@ function collabPageHandle() {
                   <div
                     v-for="(status, index) in statusFilter"
                     :key="index"
-                    class="itbkk-filter-item min-w-[120px] max-h-[60px] mb-5 pt-6 hover:bg-gray-100 text-gray-400 border border-gray-400 rounded-md flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-normal"
+                    class="itbkk-filter-item min-w-[120px] max-h-[60px] mb-5 pt-6 hover:bg-gray-300 hover:text-black text-secondary border border-primary rounded-md flex flex-row gap-[5px] w-auto items-center justify-center p-0.5 me-2 text-sm font-normal"
                   >
                     <div class="relative mb-5 transition-all text-sm duration-75 rounded-md flex">
                       {{ status }}
@@ -322,7 +336,7 @@ function collabPageHandle() {
                 </div>
               </div>
             </div>
-            <ul tabindex="0" class="dropdown-content z-[1] menu shadow rounded-[10px] w-[150px] bg-white">
+            <ul tabindex="0" class="dropdown-content z-[1] menu shadow rounded-[10px] w-[150px] bg-accent">
               <li
                 v-for="(status, index) in statusManagement.getAllStatus()"
                 :key="index"
@@ -342,7 +356,7 @@ function collabPageHandle() {
         <div
           v-show="isboardSelect"
           @click="sortTask"
-          class="itbkk-status-sort bg-[#F9F9F9] hover:bg-gray-200 w-[45px] min-w-[px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px] duration-100"
+          class="itbkk-status-sort bg-accent hover:bg-gray-300 hover:text-black w-[45px] min-w-[px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px] duration-100"
         >
           <div v-if="sortState === 0" class="flex justify-center mt-[5px]">
             <img src="/image/up-and-down-icon.png" class="w-[30px] h-[30px]" />
@@ -358,7 +372,7 @@ function collabPageHandle() {
           <div
             v-show="isboardSelect"
             @click="permission_owner ? limitModalHandler(true) : ''"
-            class="itbkk-status-setting flex justify-center items-center bg-[#F9F9F9] hover:bg-gray-200 duration-100 w-[45px] min-w-[40px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
+            class="itbkk-status-setting flex justify-center items-center bg-accent hover:bg-gray-300 hover:text-black duration-100 w-[45px] min-w-[40px] h-[45px] m-[auto] cursor-pointer border border-[#BDBDBD] rounded-[4px]"
           >
             <div class="flex justify-center">
               <img src="/image/setting-icon.png" class="w-[25px] h-[25px]" />
@@ -394,7 +408,7 @@ function collabPageHandle() {
         </div>
         <ul
           tabindex="0"
-          class="menu menu-sm dropdown-content rounded-box z-[1] mt-[100px] w-52 p-2 shadow cursor-none bg-white"
+          class="menu menu-sm dropdown-content rounded-box z-[1] mt-[100px] w-52 p-2 shadow cursor-none bg-accent"
         >
           <li @click="handleLogout(false)">
             <div class="flex justify-between">
@@ -406,7 +420,7 @@ function collabPageHandle() {
       </div>
     </div>
   </div>
-  <div v-if="isboardSelect" class="breadcrumbs flex justify-between text-sm overflow-visible">
+  <div v-if="isboardSelect" class="breadcrumbs flex justify-between text-sm overflow-visible text-secondary">
     <ul class="w-[50%]">
       <li @click="backToPrevious"><a>HOME</a></li>
       <li>
@@ -416,17 +430,27 @@ function collabPageHandle() {
 
     <ul>
       <div class="flex gap-[15px]">
+        <ToolTipOwnerBtn>
+          <div class="dropdown" :class="!permission_owner ? 'pointer-events-none opacity-50' : ''">
+            <div tabindex="0" role="button" class="btn m-1 bg-accent text-secondary hover:bg-gray-300">Theme</div>
+            <ul tabindex="0" class="dropdown-content menu bg-accent rounded-box z-[1] w-52 p-2 shadow">
+              <li v-for="(theme, index) in Object.keys(themeManagement.getAllTheme())">
+                <a @click="setTheme(theme)">{{ theme }}</a>
+              </li>
+            </ul>
+          </div>
+        </ToolTipOwnerBtn>
         <div>
           <button
             v-if="route.params.id"
             @click="collabPageHandle"
-            class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 hover:text-black transition duration-200"
+            class="bg-accent text-secondary border border-black px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition duration-200"
           >
             Manage Collaborator
           </button>
         </div>
         <ToolTipOwnerBtn>
-          <li class="border">
+          <li class="border bg-accent">
             <div class="itbkk-board-visibility form-control w-[120px]">
               <label class="label cursor-pointer">
                 <span>{{ visibilityToggle === false ? "private" : "public" }}</span>

@@ -4,16 +4,13 @@
 @tailwind utilities;
 
 .fade-up {
-  animation: fadeUp 0.5s
-    ease-out;
+  animation: fadeUp 0.5s ease-out;
 }
 
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(
-      20px
-    );
+    transform: translateY(20px);
   }
 
   to {
@@ -23,8 +20,7 @@
 }
 
 .transition {
-  transition: all 0.1.5s
-    ease-in-out;
+  transition: all 0.1.5s ease-in-out;
 }
 
 .transition:hover {
@@ -32,10 +28,15 @@
 }
 
 .transition-icon {
-  transition: all 0.1.5s
-    ease-in-out;
+  transition: all 0.1.5s ease-in-out;
 }
 
 .transition-icon:hover {
   transform: scale(1.15);
+}
+
+:root {
+  --color-primary: #ffffff; /* สีเริ่มต้น */
+  --color-secondary: #00171f;
+  --color-accent: #ffffff;
 }

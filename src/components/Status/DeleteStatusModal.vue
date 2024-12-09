@@ -1,7 +1,7 @@
 <script setup>
-import {useStatus} from "@/store/status";
-import {convertStatus} from "@/util/formatUtils";
-import {ref} from "vue";
+import { useStatus } from "@/store/status";
+import { convertStatus } from "@/util/formatUtils";
+import { ref } from "vue";
 const emit = defineEmits(["cancel", "confirm"]);
 
 const statusManagement = useStatus();
@@ -36,19 +36,11 @@ const newStatus = ref({
 </script>
 
 <template>
-  <div
-    class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[10] font-nonto"
-  >
+  <div class="backdrop-blur-sm bg-black/50 w-screen h-screen fixed top-0 left-0 z-[10] font-nonto">
     <div class="flex justify-center items-center w-screen h-screen">
-      <div
-        class="fade-up flex flex-col bg bg-white w-[45%] min-w-[300px] min-h-[250px] rounded-[7px]"
-      >
-        <div class="text-[28px] font-[600] h-[40%] px-[15px] py-[10px]">
-          Delete a Status !!
-        </div>
-        <div
-          class="itbkk-message border border-gray-300 min-h-[120px] px-[15px] py-[10px] break-all"
-        >
+      <div class="fade-up flex flex-col bg bg-primary text-secondary w-[45%] min-w-[300px] min-h-[250px] rounded-[7px]">
+        <div class="text-[28px] font-[600] h-[40%] px-[15px] py-[10px]">Delete a Status !!</div>
+        <div class="itbkk-message border border-gray-300 min-h-[120px] px-[15px] py-[10px] break-all">
           <div v-if="stage === 'delete'" class="pb-[20px]">
             Do you want to delete the
             <span class="text-red-600">"{{ stDetail.name }}" status ?</span>
@@ -59,18 +51,19 @@ const newStatus = ref({
             <span class="text-red-500">{{ amountTasks }}</span>
             status.
             <p class="break-all">
-              These statuses that have reached the task limit. No additional
-              tasks can be added to these statuses at this time.
+              These statuses that have reached the task limit. No additional tasks can be added to these statuses at
+              this time.
             </p>
             <div
               v-show="limitExceed.length > 0"
               v-for="(task, index) in limitExceed"
               :key="index"
               class="itbkk-filter-item text-white border border-gray-400 rounded-md mt-2.5 flex flex-row gap-[5px] w-[100px] items-center justify-center p-0.5 me-2 text-sm font-medium bre"
-              :style="{backgroundColor: task.statusColor}"
+              :style="{ backgroundColor: task.statusColor }"
             >
               <p>
-                {{ task.name }} <span>{{ task.numOfTasks }}</span>
+                {{ task.name }}
+                <span>{{ task.numOfTasks }}</span>
               </p>
             </div>
             <div class="mt-[15px]">
@@ -78,17 +71,12 @@ const newStatus = ref({
               <div class="mt-[10px] border-2">
                 <select
                   name="status"
-                  class="itbkk-status w-full h-full min-h-[50px] px-[15px] bg-white"
+                  class="itbkk-status w-full h-full min-h-[50px] px-[15px] bg-accent"
                   v-model="newStatus.id"
                   :required="true"
                   v-if="stage === 'tranfer'"
                 >
-                  <option
-                    v-for="(status, index) in tranferData"
-                    :key="index"
-                    :value="status.id"
-                    class="bg-white"
-                  >
+                  <option v-for="(status, index) in tranferData" :key="index" :value="status.id" class="bg-accent">
                     {{ convertStatus(status.name) }}
                   </option>
                 </select>
@@ -96,9 +84,7 @@ const newStatus = ref({
             </div>
           </div>
         </div>
-        <div
-          class="flex flex-row justify-end items-end gap-[20px] h-[25%] mt-[auto] px-[15px] py-[10px]"
-        >
+        <div class="flex flex-row justify-end items-end gap-[20px] h-[25%] mt-[auto] px-[15px] py-[10px]">
           <div
             @click="$emit('confirm', stDetail.id, newStatus.id)"
             class="itbkk-button-confirm flex items-center justify-center h-[50px] w-[100px] text-white bg-green-500 rounded-[5px]"
