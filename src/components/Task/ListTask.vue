@@ -86,33 +86,35 @@ const props = defineProps({
         >
           <router-link :to="{ name: 'taskDetail', params: { taskId: slotprop.job.id } }" class="w-full h-full">
             <div class="flex w-full min-h-[55px]">
-              <div class="w-[10%] mobile-L:w-[3%] font-[350] mobile-L:w-[4%]">
+              <div class="w-[11%] laptop-L:w-[12%] mobile-L:w-[3%] font-[350] mobile-L:w-[4%]">
                 <p class="m-[auto]">
                   {{ slotprop.key + 1 }}
                 </p>
               </div>
-              <div class="w-[37%] mobile-L:w-[45%] mobile-L:pl-9">
+              <div class="w-[36%] laptop-L:w-[37%] mobile-L:w-[45%] mobile-L:pl-5">
                 <div class="itbkk-title font-[430]">
                   {{ slotprop.job.title }}
                 </div>
               </div>
               <div
-                class="w-[13%] mobile-L:w-[30%] mobile-L:min-w-[100px] mobile-L:ml-1 mobile-L:mb-10 mobile-L:py-1 tablet:w-[20%] flex items-center transition-icon duration-100"
+                class="w-[16%] laptop-L:w-[20%] mobile-L:text-sm mobile-L:w-[20%] mobile-L:min-w-[90px] mobile-L:ml-1 mobile-L:mb-10 mobile-L:py-1 flex items-center transition-icon duration-100"
               >
                 <div
-                  class="min-w-[50px] max-w-[100px] w-[auto] rounded-[4px] py-[4px] laptop-L:py-1 laptop-L:px-2 flex items-center justify-center"
+                  class="min-w-[50px] ml-30 laptop-L:text-red-400 max-w-[100px] w-auto rounded-[4px] py-[6px] px-[12px] flex items-center justify-center"
                   :style="{
                     backgroundColor: slotprop.job.status.statusColor,
                   }"
                 >
-                  <p class="itbkk-status text-white mobile-L:text-[10px]">
+                  <p class="itbkk-status text-white">
                     {{ slotprop.job.status.name }}
                   </p>
                 </div>
               </div>
 
-              <div class="w-[13%] b mobile-L:w-[30%] mobile-L:-auto">
-                <p class="text-center">{{ slotprop.job.files?.length ? slotprop.job.files.length : "-" }}</p>
+              <div class="w-[10%] b mobile-L:w-[30%] mobile-L:-auto mobile-L:pl-5 tablet:pl-10">
+                <p class="">
+                  {{ slotprop.job.files?.length ? slotprop.job.files.length : "-" }}
+                </p>
               </div>
 
               <div
