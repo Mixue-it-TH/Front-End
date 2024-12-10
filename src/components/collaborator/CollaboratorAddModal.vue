@@ -46,10 +46,10 @@ function handleValidEmail() {
             <p>Access Right</p>
             <select
               v-model="access"
-              class="w-full text-white border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+              class="w-full text-white border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-500 mobile:mt-7"
             >
-              <option value="READ">Read</option>
-              <option value="WRITE">Write</option>
+              <option value="READ" class="mobile:text-xs">Read</option>
+              <option value="WRITE" class="mobile:text-xs">Write</option>
             </select>
           </div>
         </div>
