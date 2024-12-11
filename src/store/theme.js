@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import WarmLight from "../../public/image/warmlight.svg";
 
 export const useThemeStore = defineStore("theme", () => {
   const currentTheme = ref("default");
@@ -9,32 +8,32 @@ export const useThemeStore = defineStore("theme", () => {
       primary: "#ffffff",
       secondary: "#00171f",
       accent: "#ffffff",
-      icon: "/image/default.svg",
+      icon: "https://res.cloudinary.com/dyhavbbzf/image/upload/v1733932105/qy0vnrc2dx3o0uachlmb.svg",
     },
 
     dark: {
       primary: "#222831",
       secondary: "#EEEEEE",
       accent: "#76ABAE",
-      icon: "/image/dark.svg",
+      icon: "https://res.cloudinary.com/dyhavbbzf/image/upload/v1733932138/apqknw79g0acn6os0bjq.svg",
     },
     forest: {
       primary: "#386641",
       secondary: "#f2e8cf",
       accent: "#a7c957",
-      icon: "/image/forest.svg",
+      icon: "https://res.cloudinary.com/dyhavbbzf/image/upload/v1733932148/b9h8ohhzjklhuq4oonho.svg",
     },
     ocean: {
       primary: "#4ea8de",
       secondary: "#80ffdb",
       accent: "#6930c3",
-      icon: "/image/ocean.svg",
+      icon: "https://res.cloudinary.com/dyhavbbzf/image/upload/v1733932158/xujotposjoo0wgr5c7sr.svg",
     },
     warmlight: {
       primary: "#fefae0",
       secondary: "#d4a373",
       accent: "#faedcd",
-      icon: "/image/warmlight.svg",
+      icon: "https://res.cloudinary.com/dyhavbbzf/image/upload/v1733932163/jmtkaznoofzgme8eatbg.svg",
     },
   });
 
