@@ -221,42 +221,57 @@ function closeModal() {
           :class="mode !== 'read' ? 'pt-[30px]' : ''"
         >
           <!-- DESCRIPTION  -->
-          <div class="flex flex-col w-[70%] mobile-L:w-[100%] h-[100%] py-[10px]">
-            <p class="font-[600]">Description</p>
+          <div
+            class="flex flex-col w-[70%] min-h-[200px] mobile-L:min-h-[500px] mob mobile-L:w-[100%] h-[80%] py-[10px]"
+          >
+            <div class="flex gap-[7px]">
+              <p class="font-[600]">Description</p>
+              <p
+                v-if="mode !== 'read'"
+                class="text-[15px]"
+                :class="taskDetails.description?.length > 500 ? 'text-red-500' : 'text-[#AFAFAF]'"
+              >
+                {{ taskDetails.description?.length || "0" }}/500 characters
+              </p>
+            </div>
             <textarea
               v-if="mode !== 'read'"
-              class="itbkk-description w-[95%] h-[60%] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-accent overflow-hidden"
+              class="itbkk-description w-[95%] h-[60%] min-h-[200px] px-[15px] border-[2px] border-gray-400 rounded-[8px] bg-accent overflow-hidden"
               v-model="taskDetails.description"
               @input="saveBthHandler"
             ></textarea>
-            <p
-              v-if="mode !== 'read'"
-              class="text-[15px]"
-              :class="taskDetails.description?.length > 500 ? 'text-red-500' : 'text-[#AFAFAF]'"
-            >
-              {{ taskDetails.description?.length || "0" }}/500 characters
-            </p>
 
             <div
               v-if="mode === 'read'"
-              class="itbkk-description w-[95%] h-[60%] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
+              class="itbkk-description w-[95%] h-[60%] min-h-[200px] px-[15px] py-[10px] border-[2px] border-gray-400 rounded-[8px] break-all"
               :class="{ 'italic text-gray-500': !taskDetails.description }"
             >
               {{ taskDetails.description ? taskDetails.description : "No Description Provided" }}
             </div>
 
-            <!-- ATTACHMENTS -->
-            <div class="mt-[15px]">
-              <p class="font-[600] mb-[5px]">
-                Attachments
-                <span
-                  v-if="mode !== 'read'"
-                  :class="taskDetails?.files?.length >= 10 ? 'text-red-500' : ''"
-                  class="text-[14px] font-[400] text-[#AFAFAF]"
-                >
-                  {{ taskDetails.files?.length }}/10 files
-                </span>
-              </p>
+            <div v-if="mode !== 'add'">
+              <div class="flex gap-[5px] mt-[15px]">
+                <p class="font-[600]">Attachments</p>
+                <div class="flex" @click="triggerFileUpload">
+                  <span
+                    v-if="mode !== 'read'"
+                    :class="files?.length >= 10 ? 'text-red-500' : ''"
+                    class="text-[16px] font-[400] text-[#AFAFAF]"
+                  >
+                    {{ taskDetails?.files.length }}/10 files
+                  </span>
+                  <svg
+                    v-if="taskDetails?.files.length < 10 && taskDetails?.files.length && mode === 'edit'"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                    class="w-[20px] ml-2"
+                  >
+                    <path
+                      d="M364.2 83.8c-24.4-24.4-64-24.4-88.4 0l-184 184c-42.1 42.1-42.1 110.3 0 152.4s110.3 42.1 152.4 0l152-152c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-152 152c-64 64-167.6 64-231.6 0s-64-167.6 0-231.6l184-184c46.3-46.3 121.3-46.3 167.6 0s46.3 121.3 0 167.6l-176 176c-28.6 28.6-75 28.6-103.6 0s-28.6-75 0-103.6l144-144c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-144 144c-6.7 6.7-6.7 17.7 0 24.4s17.7 6.7 24.4 0l176-176c24.4-24.4 24.4-64 0-88.4z"
+                    />
+                  </svg>
+                </div>
+              </div>
               <UploadBtn
                 @upload="handleFileUpload"
                 @remove="removeFile"
@@ -267,32 +282,35 @@ function closeModal() {
             </div>
           </div>
           <!-- RIGHT SECTION -->
-          <div class="flex flex-col w-[30%] mobile-L:w-[100%] mobile-L:mt-[14px] h-[94%]">
+          <div class="flex flex-col w-[30%] mobile-L:w-[100%] mobile-L: h-[65%]">
             <!-- ASSIGNEE -->
-            <div class="flex flex-col h-[45%] py-[10px] mb-[10px]">
-              <p class="font-[650]">Assignees</p>
+            <div class="flex flex-col h-[45%] py-[10px] mb-[70px] mobile-L:mb-[20px]">
+              <div class="flex gap-[7px]">
+                <p class="font-[650]">Assignees</p>
+                <p
+                  v-if="mode !== 'read'"
+                  class="text-[15px]"
+                  :class="taskDetails.assignees?.length > 30 ? 'text-red-500' : 'text-[#AFAFAF]'"
+                >
+                  {{ taskDetails.assignees?.length || "0" }}/30 characters
+                </p>
+              </div>
               <textarea
                 v-if="mode !== 'read'"
                 class="itbkk-assignees px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all bg-accent"
                 v-model="taskDetails.assignees"
                 @input="saveBthHandler"
               ></textarea>
-              <p
-                v-if="mode !== 'read'"
-                class="text-[15px] mt-[8px]"
-                :class="taskDetails.assignees?.length > 30 ? 'text-red-500' : 'text-[#AFAFAF]'"
-              >
-                {{ taskDetails.assignees?.length || "0" }}/30 characters
-              </p>
+
               <div
                 v-if="mode === 'read'"
-                class="itbkk-assignees min-h-[180px] px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
+                class="itbkk-assignees min-h-[180px] px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all mobile-L:min-h-[80px]"
                 :class="{ 'italic text-gray-500': !taskDetails.assignees }"
               >
                 {{ taskDetails.assignees ? taskDetails.assignees : "Unassigned" }}
               </div>
             </div>
-            <div class="flex flex-col gap-[20px] h-[55%] mt-[17px]">
+            <div class="flex flex-col gap-[20px] h-[55%] mb-[170px]">
               <div>
                 <p class="font-[600]">
                   Status
