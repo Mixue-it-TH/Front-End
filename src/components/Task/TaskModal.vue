@@ -221,7 +221,9 @@ function closeModal() {
           :class="mode !== 'read' ? 'pt-[30px]' : ''"
         >
           <!-- DESCRIPTION  -->
-          <div class="flex flex-col w-[70%] mobile-L:w-[100%] h-[100%] py-[10px]">
+          <div
+            class="flex flex-col w-[70%] min-h-[200px] mobile-L:min-h-[500px] mob mobile-L:w-[100%] h-[80%] py-[10px]"
+          >
             <p class="font-[600]">Description</p>
             <textarea
               v-if="mode !== 'read'"
@@ -246,7 +248,7 @@ function closeModal() {
             </div>
 
             <!-- ATTACHMENTS -->
-            <div class="mt-[15px]">
+            <!-- <div class="mt-[15px]">
               <p class="font-[600] mb-[5px]">
                 Attachments
                 <span
@@ -264,12 +266,36 @@ function closeModal() {
                 :files="taskDetails?.files"
                 :mode="mode"
               />
+            </div> -->
+
+            <!-- <div class="outline-dashed outline-2 flex flex-col justify-center items-center mt-5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="w-[65px]">
+                <path
+                  d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128l-368 0zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39L296 392c0 13.3 10.7 24 24 24s24-10.7 24-24l0-134.1 39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+                />
+              </svg>
+              <h1>Upload a File</h1>
+              <p class="text-gray-400">Drag and drop file here</p>
+              
+            </div> -->
+            <!-- <div class="mt-10"> -->
+            <div v-if="mode !== 'add'">
+              <p class="font-[600]">Attachments</p>
+              <UploadBtn
+                @upload="handleFileUpload"
+                @remove="removeFile"
+                @open="openImageInNewTab"
+                :files="taskDetails?.files"
+                :mode="mode"
+              />
             </div>
+
+            <!-- </div> -->
           </div>
           <!-- RIGHT SECTION -->
-          <div class="flex flex-col w-[30%] mobile-L:w-[100%] mobile-L:mt-[14px] h-[94%]">
+          <div class="flex flex-col w-[30%] mobile-L:w-[100%] mobile-L: h-[65%]">
             <!-- ASSIGNEE -->
-            <div class="flex flex-col h-[45%] py-[10px] mb-[10px]">
+            <div class="flex flex-col h-[45%] py-[10px] mb-[70px] mobile-L:mb-[20px]">
               <p class="font-[650]">Assignees</p>
               <textarea
                 v-if="mode !== 'read'"
@@ -286,13 +312,13 @@ function closeModal() {
               </p>
               <div
                 v-if="mode === 'read'"
-                class="itbkk-assignees min-h-[180px] px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all"
+                class="itbkk-assignees min-h-[180px] px-[10px] py-[12px] border-[2px] border-gray-300 rounded-[4px] break-all mobile-L:min-h-[80px]"
                 :class="{ 'italic text-gray-500': !taskDetails.assignees }"
               >
                 {{ taskDetails.assignees ? taskDetails.assignees : "Unassigned" }}
               </div>
             </div>
-            <div class="flex flex-col gap-[20px] h-[55%] mt-[17px]">
+            <div class="flex flex-col gap-[20px] h-[55%] mb-[170px]">
               <div>
                 <p class="font-[600]">
                   Status

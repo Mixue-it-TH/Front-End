@@ -29,6 +29,7 @@ function loginPopup() {
 onMounted(async () => {
   localStorage.removeItem("token");
   localStorage.removeItem("refreshToken");
+  localStorage.removeItem("theme");
   taskManagement.clearAllTask();
   statusManagement.clearAllStatus();
   if (localStorage.getItem("msal_logout")) {
