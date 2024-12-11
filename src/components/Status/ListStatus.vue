@@ -137,7 +137,7 @@ function delBtnHandler(id, tranferId) {
             </div>
           </router-link>
           <div class="w-[12%]">
-            <TooltipBtn>
+            <TooltipBtn v-if="slotprop.job.name !== 'No Status' && slotprop.job.name !== 'Done'">
               <div class="flex tablet:flex-col w-[100px]" :class="!permission ? 'pointer-events-none opacity-50' : ''">
                 <router-link
                   :to="{
@@ -163,6 +163,7 @@ function delBtnHandler(id, tranferId) {
                 </div>
               </div>
             </TooltipBtn>
+            <div v-else class=""><p class="text-sm text-gray-600">default status</p></div>
           </div>
         </div>
       </template>

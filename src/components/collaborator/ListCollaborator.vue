@@ -97,7 +97,7 @@ function collabUserHandler(userDetail) {
                 <select
                   v-model="slotprop.job.accessRight"
                   @change="changeAccessRight(slotprop.job)"
-                  :disabled="!permission_owner && accountStore.getData().email !== slotprop.job.email"
+                  :disabled="!permission_owner && accountStore.getData().email === slotprop.job.email"
                   class="text-white bg-black border-2 border-gray-300 rounded-lg px-4 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
                 >
                   <option :value="'WRITE'">WRITE</option>
