@@ -193,8 +193,7 @@ function handleLogout(login) {
     accountStore.setisLogin(login);
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("boardId");
-    localStorage.removeItem("boardName");
+    themeManagement.setTheme("default");
     taskManagement.clearAllTask();
     statusManagement.clearAllStatus();
 
@@ -281,19 +280,19 @@ async function setTheme(theme) {
   </Teleport>
   <div class="flex flex-row justify-between tablet:h-[auto] tablet:flex-col w-[100%] h-[75px] mb-[15px]0">
     <div class="flex h-[85%]">
-      <img class="mr-[10px] tablet:w-[15%] laptop:w-[100px] mobile:w-[5%] mobile-M:hidden" src="/image/SIT-logo.png" />
+      <img class="mr-[10px] tablet:w-[15%] laptop:w-[100px] mobile:w-[5%]" src="/image/SIT-logo.png" />
 
       <h1 class="text-[22px] text-secondary font-[800] mt-[10px]">IT-Bangmod Kradan Kanban</h1>
     </div>
-    <div class="flex mobile:flex-col tablet:justify-between gap-[15px] h-[75%]">
-      <div class="flex mobile:items-center mobile-L:flex-col">
+    <div class="flex mobile:flex-col tablet:justify-between gap-[15px] h-[75%] mobile-L:flex-col">
+      <div class="flex mobile-L:items-center mobile-L:flex-col">
         <div
           v-show="isboardSelect"
           class="itbkk-manage-status itbkk-button-home mobile-L:w-[235px] cursor-pointer hover:bg-gray-300 hover:text-black duration-100 bg-accent border border-[#BDBDBD] rounded-[4px] w-[200px] h-[45px] m-[7px] py-[7px] px-[5px] text-center"
           @click="toggleMode"
         >
           <div v-if="toggleManage === 'Home'" class="flex items-center justify-center gap-[10px]">
-            <h1>
+            <h1 class="">
               {{ toggleManage }}
             </h1>
             <img src="/image/home-icon.png" width="30px" />
@@ -352,7 +351,7 @@ async function setTheme(theme) {
           </div>
         </div>
       </div>
-      <div class="flex items-center mobile:flex-row l gap-[10px]">
+      <div class="flex items-center gap-[10px] mobile-L:gap-56 mobile:pt-2">
         <div
           v-show="isboardSelect"
           @click="sortTask"
@@ -380,6 +379,7 @@ async function setTheme(theme) {
           </div>
         </ToolTipOwnerBtn>
       </div>
+
       <RouterLink v-if="!accountStore.getisLogin()" :to="{ name: 'login' }">
         <div class="flex btn btn-outline mt-[5px]">Login</div>
       </RouterLink>
@@ -387,7 +387,7 @@ async function setTheme(theme) {
         <div
           tabindex="0"
           role="button"
-          class="btn btn-ghost btn-circle avatar flex items-center w-auto"
+          class="btn btn-ghost btn-circle avatar flex items-center w-auto mobile-L:ml-20"
           style="min-width: 170px; padding: 0 10px"
         >
           <div class="flex-shrink-0 w-[50px] h-[50px] mb-auto rounded-full overflow-hidden">
@@ -397,7 +397,7 @@ async function setTheme(theme) {
               class="w-full h-full object-cover"
             />
           </div>
-          <div class="ml-2 font-inter flex-1 flex flex-col justify-center h-[50px] w-[125px]">
+          <div class="ml-2 font-inter flex-1 flex flex-col justify-center h-[50px] w-[125px] mobile:text-md">
             <div class="itbkk-fullname mt-2">
               {{ accountStore.getData()?.name }}
             </div>
@@ -452,7 +452,7 @@ async function setTheme(theme) {
         <ToolTipOwnerBtn>
           <li class="border bg-accent">
             <div class="itbkk-board-visibility form-control w-[120px]">
-              <label class="label cursor-pointer">
+              <label class="label cursor-pointer mobile:text-base">
                 <span>{{ visibilityToggle === false ? "private" : "public" }}</span>
 
                 <input
