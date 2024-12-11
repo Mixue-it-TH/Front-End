@@ -33,9 +33,9 @@ const toggleManage = ref(" Manage Status");
 const route = useRoute();
 const isboardSelect = ref(true);
 const boardName = ref("");
-
 const visibilityToggle = ref(false);
 const showVisibilityModal = ref(false);
+const currentTheme = ref();
 const permission = computed(() => accountStore.permission);
 const permission_owner = computed(() => accountStore.isOwner);
 const icon = ref("");
@@ -68,6 +68,7 @@ onMounted(async () => {
       }
     }
   }
+  currentTheme.value = localStorage.getItem("theme");
 });
 
 watch(
@@ -75,6 +76,7 @@ watch(
   async (newPath) => {
     if (newPath === "/board" || newPath === "/board/add") {
       themeManagement.setTheme("default");
+      currentTheme.value = "default";
       isboardSelect.value = false;
 
       toggleManage.value = " Manage Status";
@@ -121,6 +123,7 @@ watch(
 
       boardName.value = boardDetail.name;
       const themeSelect = localStorage.getItem("theme");
+      currentTheme.value = themeSelect;
       icon.value = icon.value = themeManagement.getAllTheme()[themeSelect].icon;
     }
   },
@@ -272,6 +275,7 @@ async function setTheme(theme) {
     icon.value = themeManagement.getAllTheme()[newTheme.theme].icon;
     console.log(icon.value);
     localStorage.setItem("theme", newTheme.theme);
+    currentTheme.value = newTheme.theme;
   }
 }
 </script>
@@ -423,9 +427,7 @@ async function setTheme(theme) {
         <ToolTipOwnerBtn>
           <div class="dropdown dropdown-right" :class="!permission_owner ? 'pointer-events-none opacity-50' : ''">
             <div tabindex="0" role="button ">
-              <!-- <div class="border border-black rounded-md bg-accent w-9"> -->
               <img :src="icon" alt="Theme Icon" class="w-8 h-6 inline mr-2" />
-              <!-- </div> -->
             </div>
             <ul tabindex="0" class="dropdown-content menu rounded-box z-[1] w-52 p-2 shadow bg-accent">
               <li v-for="(theme, index) in Object.keys(themeManagement.getAllTheme())">
@@ -436,6 +438,10 @@ async function setTheme(theme) {
                     class="w-6 h-6 inline mr-2 text-secondary"
                   />
                   {{ theme }}
+                  <span v-if="currentTheme === theme" class="text-[12px] flex gap-[5px] justify-center items-center">
+                    <div class="rounded-full bg-green-500 w-[7px] h-[7px]"></div>
+                    in use
+                  </span>
                 </a>
               </li>
             </ul>
